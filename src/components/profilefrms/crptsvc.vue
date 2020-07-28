@@ -140,7 +140,12 @@ export default {
     ...mapState(['CurThreadDetails', 'CurUserDetails', 'CurClientDetails']),
     trd_comments() {
       const cmnt = this.CurThreadDetails.TRDCMM
-      return cmnt.reverse()
+      // console.log(cmnt)
+      if (cmnt !== undefined) {
+        return cmnt.reverse()
+      } else {
+        return cmnt
+      }
     },
   },
   mounted() {
@@ -187,7 +192,8 @@ export default {
   created() {
     this.getThreadDetailsById(this.$route.params.TRDMTI).then(
       res => {
-        if (Object.keys(this.CurClientDetails).length == 0) {
+        if (this.CurClientDetails.ACCMID !== this.CurThreadDetails.TRDMAC) {
+          // if (Object.keys(this.CurClientDetails).length == 0) {
           this.getAcc(res.TRDMAC).then(
             acc => {
               this.upClient(acc.data)

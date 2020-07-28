@@ -2,13 +2,13 @@
   <div class="text-xs-center">
     <v-dialog v-model="dialog" max-width="950" persistent>
       <template v-if="isEdit" v-slot:activator="{ on }">
-        <v-btn class="mt-5 mr-2" flat icon color="teal darken-2" small absolute top right v-on="on">
+        <v-btn class="mt-5 mr-2" flat icon color="teal darken-2" small absolute top rightv-on="on">
           <v-icon>edit</v-icon>
         </v-btn>
       </template>
       <template v-else v-slot:activator="{ on }">
-        <v-btn class="teal darken-2" dark fab fixed bottom right v-on="on">
-          <v-icon>add</v-icon>
+        <v-btn small round dark color="teal" v-on="on">
+          Create Thread
         </v-btn>
       </template>
 
@@ -92,12 +92,27 @@
                   <v-flex xs12 lg6>
                     <!-- <v-text-field v-model="data.TRDMMC" label="Instrument Name" outline></v-text-field> -->
                     <v-autocomplete
-                      v-model="data.TRDMMC"
+                      v-model="tmp_TRDMMC"
                       :items="instruments"
                       label="Instrument Name"
                       clearable
                       box
-                    ></v-autocomplete>
+                      item-value="SERIAL_NO"
+                      dont-fill-mask-blanks
+                    >
+                      <template v-slot:selection="data">
+                        {{ `${data.item.ITEM_CODE} - (SN: ${data.item.SERIAL_NO})` }}
+                      </template>
+                      <template v-slot:item="data">
+                        <v-list-tile-content class="py-1">
+                          <v-list-tile-title class="body-2" v-html="data.item.ITEM_CODE"></v-list-tile-title>
+                          <v-list-tile-sub-title
+                            class="caption font-weight-light"
+                            v-html="'SN:' + data.item.SERIAL_NO"
+                          ></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                      </template>
+                    </v-autocomplete>
                   </v-flex>
                   <v-flex xs12 lg3>
                     <v-select
@@ -206,10 +221,21 @@ export default {
   },
   data() {
     return {
-      SECTION: ['Hematology', 'Coagulation', 'Chemistry', 'Immunology', 'Microscopy', 'Microbiology', 'Reception'],
+      tmp_TRDMMC: '',
+      SECTION: [
+        'Coagulation',
+        'Chemistry',
+        'Hematology',
+        'Immunology',
+        'Microscopy',
+        'Microbiology',
+        'Pulmonary',
+        'Reception',
+        'Others',
+      ],
       tClass: ['ASAP', 'Scheduled', 'Unscheduled', 'N/A'],
       tType: [
-        'Service Report',
+        'Activation Code',
         'Host PC Installation',
         'Server Installation',
         'TTP',
@@ -240,136 +266,7 @@ export default {
       },
       datepicker: false,
       // instruments: ['ACL 200', 'HMX', 'DXH 800', 'STKS Analyzer'],
-      instruments: [
-        '24 Placer Clinical Centrifuge',
-        'Access 2 (OUS) Refurbis',
-        'Access 2 Analyzer',
-        'Access 2 Immuno Assy Analyzer',
-        'Access Analyzer',
-        'ACL 100 ANALYZER P. ID 220/240 ENG',
-        'ACL 200 ANALYZER',
-        'ACL 6000 ANALYZER',
-        'ACL 7000 5ML TRAY  220/240 V ENG.',
-        'ACL 7000 Ref ITA',
-        'ACL 9000 5ML TRAY 220/240 V ENG.',
-        'ACL Couagulation Analyzer',
-        'ACL ELite Pro Analyzer',
-        'ACL Top 300 Cts',
-        'ACL Top 350 CTS',
-        'ACL Top 350 CTS System Analyzer',
-        'ACL Top 500 Cts w/ accessories',
-        'ACL7000 ANALYZER',
-        'ACT 10 ANALYZER',
-        'Act 5 Diff Hematology Analyzer',
-        'Allegra X5 Centrifuge',
-        'Aris 2X',
-        'AU 480 w/ ISE Automated Chem Analyzer',
-        'AU400 Chemistry Analyzer',
-        'AU481-10E, Chemistry Analyzer AU480 with ISE',
-        'AU680 Chemistry Analyzer',
-        'Automate 800',
-        'BC Robo-8000RFID',
-        'Beckman LX20 Pro Chemistry Analyzer',
-        'Beckman Unicel DXC800 Pro Analyzer',
-        'CL Analyzer',
-        'Coulter AcT diff Hematology Analyzer',
-        'CX 3 Chemistry System Analyzer',
-        'CX 9 Chemistry System Analyzer',
-        'CX3 Chemistry System Analyzer',
-        'CX4 CE REF COMPLETE  ACCESSORIES',
-        'CX5 Delta Analyzer (Cat. No. 468242)',
-        'CX5 REF COMPLETE ACCESSORIES',
-        'Dirui CS 130B Close System Analyzer',
-        'DR-7000D Semi-Automated Chemistry Analyzer',
-        'DX i800 Analyzer Refurbished',
-        'DxC 600 PRO (R) Analyzer',
-        'DxC 800 PRO',
-        'DxC 800 PRO, Reconditioned, Basic Assy, Pkg Analyz...',
-        'DxC700 AU with ISE Instrument',
-        'DxH 500 Analyzer',
-        'DxH 520 Hematology Analyzer',
-        'DXH 900 Hematology System with Floor Stand',
-        'DxI 800 Access Immunoassy w/ Spot B Analyzer',
-        'Dxi 800 Analyzer',
-        'FC500 with UPS ®',
-        'Frontline Focus Anaesthesia',
-        'FUS-100 Urine Sediment Analyzer',
-        'FUS-200 Urine Sediment Analyzer',
-        'GEM 3000 PREMIER 220V',
-        'Gem OPL System',
-        'Gem PCL Plus',
-        'Gem Premier 3500 Instrument 110/220',
-        'Gem Premier 4000 Instrument',
-        'Gem Premier 40000 Instrument',
-        'Gem Premier 5000 Analyzer',
-        'H-100 Urine Analyzer',
-        'H-500 Urine Analyzer',
-        'H-800 Urine Analyzer',
-        'HMX Autoloader Hematology Analyzer',
-        'IL ACL Elite PRO Coag Analyzer',
-        'Ilab 300 Plus w/ ISE',
-        'Ilab 300 Plus w/o ISE',
-        'Ilab Aries w/o ISE',
-        'Ilab Aries w/o ISE with Reagent and Sample BRC Ana...',
-        'Ilyte NA/K/Ca/Ph 220V',
-        'Ilyte NA/K/CL 220V',
-        'Immage 800',
-        'Immage 800 Analyzer, Reconditioned',
-        'Immage 800 Final Assy Pkgd Analyzer',
-        'Immage System 240V',
-        'Immunofluorescence Immune Analyzer',
-        'IRICELL 2000 (IQ200 Elite + 2.5 ICHEM Velocity)',
-        'IRICELL 3000 PRO INTL',
-        'IRICELL2000 Pro Analyzer',
-        'LH SlideMaker',
-        'LH SlideStainer',
-        'LH500 SALESGROUP (198-242V)',
-        'LH750 Analytical Station',
-        'LH750 Hematology Analyzer',
-        'LH780 (R) Analytical Station',
-        'LH780 ANALYTICAL STATION',
-        'LX 20 Pro Chemistry System',
-        'Lx20 analyzer w/o Cap',
-        'LX20 PRO',
-        'LX20 PRO (Reconditioned)',
-        'LX20 PRO (Refurbished)',
-        'LXi-725 Analyzer',
-        'Power Processor Basic Track',
-        'Power Processor Track',
-        'Prince SP400 POCT Analyzer',
-        'Randox Molecular Evidence Investigator Package',
-        'SG, HMX AL (EUROPE) 240 V',
-        'SG, HMX AL (EUROPE) 240V',
-        'SLGP, Immage 800 - English 240V',
-        'SLGP, LxI 725 English Int Analyzer',
-        'Spinchron DLX Centrifuge',
-        'STKS Hematology analyzer',
-        'Synchron CX3 Delta Analyzer',
-        'Synchron CX4 Clinical System',
-        'Synchron CX5 Analyzer',
-        'Synchron CX5 Delta Analyzer',
-        'Synchron CX7 Clinical System',
-        'T 540 HEMATOLOGY ANALYZER',
-        'TN, LH 500 (198-242/48-62) Analyzer',
-        'TN, LH750 Slide Maker Analyzer',
-        'TQ-Prep Workstation',
-        'Unicel DXC 600i Analyzer',
-        'UniCel DxC 800 PRO',
-        'UniCel DxC 800 Pro Analyzer',
-        'UniCel DxC 800 PRO, Pkg Analyzer',
-        'UniCel DxC 860i Analyzer(UTCA+DXC800+DxI600)',
-        'UniCel DXC600 Pro Analyzer',
-        'Unicel DXH 800 Benchtop Analyzer',
-        'Unicel DXH 800 Hematology Analyzer',
-        'UniCel DxH 800 Hematology System Analyzer',
-        'Unicel DXH SMS Analyzer',
-        'UniCel DXI 600 Immuno Analyzer',
-        'UniCel DXi 800 Immuno Analyzer',
-        'Unicel DXi600 Analyzer (A45868)-Salesgroup',
-        'VersaTrek 240 W/6 DR/Ctrl MOD, 220V',
-        'Vision ESR Analyzer',
-        'WA40 Plus Generic',
-      ],
+      instruments: [],
       dialog: false,
       transType_status: true,
       transClass: ['ASAP', 'Scheduled', 'Unscheduled', 'N/A'],
@@ -449,14 +346,36 @@ export default {
     },
   },
   watch: {
+    tmp_TRDMMC(val) {
+      if (val == undefined) {
+        this.data.TRDMMC = ''
+      } else {
+        const item = this.instruments.filter(itm => {
+          return itm.SERIAL_NO == val
+        })
+        this.data.TRDMMC = `${item[0].ITEM_CODE} - (SN: ${item[0].SERIAL_NO})`
+      }
+    },
     TRDSEC(val) {
       if (val == '') return false
       this.transType_status = false
       if (this.CurClientDetails.ACCMSC == 'MDMPI') this.TransType()
     },
+    dialog(val) {
+      if (val) {
+        this.getInstrumentByAccId(this.$route.params.ACCMID).then(
+          res => {
+            this.instruments = res.data.tbinstruments
+          },
+          error => {
+            console.error(error)
+          }
+        )
+      }
+    },
   },
   methods: {
-    ...mapActions(['postThread', 'getTransType', 'getAcc']),
+    ...mapActions(['postThread', 'getTransType', 'getAcc', 'getInstrumentByAccId']),
     ...mapMutations(['upClient']),
     savePost() {
       this.$v.$touch()

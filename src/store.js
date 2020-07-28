@@ -10,11 +10,13 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    CurCheckInAcc: {},
     CurThreads: [],
+    Notifications: [],
+    CurSRDetails: {},
     CurClientDetails: {},
     CurThreadDetails: {},
     CurUserDetails: {},
-    Notifications: [],
   },
   mutations: {
     upClient(state, val) {
@@ -23,14 +25,20 @@ export default new Vuex.Store({
     upTrdDetails(state, val) {
       state.CurThreadDetails = val
     },
+    upSRdDetails(state, val) {
+      state.CurSRDetails = val
+    },
     upCurUserDetails(state, val) {
       state.CurUserDetails = JSON.parse(val)
     },
     upCurThreads(state, val) {
       state.CurThreads = val
     },
+    upCurCheckInAcc(state, val) {
+      state.CurCheckInAcc = val
+    },
     pushCurThreadCmm(state, val) {
-      state.CurThreadDetails.TRDCMM.push(val)
+      state.CurThreadDetails.TRDCMM.unshift(val)
     },
     pushCurThreads(state, val) {
       state.CurThreads.unshift(val)
@@ -63,6 +71,18 @@ export default new Vuex.Store({
           })
       })
     },
+    getContacts({}, cntId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/contacts/${cntId}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     getCurUserDetails({ commit }) {
       try {
         commit('upCurUserDetails', Cookies.get('user_details'))
@@ -70,11 +90,38 @@ export default new Vuex.Store({
         console.log(error.message)
       }
     },
+    getCurCheckInAcc({ commit }, usrId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`https://inventory.mdmpi.com.ph/api2/threads/activelog`, {
+            usrId,
+          })
+          .then(result => {
+            commit('upCurCheckInAcc', result.data)
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     getAcc({}, accId) {
       accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
           .get(`/account/${accId}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getInstrumentByAccId({}, accId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/account/instruments/${accId}`)
           .then(result => {
             resolve(result)
           })
@@ -113,6 +160,19 @@ export default new Vuex.Store({
           .get(`/threads/details/${trdId}`)
           .then(result => {
             commit('upTrdDetails', result.data)
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getSRDetailsById({ commit }, trdId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/threads/sr/${trdId}`)
+          .then(result => {
+            commit('upSRdDetails', result.data)
             resolve(result.data)
           })
           .catch(error => {
@@ -192,6 +252,21 @@ export default new Vuex.Store({
         }
       })
     },
+    getOTP({}, data) {
+      console.log(data)
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`/user/genOTP`, {
+            usr_initial: data.usr_initial,
+          })
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     //Post
     postNewAccount({}, data) {
       return new Promise((resolve, reject) => {
@@ -199,6 +274,22 @@ export default new Vuex.Store({
           .post(`/account`, data)
           .then(result => {
             resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    postNewPassword({}, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/user/change-password', {
+            username: data.username,
+            password: data.curpass,
+            NewPassword: data.newpassword,
+          })
+          .then(res => {
+            resolve(res)
           })
           .catch(error => {
             reject(error)
@@ -232,6 +323,30 @@ export default new Vuex.Store({
           })
       })
     },
+    postContact({}, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/contacts/${data.id}`, data.val)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    postContactDetails({}, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/contacts/${data.id}`, data.val)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     updateThreadByID({}, data) {
       return new Promise((resolve, reject) => {
         axios
@@ -244,7 +359,20 @@ export default new Vuex.Store({
           })
       })
     },
+    updateContacts({}, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/contacts/${data.id}`, data.val)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
     //Notification
+    // eslint-disable-next-line no-unused-vars
     getNotifications({ state, commit }, userID) {
       var USRID = state.CurUserDetails.CNTMST.CNTMID
       //notif
@@ -263,7 +391,9 @@ export default new Vuex.Store({
     updateNotification({}, data) {
       return new Promise((resolve, reject) => {
         axios
-          .patch(`/notif/${data.notif_id}`, { CNTMID: data.usr_id })
+          .patch(`/notif/${data.notif_id}`, {
+            CNTMID: data.usr_id,
+          })
           .then(result => {
             resolve(result.data)
           })

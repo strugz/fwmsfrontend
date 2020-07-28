@@ -70,12 +70,11 @@ export default {
       }
       this.userLogin({ username: this.username, password: this.password })
         .then(res => {
-          console.log(res)
           if (res.status == 200 && res.data.message == 'Auth successful') {
-            Cookies.set('token', res.data.token, { expires: 1, path: '/crm' })
-            Cookies.set('user_details', res.data.details, { expires: 1, path: '/crm' })
+            Cookies.set('token', res.data.token, { expires: 1, path: '/' })
+            Cookies.set('user_details', res.data.details, { expires: 1, path: '/' })
             this.getCurUserDetails()
-            this.$router.go({ name: 'home' })
+            this.$router.replace({ name: 'home' })
           }
         })
         .catch(error => {

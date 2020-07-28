@@ -9,22 +9,49 @@
     dark
   >
     <v-toolbar color="teal darken-3" flat dark dense>
-      <v-toolbar-title class="text--white"><v-icon>view_quilt</v-icon> Customers</v-toolbar-title>
+      <v-toolbar-title class="text--white"> <v-icon>view_quilt</v-icon> Customers </v-toolbar-title>
     </v-toolbar>
     <v-flex>
-      <v-text-field
-        v-model="custSrch"
-        class="pt-2
-        px-3"
-        hide-details
-        placeholder="search"
-        append-icon="search"
-        clearable
-        solo
-        light
-      ></v-text-field>
+      <v-layout row wrap>
+        <v-flex>
+          <v-text-field
+            v-model="custSrch"
+            class="pt-2
+            px-3"
+            hide-details
+            placeholder="search"
+            append-icon="search"
+            clearable
+            solo
+            light
+          ></v-text-field>
+        </v-flex>
+        <v-flex v-if="CurCheckInAcc.serviceLocLogAction == 'CheckIn'" class="mt-2">
+          <v-list three-line subheader dark>
+            <v-list-tile class="teal darken-4" avatar @click="clientClick(CurCheckInAcc.customerID.ACCMID)">
+              <v-list-tile-avatar tile>
+                <v-icon large>fa-clinic-medical</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content style="opacity: 100! important" class="pl-4">
+                <v-list-tile-sub-title class="white--text caption">Check-In at: </v-list-tile-sub-title>
+                <v-list-tile-title class="white--text">{{ CurCheckInAcc.customerID.ACCMSC }}</v-list-tile-title>
+                <v-list-tile-sub-title class="white--text caption">{{
+                  CurCheckInAcc.serviceLocLogDateTime
+                }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+
+              <v-list-tile-action>
+                <checkInOut type="icon"></checkInOut>
+                <!-- <v-btn icon ripple>
+                  <v-icon color="white lighten-1">timer_off</v-icon>
+                </v-btn> -->
+              </v-list-tile-action>
+            </v-list-tile>
+          </v-list>
+        </v-flex>
+      </v-layout>
     </v-flex>
-    <v-layout d-flex align-space-around column class="mt-1 items">
+    <v-layout d-flex align-space-around column class="items">
       <v-list>
         <v-list-tile
           v-for="(client, key) in filtItems"
@@ -78,6 +105,7 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex'
+import checkInOut from '@/components/checkInOut.vue'
 // import RegClient from '@/components/regClient.vue'
 export default {
   data() {
@@ -102,7 +130,7 @@ export default {
     )
   },
   computed: {
-    ...mapState(['CurUserDetails', 'CurClientDetails']),
+    ...mapState(['CurUserDetails', 'CurClientDetails', 'CurCheckInAcc']),
     filtItems() {
       let srch = this.custSrch == null ? '' : this.custSrch
       var items = this.clients.filter(client => {
@@ -126,6 +154,7 @@ export default {
   },
   components: {
     // RegClient,
+    checkInOut,
   },
   methods: {
     ...mapActions(['getAcc']),
@@ -175,6 +204,9 @@ export default {
 }
 .border_right {
   border-right: solid #004d40 1px;
+}
+.v-list__tile__content {
+  opacity: 100;
 }
 .items {
   max-height: 89%;

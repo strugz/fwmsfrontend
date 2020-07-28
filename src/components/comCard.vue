@@ -1,9 +1,9 @@
 <template>
   <v-layout class="py-1" :align-start="!curUser" :align-end="curUser" justify-start column>
-    <v-flex class="caption font-weight-regular px-2">
+    <v-flex class="caption font-weight-regular px-2" style="padding-bottom: 0 !important;">
       <span style="font-size: .85em;">{{ getRelativeTime(value.TRDCDT) }}</span>
     </v-flex>
-    <v-flex>
+    <v-flex style="padding-top: 0 !important;">
       <v-card width="auto" :style="curUser ? myStyle : defStyle" :color="curUser ? 'teal darken-3' : 'teal lighten-4'">
         <v-card-title v-if="!curUser" class="caption pt-1 pb-0 pl-2 pr-4">
           <span style="font-size: .9em;">{{ `(${value.TRDCUI.CNTMNN}) ${value.TRDCUI.CNTMCN}` }}</span>

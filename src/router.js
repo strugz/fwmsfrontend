@@ -4,9 +4,11 @@ import Router from 'vue-router'
 // import regContact from './views/Forms/regContact.vue'
 import Login from './views/Forms/Login.vue'
 import home from './views/Forms/home.vue'
-//
+
 import cservice from '@/components/profilefrms/cservice.vue'
 import crptsvc from '@/components/profilefrms/crptsvc.vue'
+import detailsSR from '@/components/profilefrms/detailsSR.vue'
+import accmanager from '@/components/accmanager.vue'
 import p404 from './views/404.vue'
 
 import Cookies from 'js-cookie'
@@ -27,7 +29,7 @@ const ifNotAuthenticated = (to, from, next) => {
 const ifAuthenticated = (to, from, next) => {
   jwt.verify(Cookies.get('token'), process.env.VUE_APP_PRIVATE_KEY, err => {
     if (err) {
-      next('/Login')
+      next('/login')
       return
     }
   })
@@ -38,43 +40,6 @@ export default new Router({
   // mode: 'history',
   base: process.env.BASE_URL,
   routes: [
-    /*{
-      path: '/testForm',
-      name: 'testForm',
-      component: testForm,
-    },
-    {
-      path: '/regContact',
-      name: 'regContact',
-      component: regContact,
-    },
-    {
-      path: '/usercontact',
-      name: 'usercontact',
-      component: usercontact,
-    },
-    {
-      path: '/contactinfo',
-      name: 'contactinfo',
-      component: contactinfo,
-      children: [
-        {
-          path: '/',
-          name: 'userbasic',
-          component: userbasic,
-        },
-        {
-          path: '/usersettings',
-          name: 'usersettings',
-          component: usersettings,
-        },
-        {
-          path: '/usercontact',
-          name: 'usercontact',
-          component: usercontact,
-        },
-      ],
-    },*/
     // new Design
     {
       path: '/Login',
@@ -88,18 +53,29 @@ export default new Router({
       component: p404,
     },
     {
+      path: '/accmanager',
+      component: accmanager,
+    },
+    {
       path: '/',
       name: 'home',
       component: home,
       beforeEnter: ifAuthenticated,
       children: [
         {
+          name: 'customer',
           path: '/customer/:ACCMID',
           component: cservice,
         },
         {
+          name: 'thread',
           path: '/thread/:TRDMTI',
           component: crptsvc,
+        },
+        {
+          name: 'sr',
+          path: '/sr/:TRDMTI',
+          component: detailsSR,
         },
       ],
     },

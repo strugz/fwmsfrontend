@@ -1,98 +1,47 @@
 <template>
-  <v-container grid-list-md>
-    <app-filter-thread></app-filter-thread>
+  <v-container grid-list-md pt-2>
+    <app-filter-thread v-if="false"></app-filter-thread>
     <v-layout row wrap>
       <v-flex v-for="(thread, key) in CurThreads" :key="key" xs12>
         <v-badge color="red" left overlap style="width: 100%;">
-          <!-- <template v-slot:badge>
-            <span>!</span>
-          </template> -->
-          <v-card light color="white" class="text-sm-left">
-            <v-card-title class="subheading">
-              <v-layout row wrap>
-                <v-flex @click="toDetails(thread.TRDMTI)" class="subheading" xs12>
-                  <span class="indigo darken-1 pa-1 caption white--text mr-1">{{ thread.TRDSEC }}</span>
-                  <span class="red darken-1 pa-1 caption white--text">{{ thread.TRDMTY }}</span>
-                  <span class="hoverClick"> {{ thread.TRDMTT }} </span>
-                  <v-chip
-                    v-if="thread.TRDMST"
-                    label
-                    color="indigo darken-1"
-                    text-color="white"
-                    small
-                    class="absolute top right"
-                  >
-                    <v-icon size="12" class="pr-2">fa-lock-open</v-icon> Open
-                  </v-chip>
-                  <v-chip v-else label color="red darken-1" text-color="white" small class="absolute top right">
-                    <v-icon size="12" class="pr-2">fa-lock</v-icon> Closed
-                  </v-chip>
-                </v-flex>
-                <v-flex mt-1 ml-1>
-                  <v-layout
-                    class="caption font-weight-regular text-uppercase"
-                    align-start
-                    justify-center
-                    column
-                    fill-height
-                  >
-                    <v-flex pa-0>
-                      Posted by:
-                      <template v-if="thread.TRDMUI">
-                        <span class="font-weight-medium">
-                          {{ thread.TRDMUI.CNTMCN }}
-                        </span>
-                      </template>
-                    </v-flex>
-                    <v-flex pa-0>
-                      Date posted:
-                      <span class="font-weight-medium">{{ getRelativeTime(thread.TRDMCD) }}</span>
-                    </v-flex>
-                    <v-flex pa-0>
-                      Action date:
-                      <span class="font-weight-medium">{{ getRelativeTime(thread.TRDADT) }}</span>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-                <!-- <v-flex class="caption py-0" xs12>Posted by: {{ thread.TRDMUI.CNTMCN }}</v-flex>
-                <v-flex class="caption pt-0" xs12>Date posted: {{ getRelativeTime(thread.TRDMCD) }} </v-flex> -->
-              </v-layout>
-            </v-card-title>
-            <v-card-text class="body-1">{{ thread.TRDMDE }}</v-card-text>
-            <v-divider light></v-divider>
-            <v-card-actions class="pa-2">
-              <v-layout @click="toDetails(thread.TRDMTI)" class="xs3 hoverClick" justify-start align-center row wrap>
-                <v-flex>
-                  <v-icon small class="pr-1">chat_bubble</v-icon>
-                  <span class="">{{ thread.TRDCNT }}</span>
-                  <template class="caption" v-if="thread.TRDUBY !== undefined">
-                    <span class="caption font-weight-light ml-3">
-                      by: <span class="font-weight-medium">{{ thread.TRDUBY.CNTMNN }}</span> on:
-                      {{ getRelativeTime(thread.TRDUPD) }}
-                    </span>
-                  </template>
-                </v-flex>
-              </v-layout>
-            </v-card-actions>
-          </v-card>
+          <card-thread v-if="thread.TRDMTY !== 'Service Report'" :thread="thread"></card-thread>
+          <card-sr v-else :data="thread"></card-sr>
         </v-badge>
       </v-flex>
+      <!-- <v-flex v-for="(details, key) in sampleSR" :key="key" xs12>
+        <card-sr :data="details"></card-sr>
+      </v-flex> -->
     </v-layout>
-    <new-thread></new-thread>
+    <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top">
+      <template v-slot:activator>
+        <v-btn color="blue darken-2" dark fab>
+          <v-icon>add</v-icon>
+          <v-icon>close</v-icon>
+        </v-btn>
+      </template>
+      <new-thread class="mr-5"></new-thread>
+      <new-sreport class="mr-5" v-if="CurCheckInAcc.serviceLocLogAction == 'CheckIn'"></new-sreport>
+      <checkInOut class="mr-5"></checkInOut>
+    </v-speed-dial>
   </v-container>
 </template>
 
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
-import moment from 'moment'
 import AppFilterThread from '@/components/threadFilter.vue'
 import NewThread from '@/components/zuzi/createthread.vue'
+import checkInOut from '@/components/checkInOut.vue'
+import NewSreport from '@/components/SRForm.vue'
+import CardThread from './cardThread'
+import CardSr from './cardSR'
+
 export default {
   data() {
     return {}
   },
   created() {
-    this.getThreadByAccountId(this.$route.params.ACCMID).then(
+    const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
+    this.getThreadByAccountId(accID).then(
       res => {
         this.upCurThreads(res.data.threads)
       },
@@ -102,26 +51,19 @@ export default {
     )
   },
   computed: {
-    ...mapState(['CurThreads']),
+    ...mapState(['CurThreads', 'CurCheckInAcc']),
   },
   methods: {
     ...mapActions(['getThreadByAccountId']),
     ...mapMutations(['upCurThreads']),
-    toDetails(TRDMTI) {
-      this.$router.push({ path: `/thread/${TRDMTI}` })
-    },
-    getRelativeTime(date) {
-      let time = moment().from(date, true)
-      if (time.endsWith('days')) {
-        return moment(date).format('MMMM Do YYYY, hh:mm a')
-      } else {
-        return time + ' ago'
-      }
-    },
   },
   components: {
     NewThread,
+    NewSreport,
     AppFilterThread,
+    CardThread,
+    CardSr,
+    checkInOut,
   },
 }
 </script>

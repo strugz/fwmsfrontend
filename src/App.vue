@@ -11,11 +11,11 @@
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
 
-// import kprofile from "./components/Keys/kprofile";
-
 export default {
   name: 'App',
-  components: {},
+  components: {
+    // notifAlert,
+  },
   computed: {
     ...mapState(['CurUserDetails', 'CurThreadDetails', 'Notifications']),
   },
@@ -24,18 +24,13 @@ export default {
     ...mapMutations(['upClient']),
     alertNotif(notif) {
       if (this.CurUserDetails.CNTMST.CNTMID == notif.NTFFRM.CNTMID) return false
-      this.$notify({
+      console.log(notif)
+      this.$vs.notification({
+        color: '#4DB6AC',
+        position: null,
+        duration: null,
         title: `${notif.NTFAID.ACCMSC} - ${notif.NTFTRD.TRDMTT}`,
         text: notif.NTFCMM !== undefined ? notif.NTFCMM.TRDCCM : notif.NTFTRD.TRDMDE,
-        data: {
-          from: `(${notif.NTFFRM.CNTMNN}) ${notif.NTFFRM.CNTMCN}`,
-          icon: notif.NTFTYP == 'comment' ? 'chat' : 'forum',
-          img: notif.NTFAID.ACCMSC,
-          usr_id: this.CurUserDetails.CNTMST.CNTMID,
-          notif_id: notif._id,
-          notif_index: this.Notifications.indexOf(notif),
-        },
-        duration: 8000,
       })
     },
   },
@@ -68,7 +63,6 @@ export default {
 <style>
 .BG1 {
   background-image: url(./assets/minimal.jpg);
-
   width: 100%;
   height: 100vh;
   background-repeat: no-repeat;

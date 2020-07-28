@@ -28,6 +28,7 @@
               <v-spacer></v-spacer>
               <v-flex class="layout align-center justify-space-around caption">
                 <span> <v-icon small>forum</v-icon>Thread </span>
+                <span> <v-icon small>assignment</v-icon>Service Report </span>
                 <span> <v-icon small>chat</v-icon>Comment </span>
               </v-flex>
             </v-layout>
@@ -51,14 +52,19 @@
                   style="border-radius: 8px;"
                 ></v-img>
                 <v-icon v-else large>fa-clinic-medical</v-icon>
-                <!-- <v-img v-else src="@/assets/Untitled.png" style="border-radius: 8px;"></v-img> -->
               </v-list-tile-avatar>
 
               <v-list-tile-content v-if="notif.NTFTYP == 'thread'">
-                <span class="v-list__tile__title body-1">
+                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list__tile__title body-1">
+                  <span class="red darken-1 pa-1 caption white--text">{{ 'SR' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
-                  {{ ` - ${notif.NTFTRD.TRDMTT}` }}</span
-                >
+                  {{ ` - SR: #${notif.NTFTRD.TRDMTT}` }}
+                </span>
+                <span v-else class="v-list__tile__title body-1">
+                  <span class="indigo darken-1 pa-1 caption white--text">{{ 'TRD' }}</span>
+                  <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
+                  {{ ` - ${notif.NTFTRD.TRDMTT}` }}
+                </span>
                 <span class="v-list__tile__sub-title caption">
                   <span class="text--primary">
                     {{ `(${notif.NTFFRM.CNTMNN}) ${notif.NTFFRM.CNTMCN}` }}
@@ -66,16 +72,23 @@
                   - {{ notif.NTFTRD.TRDMDE }}
                 </span>
                 <span class="v-list__tile__sub-title align-start caption">
-                  <v-icon small>forum</v-icon>
+                  <v-icon v-if="notif.NTFTRD.TRDMTY == 'Service Report'" small>assignment</v-icon>
+                  <v-icon v-else small>forum</v-icon>
                   {{ getRelativeTime(notif.created_at) }}
                 </span>
               </v-list-tile-content>
 
               <v-list-tile-content v-else-if="notif.NTFTYP == 'comment'">
-                <span class="v-list__tile__title body-1">
+                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list__tile__title body-1">
+                  <span class="red darken-1 pa-1 caption white--text">{{ 'SR' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
-                  {{ ` - ${notif.NTFTRD.TRDMTT}` }}</span
-                >
+                  {{ ` - ${notif.NTFTRD.TRDMTT}` }}
+                </span>
+                <span v-else class="v-list__tile__title body-1">
+                  <span class="indigo darken-1 pa-1 caption white--text">{{ 'TRD' }}</span>
+                  <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
+                  {{ ` - SR: #${notif.NTFTRD.TRDMTT}` }}
+                </span>
                 <span class="v-list__tile__sub-title caption">
                   <span class="text--primary">
                     {{ `(${notif.NTFFRM.CNTMNN}) ${notif.NTFFRM.CNTMCN}` }}
@@ -146,15 +159,15 @@ export default {
       }
     },
     toThread(i) {
+      const route = this.Notifications[i].NTFTRD.TRDMTY == 'Service Report' ? 'sr' : 'thread'
       if (!this.notifIsNotSeen[i]) {
-        this.$router.push({ path: `/thread/${this.Notifications[i].NTFTRD._id}` })
+        this.$router.push({ path: `/${route}/${this.Notifications[i].NTFTRD._id}` })
       } else {
         const data = { notif_id: this.Notifications[i]._id, usr_id: this.usr_id }
         this.updateNotification(data).then(
           res => {
-            this.$router.push({ path: `/thread/${res.data.NTFTRD}` })
+            this.$router.push({ path: `/${route}/${res.data.NTFTRD}` })
             this.seenNotification({ index: i, usr_id: this.usr_id })
-            console.log(res)
           },
           error => {
             console.error(error)
