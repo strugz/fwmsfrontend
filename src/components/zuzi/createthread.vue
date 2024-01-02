@@ -261,8 +261,8 @@ export default {
         TRDMAC: '', //client.ID
         TRDMMC: '', //Instrument Name
         TRDMUI: '', //UserID
-        TRDMST: true,
-        TRDCNT: 0,
+        TRDMST: 'true',
+        TRDCNT: '0',
       },
       datepicker: false,
       // instruments: ['ACL 200', 'HMX', 'DXH 800', 'STKS Analyzer'],
@@ -388,6 +388,8 @@ export default {
         this.data.TRDMDE = this.TRDMDE
         this.data.TRDSEC = this.TRDSEC
         this.data.TRDADT = this.TRDADT
+        console.log(this.data);
+
         this.postThread(this.data).then(
           () => {
             this.closeDialog()

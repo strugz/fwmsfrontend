@@ -8,14 +8,15 @@ import store from './store'
 import Axios from 'axios'
 import moment from 'moment'
 import Vuelidate from 'vuelidate'
-import VueSocketio from 'vue-socket.io-extended'
-import io from 'socket.io-client'
+// import VueSocketio from 'vue-socket.io-extended'
+// import io from 'socket.io-client'
+// import VueSignaturePad from 'vue-signature-pad';
+
+// Vue.use(VueSignaturePad);
 
 Axios.defaults.baseURL = process.env.VUE_APP_apiURL
 
-Vue.config.productionTip = false
-
-Vue.use(VueSocketio, io(process.env.VUE_APP_wsURL))
+// Vue.use(VueSocketio, io(process.env.VUE_APP_wsURL))
 
 new Vue({
   router,

@@ -8,7 +8,14 @@ import home from './views/Forms/home.vue'
 import cservice from '@/components/profilefrms/cservice.vue'
 import crptsvc from '@/components/profilefrms/crptsvc.vue'
 import detailsSR from '@/components/profilefrms/detailsSR.vue'
+import detailsTTP from '@/components/profilefrms/detailsTTP.vue'
+import medRepVisit from '@/components/profilefrms/detailsItinerary.vue'
+import cardOcc from '@/components/profilefrms/cardOcc.vue'
 import accmanager from '@/components/accmanager.vue'
+import recentvisit from '@/components/SRRecentVisit.vue'
+import mritinerary from './components/MRItinerary.vue'
+import itineraryViewer from './components/ItineraryViewer.vue'
+import servicecalendar from './components/ServiceCalendar.vue'
 import p404 from './views/404.vue'
 
 import Cookies from 'js-cookie'
@@ -77,6 +84,36 @@ export default new Router({
           path: '/sr/:TRDMTI',
           component: detailsSR,
         },
+        {
+          name: 'ttp',
+          path: '/ttp/:TRDMTI',
+          component: detailsTTP,
+        },
+        {
+          name: 'itinerary',
+          path: '/itinerary/:TRDMTI',
+          component: medRepVisit,
+        },
+        {
+          name: 'recentvisit',
+          path: '/recentvisit/:RCTCNT',
+          component: recentvisit,
+        },
+        {
+          name: 'mritinerary',
+          path: '/mritinerary/:CNTMID',
+          component: mritinerary
+        },
+        {
+          name: 'itineraryviewer',
+          path: '/itineraryviewer/:CNTMID',
+          component: itineraryViewer
+        },
+        {
+          name: 'servicecalendar',
+          path: '/servicecalendar/:CNTMID',
+          component: servicecalendar
+        }
       ],
     },
   ],

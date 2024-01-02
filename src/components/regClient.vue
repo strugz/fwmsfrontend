@@ -183,7 +183,7 @@ export default {
         }
         this.postNewAccount(data).then(
           res => {
-            console.log(res)
+            // console.log(res)
             this.dialog = false
           },
           error => {

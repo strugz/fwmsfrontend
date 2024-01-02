@@ -1,16 +1,30 @@
 <template>
   <div class="text-xs-center">
-    <v-dialog v-model="dialog" lazy width="500" persistent>
+    <v-dialog
+      v-model="dialog"
+      lazy
+      width="500"
+      persistent
+    >
       <template v-slot:activator="{ on }">
         <span v-on="on"> Change Password </span>
       </template>
       <v-card>
-        <v-toolbar dense dark flat color="primary darken-1 text--white">
+        <v-toolbar
+          dense
+          dark
+          flat
+          color="primary darken-1 text--white"
+        >
           <v-toolbar-title class="title">Change Password</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card-text>
-          <v-layout row wrap px-3>
+          <v-layout
+            row
+            wrap
+            px-3
+          >
             <v-flex xs12>
               <v-text-field
                 :append-icon="show1 ? 'visibility' : 'visibility_off'"
@@ -52,11 +66,31 @@
             </v-flex>
             <v-flex xs12>
               <v-layout row>
-                <v-flex class="row" xs6 sm6 md3>
-                  <v-text-field v-model="OTPvalue" hide-details label="OTP" outline></v-text-field>
+                <v-flex
+                  class="row"
+                  xs6
+                  sm6
+                  md3
+                >
+                  <v-text-field
+                    v-model="OTPvalue"
+                    hide-details
+                    label="OTP"
+                    outline
+                  ></v-text-field>
                 </v-flex>
-                <v-flex class="row" xs6 sm6 md3>
-                  <v-btn :loading="otploading" :disabled="otploading" color="success" @click="sendOTP()">
+                <v-flex
+                  class="row"
+                  xs6
+                  sm6
+                  md3
+                >
+                  <v-btn
+                    :loading="otploading"
+                    :disabled="otploading"
+                    color="success"
+                    @click="sendOTP()"
+                  >
                     {{ OTPcaption }}
                     <template v-slot:loader>
                       <span>{{ otpcntr }}</span>
@@ -70,13 +104,30 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn flat color="indigo" @click="save()">Save</v-btn>
-          <v-btn flat color="orange" @click="close_click()">Cancel</v-btn>
+          <v-btn
+            flat
+            color="indigo"
+            @click="save()"
+          >Save</v-btn>
+          <v-btn
+            flat
+            color="orange"
+            @click="close_click()"
+          >Cancel</v-btn>
         </v-card-actions>
       </v-card>
-      <v-snackbar v-model="snackbar" right :color="color" :timeout="6000">
+      <v-snackbar
+        v-model="snackbar"
+        right
+        :color="color"
+        :timeout="6000"
+      >
         {{ message }}
-        <v-btn dark flat @click="snackbar = false">
+        <v-btn
+          dark
+          flat
+          @click="snackbar = false"
+        >
           Close
         </v-btn>
       </v-snackbar>
@@ -85,110 +136,110 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import bcrypt from 'bcryptjs'
+import { mapActions, mapState } from "vuex";
+import bcrypt from "bcryptjs";
 export default {
   data() {
     return {
-      OTPhash: '',
-      OTPvalue: '',
-      OTPcaption: 'Send OTP',
+      OTPhash: "",
+      OTPvalue: "",
+      OTPcaption: "Send OTP",
       otpcntr: 60,
       otploading: false,
-      message: '',
-      color: '',
+      message: "",
+      color: "",
       snackbar: false,
       dialog: false,
       show1: false,
       show2: false,
       show3: false,
       curpass_valid: true,
-      curpass: '',
-      newpass: '',
-      newpass1: '',
+      curpass: "",
+      newpass: "",
+      newpass1: "",
       rules: {
-        required: v => !!v || 'Required.',
-        min: v => v.length >= 6 || 'Min 6 characters',
-        match: () => this.matchpass || 'new password not match',
-        valid: () => this.curpass_valid || 'Incorrect Password',
+        required: (v) => !!v || "Required.",
+        min: (v) => v.length >= 6 || "Min 6 characters",
+        match: () => this.matchpass || "new password not match",
+        valid: () => this.curpass_valid || "Incorrect Password",
       },
-    }
+    };
   },
   methods: {
-    ...mapActions(['postNewPassword', 'getOTP']),
+    ...mapActions(["postNewPassword", "getOTP"]),
     sendOTP() {
       this.getOTP({ usr_initial: this.CurUserDetails.CNTMST.CNTMNN })
-        .then(hash => {
-          this.OTPhash = hash.data
+        .then((hash) => {
+          let otp = JSON.parse(hash.data);
+          this.OTPhash = otp.OTP;
         })
-        .catch(error => {
-          console.log(error)
-        })
-      this.otploading = true
+        .catch((error) => {
+          console.log(error);
+        });
+      this.otploading = true;
       // setTimeout(() => (this.otploading = false), 3000)
       var cnt = setInterval(() => {
         if (this.otpcntr == 1) {
-          this.OTPcaption = 'Resend OTP'
-          this.otploading = false
-          this.otpcntr = 10
-          clearInterval(cnt)
+          this.OTPcaption = "Resend OTP";
+          this.otploading = false;
+          this.otpcntr = 10;
+          clearInterval(cnt);
         }
-        this.otpcntr--
-      }, 1000)
+        this.otpcntr--;
+      }, 1000);
     },
     save() {
       bcrypt
         .compare(this.OTPvalue, this.OTPhash)
-        .then(success => {
+        .then((success) => {
           if (success) {
             this.postNewPassword({
               curpass: this.curpass,
               username: this.CurUserDetails.USRMUI,
-              newpassword: this.newpass,
+              newpassword: this.newpass
             })
-              .then(result => {
-                if (result.data.status == 'success') {
-                  this.message = result.data.message
-                  this.color = 'success'
-                  this.snackbar = true
+              .then((result) => {
+                if (result.status == 200) {
+                  this.message = result.data.message;
+                  this.color = "success";
+                  this.snackbar = true;
                   setTimeout(() => {
-                    this.curpass = ''
-                    this.newpass = ''
-                    this.newpass1 = ''
-                    this.OTPhash = ''
-                    this.OTPvalue = ''
-                    this.close_click()
-                  }, 2000)
-                } else if (result.data.status == 'failed') {
-                  this.curpass_valid = false
-                  this.color = 'error'
-                  this.message = result.data.message
-                  this.snackbar = true
+                    this.curpass = "";
+                    this.newpass = "";
+                    this.newpass1 = "";
+                    this.OTPhash = "";
+                    this.OTPvalue = "";
+                    this.close_click();
+                  }, 2000);
+                } else if (result.data.status == "failed") {
+                  this.curpass_valid = false;
+                  this.color = "error";
+                  this.message = result.data.message;
+                  this.snackbar = true;
                 }
               })
-              .catch(error => {
-                console.log(error)
-              })
+              .catch((error) => {
+                console.log(error);
+              });
           } else {
             // this.curpass_valid = false
-            this.color = 'error'
-            this.message = 'Incorrect OTP'
-            this.snackbar = true
+            this.color = "error";
+            this.message = "Incorrect OTP";
+            this.snackbar = true;
           }
         })
-        .catch(error => {
-          console.log(error)
-        })
-      // CNTMST.CNTMNN
+        .catch((error) => {
+          console.log(error);
+        });
     },
     close_click() {
-      this.dialog = false
-      this.show1 = false
-      this.show2 = false
-      this.show3 = false
-      this.curpass = ''
-      this.newpass = ''
-      this.newpass1 = ''
+      this.dialog = false;
+      this.show1 = false;
+      this.show2 = false;
+      this.show3 = false;
+      this.curpass = "";
+      this.newpass = "";
+      this.newpass1 = "";
     },
   },
   props: {
@@ -198,16 +249,14 @@ export default {
     },
   },
   computed: {
-    ...mapState(['CurUserDetails']),
+    ...mapState(["CurUserDetails"]),
     matchpass() {
       if (this.newpass === this.newpass1) {
-        return true
+        return true;
       } else {
-        return false
+        return false;
       }
     },
   },
-}
+};
 </script>
-
-<style></style>

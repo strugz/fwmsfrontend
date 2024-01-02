@@ -1,22 +1,45 @@
 <template>
-  <v-layout row justify-center>
-    <v-dialog v-model="dialog" max-width="950" persistent>
+  <v-layout
+    row
+    justify-center
+  >
+    <v-dialog
+      v-model="dialog"
+      fullscreen
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
       <template v-slot:activator="{ on }">
         <span v-on="on"> User/Contact Manager </span>
       </template>
-      <v-card color="primary lighten-3" class="hide-overflow" style="position: relative;">
-        <v-toolbar color="primary" dense dark flat>
+      <v-card
+        color="primary lighten-3"
+        class="hide-overflow"
+        style="position: relative;"
+      >
+        <v-toolbar
+          color="primary"
+          dense
+          dark
+          flat
+        >
           <v-toolbar-title>User Account Manager</v-toolbar-title>
 
           <v-spacer></v-spacer>
-          <v-btn icon @click="dialog = !dialog">
+          <v-btn
+            icon
+            @click="dialog = !dialog"
+          >
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-card-text>
           <template>
             <div>
-              <v-toolbar flat color="white">
+              <v-toolbar
+                flat
+                color="white"
+              >
                 <v-text-field
                   clearable
                   hide-details
@@ -27,9 +50,17 @@
                 ></v-text-field>
                 <v-spacer></v-spacer>
                 <!-- Add Edit Dialog -->
-                <v-dialog v-model="editdialog" max-width="500px">
+                <v-dialog
+                  v-model="editdialog"
+                  max-width="500px"
+                >
                   <template v-slot:activator="{ on }">
-                    <v-btn class="teal darken-2" dark small v-on="on">
+                    <v-btn
+                      class="teal darken-2"
+                      dark
+                      small
+                      v-on="on"
+                    >
                       <v-icon>person_add</v-icon> {{ 'New Contact' }}
                     </v-btn>
                   </template>
@@ -49,23 +80,74 @@
                           Prefix
                           Suffix
                           Sex -->
-                          <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.Lname" label="Last Name"></v-text-field>
+                          <v-flex
+                            xs12
+                            md6
+                          >
+                            <v-text-field
+                              v-model="editedItem.Username"
+                              label="Username"
+                            ></v-text-field>
                           </v-flex>
-                          <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.Fname" label="First Name"></v-text-field>
+                          <v-flex
+                            xs12
+                            md6
+                          >
+                            <v-text-field
+                              v-model="editedItem.Password"
+                              label="Password"
+                              type="password"
+                            ></v-text-field>
                           </v-flex>
-                          <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.Mname" label="Middle Name"></v-text-field>
+                          <v-flex
+                            xs12
+                            sm6
+                            md4
+                          >
+                            <v-text-field
+                              v-model="editedItem.Lname"
+                              label="Last Name"
+                            ></v-text-field>
                           </v-flex>
-                          <v-flex xs12 sm6 md8>
+                          <v-flex
+                            xs12
+                            sm6
+                            md4
+                          >
+                            <v-text-field
+                              v-model="editedItem.Fname"
+                              label="First Name"
+                            ></v-text-field>
+                          </v-flex>
+                          <v-flex
+                            xs12
+                            sm6
+                            md4
+                          >
+                            <v-text-field
+                              v-model="editedItem.Mname"
+                              label="Middle Name"
+                            ></v-text-field>
+                          </v-flex>
+                          <v-flex
+                            xs12
+                            sm6
+                            md8
+                          >
                             <v-text-field
                               :value="`${editedItem.Fname} ${editedItem.Mname} ${editedItem.Lname}`"
                               label="Complete Name"
                             ></v-text-field>
                           </v-flex>
-                          <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.Department" label="Department"></v-text-field>
+                          <v-flex
+                            xs12
+                            sm6
+                            md4
+                          >
+                            <v-text-field
+                              v-model="editedItem.Department"
+                              label="Department"
+                            ></v-text-field>
                           </v-flex>
                         </v-layout>
                       </v-container>
@@ -73,21 +155,39 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        flat
+                        @click="close"
+                      >Cancel</v-btn>
+                      <v-btn
+                        color="blue darken-1"
+                        flat
+                        @click="save"
+                      >Save</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
               </v-toolbar>
-              <v-data-table :headers="headers" :items="contacts" class="elevation-1">
+              <v-data-table
+                :headers="headers"
+                :items="contacts"
+                class="elevation-1"
+              >
                 <template v-slot:items="props">
                   <td>{{ props.item.CNTMCN }}</td>
                   <td>{{ props.item.CNTDPT }}</td>
                   <td>
-                    <v-switch hide-details :value="true"></v-switch>
+                    <v-switch
+                      hide-details
+                      :value="true"
+                    ></v-switch>
                   </td>
                   <td>
-                    <v-icon class="mr-2" @click="editItem(props.item)">
+                    <v-icon
+                      class="mr-2"
+                      @click="editItem(props.item)"
+                    >
                       edit
                     </v-icon>
                     <v-icon @click="deleteItem(props.item)">
@@ -118,94 +218,118 @@ Sex
 Birthdate -->
 </template>
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
+import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   data: () => ({
     editdialog: false,
     contacts: [],
     dialog: false,
     headers: [
-      { text: 'Name', value: 'CNTMCN' },
-      { text: 'Department', value: 'CNTDPT' },
-      { text: 'Admin', value: 'admin', sortable: false },
-      { text: 'Actions', value: 'name', sortable: false },
+      { text: "Name", value: "CNTMCN" },
+      { text: "Department", value: "CNTDPT" },
+      { text: "Admin", value: "admin", sortable: false },
+      { text: "Actions", value: "name", sortable: false },
     ],
     desserts: [],
     editedIndex: -1,
     editedItem: {
-      Lname: '',
-      Fname: '',
-      Mname: '',
-      Department: '',
+      Lname: "",
+      Fname: "",
+      Mname: "",
+      Department: "",
+      Username: "",
+      Password: "",
     },
     defaultItem: {
-      Lname: '',
-      Fname: '',
-      Mname: '',
-      Department: '',
+      Lname: "",
+      Fname: "",
+      Mname: "",
+      Department: "",
+      Username: "",
+      Password: "",
     },
   }),
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
   },
 
   watch: {
     editdialog(val) {
-      val || this.close()
+      val || this.close();
     },
   },
 
   created() {
-    this.getContacts('').then(
-      res => {
-        this.contacts = res.data
+    this.getContacts("").then(
+      (res) => {
+        this.contacts = res.data;
       },
-      error => {
-        console.error(error)
+      (error) => {
+        console.error(error);
       }
-    )
+    );
   },
 
   methods: {
-    ...mapActions(['getContacts']),
+    ...mapActions(["getContacts", "postNewUser"]),
     isAdmin(data) {
-      if (data.hasOwnProperty('USRDRT')) {
-        if (data.USRDRT.hasOwnProperty('ADMIN')) {
-          return true
+      if (data.hasOwnProperty("USRDRT")) {
+        if (data.USRDRT.hasOwnProperty("ADMIN")) {
+          return true;
         } else {
-          return false
+          return false;
         }
       } else {
-        return false
+        return false;
       }
     },
     editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.editdialog = true
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.editdialog = true;
     },
 
     close() {
-      this.editdialog = false
+      this.editdialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      }, 300)
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
     },
 
     save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
-      } else {
-        this.desserts.push(this.editedItem)
-      }
-      this.close()
+      const data = JSON.stringify({
+        USRMUI: "JSAGUDO",
+        USRMPW: "123456",
+        CNTMLN: "AGUDO",
+        CNTMMN: "S",
+        CNTMFN: "JESSIE",
+        CNTDPT: "TSG",
+        CNTMNN: "JSA",
+        CNTMCN: "JESSIE S. AGUDO",
+        CNTMSX: "MALE",
+      });
+
+      this.postNewUser(data).then(
+        (res) => {
+          console.log(res.status);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+      // if (this.editedIndex > -1) {
+      //   Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      // } else {
+      //   this.desserts.push(this.editedItem)
+      // }
+      // this.close()
     },
   },
-}
+};
 </script>
 
 <style>

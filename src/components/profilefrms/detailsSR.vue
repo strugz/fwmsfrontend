@@ -1,11 +1,31 @@
 <template>
-  <v-container grid-list-md pa-2>
-    <v-layout v-if="render == true" align-start justify-center row wrap>
-      <v-flex md8 xs12>
-        <v-layout wrap column>
+  <v-container
+    grid-list-md
+    pa-2
+  >
+    <v-layout
+      v-if="render == true"
+      align-start
+      justify-center
+      row
+      wrap
+    >
+      <v-flex
+        md8
+        xs12
+      >
+        <v-layout
+          wrap
+          column
+        >
           <v-flex>
             <v-card>
-              <v-toolbar flat dense light color="white">
+              <v-toolbar
+                flat
+                dense
+                light
+                color="white"
+              >
                 <template class="caption">
                   <span class="indigo darken-1 pa-1 caption white--text mr-1">
                     {{ CurThreadDetails.TRDSEC }}
@@ -15,14 +35,9 @@
                 </template>
                 <v-spacer></v-spacer>
                 <timer-sr v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'"></timer-sr>
+                
+                <service-report v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE'"></service-report>
               </v-toolbar>
-              <!-- <v-card-title ">
-                <v-layout column wrap>
-                  <v-flex class="subheader font-weight-medium">
-                    <timer-sr class="offset-xs12"></timer-sr>
-                  </v-flex>
-                </v-layout>
-              </v-card-title> -->
             </v-card>
           </v-flex>
           <v-flex>
@@ -39,18 +54,28 @@
                       wrap
                     >
                       <v-flex xs12>
-                        <v-layout align-start row fill-height wrap>
+                        <v-layout
+                          align-start
+                          row
+                          fill-height
+                          wrap
+                        >
                           <v-flex>
                             <template v-if="CurThreadDetails.TRDMUI">
-                              <app-label header="Posted by:" :detail="CurThreadDetails.TRDMUI.CNTMCN"></app-label>
+                              <app-label
+                                header="Posted by:"
+                                :detail="CurThreadDetails.TRDMUI.CNTMCN"
+                              ></app-label>
                             </template>
                           </v-flex>
                           <v-flex>
                             <template v-if="CurSRDetails.header">
-                              <app-label
-                                header="Call Date/Time:"
-                                :detail="getRelativeTime(CurSRDetails.header.callDateTime)"
-                              ></app-label>
+                              <v-flex v-if="CurThreadDetails.TRDSEC != 'InHouse'">
+                                <app-label
+                                  header="Service Time:"
+                                  :detail="getRelativeTime(CurThreadDetails.TRDMCD)"
+                                ></app-label>
+                              </v-flex>
                             </template>
                           </v-flex>
                           <v-flex v-if="CurSRDetails.workWith.length > 0">
@@ -65,17 +90,40 @@
                           </v-flex>
                         </v-layout>
                       </v-flex>
-                      <v-flex xs12 pb-0 v-if="CurSRDetails.meterReading">
-                        <v-layout align-center justify-start row fill-height wrap>
+                      <v-flex
+                        xs12
+                        pb-0
+                        v-if="CurSRDetails.meterReading"
+                      >
+                        <v-layout
+                          align-center
+                          justify-start
+                          row
+                          fill-height
+                          wrap
+                        >
                           <v-flex xs6>
                             <span class="font-weight-bold black--text text-xs-left pa-0">
                               Meter Reading
                             </span>
-                            <v-layout style="margin-top: -10px; margin-left: 2px;" justify-start wrap>
-                              <v-flex md3 xs6>
-                                <app-label header="Arrival:" :detail="CurSRDetails.meterReading.arrival"></app-label>
+                            <v-layout
+                              style="margin-top: -10px; margin-left: 2px;"
+                              justify-start
+                              wrap
+                            >
+                              <v-flex
+                                md3
+                                xs6
+                              >
+                                <app-label
+                                  header="Arrival:"
+                                  :detail="CurSRDetails.meterReading.arrival"
+                                ></app-label>
                               </v-flex>
-                              <v-flex md3 xs6>
+                              <v-flex
+                                md3
+                                xs6
+                              >
                                 <app-label
                                   header="Departure:"
                                   :detail="CurSRDetails.meterReading.departure"
@@ -104,22 +152,54 @@
                     fill-height
                     wrap
                   >
-                    <v-flex xs12 pt-0>
-                      <v-layout align-start justify-start row fill-height wrap>
+                    <v-flex
+                      xs12
+                      pt-0
+                    >
+                      <v-layout
+                        align-start
+                        justify-start
+                        row
+                        fill-height
+                        wrap
+                      >
                         <v-flex xs12>
                           <span class="font-weight-bold black--text text-xs-left pa-0">
                             Purpose of Visit
                           </span>
-                          <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Remarks</v-flex>
+                          <v-layout
+                            pt-0
+                            wrap
+                          >
+                            <v-flex
+                              xs6
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Description</v-flex>
+                            <v-flex
+                              xs6
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Remarks</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout wrap pl-3 pt-0 v-for="(itm, key) in CurSRDetails.purposeOfVisits" :key="key">
-                            <v-flex xs6 py-1>
+                          <v-layout
+                            wrap
+                            pl-3
+                            pt-0
+                            v-for="(itm, key) in CurSRDetails.purposeOfVisits"
+                            :key="key"
+                          >
+                            <v-flex
+                              xs6
+                              py-1
+                            >
                               {{ itm.pvDescription }}
                             </v-flex>
-                            <v-flex xs6 py-1>
+                            <v-flex
+                              xs6
+                              py-1
+                            >
                               {{ itm.pvRemarks }}
                             </v-flex>
                           </v-layout>
@@ -128,21 +208,50 @@
                       </v-layout>
                     </v-flex>
                     <v-flex xs12>
-                      <v-layout align-start justify-start row fill-height wrap>
+                      <v-layout
+                        align-start
+                        justify-start
+                        row
+                        fill-height
+                        wrap
+                      >
                         <v-flex xs12>
                           <span class="font-weight-bold black--text text-xs-left pa-0">
                             Action Taken
                           </span>
-                          <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Remarks</v-flex>
+                          <v-layout
+                            pt-0
+                            wrap
+                          >
+                            <v-flex
+                              xs6
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Description</v-flex>
+                            <v-flex
+                              xs6
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Remarks</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.actionTakens" :key="key">
-                            <v-flex xs6 py-1>
+                          <v-layout
+                            pl-3
+                            pt-0
+                            wrap
+                            v-for="(itm, key) in CurSRDetails.actionTakens"
+                            :key="key"
+                          >
+                            <v-flex
+                              xs6
+                              py-1
+                            >
                               {{ itm.atDescription }}
                             </v-flex>
-                            <v-flex xs6 py-1>
+                            <v-flex
+                              xs6
+                              py-1
+                            >
                               {{ itm.atRemarks }}
                             </v-flex>
                           </v-layout>
@@ -151,19 +260,46 @@
                       </v-layout>
                     </v-flex>
                     <v-flex xs12>
-                      <v-layout align-start justify-start row fill-height wrap>
+                      <v-layout
+                        align-start
+                        justify-start
+                        row
+                        fill-height
+                        wrap
+                      >
                         <v-flex xs12>
                           <span class="font-weight-bold black--text text-xs-left pa-0">
                             Parts Used
                           </span>
-                          <v-layout wrap pt-0>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Quantity</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Part Number</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Serial Number</v-flex>
+                          <v-layout
+                            wrap
+                            pt-0
+                          >
+                            <v-flex
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Quantity</v-flex>
+                            <v-flex
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Part Number</v-flex>
+                            <v-flex
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Description</v-flex>
+                            <v-flex
+                              py-1
+                              class="font-weight-medium black--text text-xs-left"
+                            >Serial Number</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.partsUsed" :key="key">
+                          <v-layout
+                            pl-3
+                            pt-0
+                            wrap
+                            v-for="(itm, key) in CurSRDetails.partsUsed"
+                            :key="key"
+                          >
                             <v-flex py-1>
                               {{ itm.puqty }}
                             </v-flex>
@@ -182,12 +318,23 @@
                       </v-layout>
                     </v-flex>
                     <v-flex xs12>
-                      <v-flex x12 style="font-size: .85em;" class="pb-0 pl-0">
+                      <v-flex
+                        x12
+                        style="font-size: .85em;"
+                        class="pb-0 pl-0"
+                      >
                         Parts Used Signature
                       </v-flex>
-                      <v-card width="300" class="ml-2" v-if="CurSRDetails.partsUsedSignature">
-                        <v-img :src="`${CurSRDetails.partsUsedSignature.puCustomerAcceptance}`" contain />
+                      <v-card
+                        width="300"
+                        class="ml-2"
+                        v-if="CurSRDetails.partsUsedSignature"
+                      >
+                        <v-img :src="`${CurSRDetails.partsUsedSignature.puCustomerAcceptance}`" />
                       </v-card>
+                      <!-- <v-card width="300" class="ml-2" v-if="CurSRDetails.partsUsedSignature">
+                        <v-img :src="`${CurSRDetails.partsUsedSignature.puCustomerAcceptance}`" contain />
+                      </v-card> -->
                     </v-flex>
                     <v-flex xs12>
                       <app-label
@@ -201,8 +348,14 @@
                         Charges
                       </span>
                       <v-layout wrap>
-                        <v-flex v-for="(chrg, key) in CurSRDetails.charges" :key="key">
-                          <app-label :header="chrg.srChargesDescription" :detail="chrg.srChargesRemarks"></app-label>
+                        <v-flex
+                          v-for="(chrg, key) in CurSRDetails.charges"
+                          :key="key"
+                        >
+                          <app-label
+                            :header="chrg.srChargesDescription"
+                            :detail="chrg.srChargesRemarks"
+                          ></app-label>
                         </v-flex>
                       </v-layout>
                     </v-flex>
@@ -231,12 +384,23 @@
                         </v-flex>
                       </v-layout>
                     </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.footerSignature">
-                      <v-flex x12 style="font-size: .85em;" class="pb-0 pl-0">
+                    <v-flex
+                      xs12
+                      v-if="CurSRDetails.footerSignature"
+                    >
+                      <v-flex
+                        x12
+                        style="font-size: .85em;"
+                        class="pb-0 pl-0"
+                      >
                         Acceptance Signature
                       </v-flex>
-                      <v-card width="300" class="ml-2">
-                        <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" aspect-ratio="4.3" contain />
+                      <v-card
+                        width="300"
+                        class="ml-2"
+                      >
+                        <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
+                        <!-- <img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" alt="Italian Trulli" /> -->
                       </v-card>
                     </v-flex>
                   </v-layout>
@@ -246,8 +410,14 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex md4 xs12>
-        <v-card class="hide-overflow" style="position: fixed;">
+      <v-flex
+        md4
+        xs12
+      >
+        <v-card
+          class="hide-overflow"
+          style="position: fixed;"
+        >
           <v-toolbar
             flat
             dense
@@ -259,11 +429,23 @@
           >
             <v-toolbar-title>Comments</v-toolbar-title>
           </v-toolbar>
-          <div id="scrolling-techniques" class="scroll-y" style="height: 540px;">
+          <div
+            id="scrolling-techniques"
+            class="scroll-y"
+            style="height: 540px;"
+          >
             <v-card style="min-height: 490px; min-width: 330px; margin-top: 50px">
               <v-card-text v-if="spnr">
-                <v-layout align-center justify-center>
-                  <v-progress-circular :size="80" :width="7" color="primary" indeterminate></v-progress-circular>
+                <v-layout
+                  align-center
+                  justify-center
+                >
+                  <v-progress-circular
+                    :size="80"
+                    :width="7"
+                    color="primary"
+                    indeterminate
+                  ></v-progress-circular>
                 </v-layout>
               </v-card-text>
               <v-card-text v-else>
@@ -273,7 +455,13 @@
                   :value="comment"
                   :key="index"
                 ></com-card>
-                <v-layout v-if="!CurThreadDetails.TRDMST" align-center justify-center row fill-height>
+                <v-layout
+                  v-if="!CurThreadDetails.TRDMST"
+                  align-center
+                  justify-center
+                  row
+                  fill-height
+                >
                   <v-flex xs12>
                     <v-divider></v-divider>
                     <v-card-text class="title font-weight-medium text-xs-center">
@@ -292,12 +480,13 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
-import moment from 'moment'
-import AppLabel from '@/components/appLabel'
-import ComFooter from '@/components/comFooter'
-import ComCard from '@/components/comCard'
-import timerSr from '@/components/timerSR'
+import { mapActions, mapState, mapMutations } from "vuex";
+import moment from "moment";
+import AppLabel from "@/components/appLabel";
+import ComFooter from "@/components/comFooter";
+import ComCard from "@/components/comCard";
+import timerSr from "@/components/timerSR";
+import serviceReport from "../SRFormView";
 
 export default {
   components: {
@@ -305,6 +494,7 @@ export default {
     ComFooter,
     ComCard,
     timerSr,
+    serviceReport,
   },
   data() {
     return {
@@ -312,92 +502,108 @@ export default {
       render: false,
       detail: {},
       dialog: false,
-    }
+    };
   },
   computed: {
-    ...mapState(['CurSRDetails', 'CurThreadDetails', 'CurUserDetails', 'CurClientDetails']),
+    ...mapState([
+      "CurSRDetails",
+      "CurThreadDetails",
+      "CurUserDetails",
+      "CurClientDetails",
+    ]),
     trd_comments() {
-      let cmnt = this.CurThreadDetails.TRDCMM
+      let cmnt = this.CurThreadDetails.TRDCMM;
+      console.log(this.CurThreadDetails);
       if (cmnt !== undefined) {
-        return cmnt
+        return cmnt;
       } else {
-        return cmnt
+        return cmnt;
       }
     },
     ownTRD() {
-      return this.CurUserDetails.USRDTL.USRDCI == this.CurThreadDetails.TRDMUI.CNTMID
+      return (
+        this.CurUserDetails.USRDTL.USRDCI == this.CurThreadDetails.TRDMUI.CNTMID
+      );
     },
   },
   mounted() {
     this.$nextTick(() => {
       setTimeout(() => {
-        this.spnr = false
-      }, 200)
-    })
+        this.spnr = false;
+      }, 200);
+    });
     this.getThreadDetailsById(this.$route.params.TRDMTI).then(
-      res => {
+      (res) => {
         this.getSRDetailsById(res.TRDMTT).then(() => {
-          this.render = true
-        })
+          this.render = true;
+        });
         if (this.CurClientDetails.ACCMID !== this.CurThreadDetails.TRDMAC) {
           this.getAcc(res.TRDMAC).then(
-            acc => {
-              this.upClient(acc.data)
+            (acc) => {
+              this.upClient(acc.data);
             },
-            error => {
-              console.error(error)
+            (error) => {
+              console.error(error);
             }
-          )
+          );
         }
       },
-      error => {
-        console.error(error)
+      (error) => {
+        console.error(error);
       }
-    )
+    );
   },
   methods: {
-    ...mapActions(['getSRDetailsById', 'getThreadDetailsById', 'getAcc', 'updateThreadByID']),
-    ...mapMutations(['upClient', 'upTrdDetails']),
+    ...mapActions([
+      "getSRDetailsById",
+      "getThreadDetailsById",
+      "getAcc",
+      "updateThreadByID",
+    ]),
+    ...mapMutations(["upClient", "upTrdDetails"]),
     concatinate(data, key) {
-      var tmp = ''
-      data.forEach(elm => {
-        tmp += ` / ${elm[key]}`
-      })
-      return tmp.slice(3, tmp.length)
+      var tmp = "";
+      data.forEach((elm) => {
+        tmp += ` / ${elm[key]}`;
+      });
+      return tmp.slice(3, tmp.length);
     },
     openDialogStatus() {
-      this.dialog = true
+      this.dialog = true;
     },
     changeStatus() {
       const data = {
         id: this.CurThreadDetails.TRDMTI,
         val: { TRDMST: !this.CurThreadDetails.TRDMST },
-      }
+      };
 
       this.updateThreadByID(data).then(
         () => {
-          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST
-          this.dialog = false
+          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST;
+          this.dialog = false;
         },
-        error => {
-          console.error(error)
+        (error) => {
+          console.error(error);
         }
-      )
+      );
     },
     getRelativeTime(date) {
-      let time = moment().from(date, true)
-      if (time.endsWith('days')) {
-        return moment(date).format('MMMM Do YYYY, hh:mm a')
+      // console.log(this.CurSRDetails.header.callDateTime);
+      let time = moment().from(date, true);
+      if (time.endsWith("days")) {
+        return moment(date).format("MMMM Do YYYY, hh:mm a");
       } else {
-        return time + ' ago'
+        return moment(date).format("MMMM Do YYYY, hh:mm a");
       }
     },
     comFromUser(i) {
-      return this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID == this.CurUserDetails.CNTMST.CNTMID
+      return (
+        this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID ==
+        this.CurUserDetails.CNTMST.CNTMID
+      );
     },
   },
-  created() {},
-}
+};
 </script>
 
 <style>

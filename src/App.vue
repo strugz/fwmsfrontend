@@ -1,63 +1,40 @@
 <template>
   <v-app id="app">
     <div class="BG1">
-      <v-layout wrap class="bg-2">
+      <v-layout
+        wrap
+        class="bg-2"
+      >
         <router-view />
       </v-layout>
     </div>
   </v-app>
 </template>
-
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-
+import { mapState, mapMutations, mapActions } from "vuex";
 export default {
-  name: 'App',
-  components: {
-    // notifAlert,
-  },
+  name: "App",
   computed: {
-    ...mapState(['CurUserDetails', 'CurThreadDetails', 'Notifications']),
+    ...mapState(["CurUserDetails", "CurThreadDetails", "Notifications"]),
   },
   methods: {
-    ...mapActions(['getCurUserDetails', 'getAcc', 'msgListener', 'getNotifications']),
-    ...mapMutations(['upClient']),
-    alertNotif(notif) {
-      if (this.CurUserDetails.CNTMST.CNTMID == notif.NTFFRM.CNTMID) return false
-      console.log(notif)
-      this.$vs.notification({
-        color: '#4DB6AC',
-        position: null,
-        duration: null,
-        title: `${notif.NTFAID.ACCMSC} - ${notif.NTFTRD.TRDMTT}`,
-        text: notif.NTFCMM !== undefined ? notif.NTFCMM.TRDCCM : notif.NTFTRD.TRDMDE,
-      })
-    },
+    ...mapActions(["getCurUserDetails", "getAcc", "getNotifications"]),
+    ...mapMutations(["upClient"]),
   },
   created() {
-    this.getCurUserDetails()
-    this.getNotifications()
+    this.getCurUserDetails();
     if (this.$route.params.ACCMID !== undefined) {
       this.getAcc(this.$route.params.ACCMID).then(
-        res => {
-          this.upClient(res.data)
+        (res) => {
+          this.upClient(res.data);
         },
-        error => {
-          console.error(error)
+        (error) => {
+          console.error(error);
         }
-      )
-    }
-    // this.$options.sockets.onmessage = msg => this.msgListener(msg)
-  },
-  mounted() {
-    this.$options.sockets.message = data => {
-      const msg = JSON.parse(data)
-      // console.log(msg)
-      this.msgListener(msg)
-      this.alertNotif(msg.notif)
+      );
     }
   },
-}
+};
 </script>
 
 <style>

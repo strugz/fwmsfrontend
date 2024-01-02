@@ -10,6 +10,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    CurClientMID: "",
     CurCheckInAcc: {},
     CurThreads: [],
     Notifications: [],
@@ -17,10 +18,132 @@ export default new Vuex.Store({
     CurClientDetails: {},
     CurThreadDetails: {},
     CurUserDetails: {},
+    CurRecentVisit: [],
+    CurClientList: [],
+    CurCNTMSTList: [],
+    CurItemCode: [],
+    CurCSTMSTList: [],
+    CurOCCMSTList: [],
+    CurCSTMST: [],
+    CurITIMSTList: [],
+    CurServiceCalendar: [],
+    CurCSTMSTTableHeaders: [
+      {
+        text: 'Client',
+        align: 'center',
+        sortable: true,
+        value: 'ACCMNM'
+      },
+      {
+        text: 'Customer',
+        align: 'center',
+        sortable: false,
+        value: 'CSTNME'
+      },
+      {
+        text: 'Email Adress',
+        align: 'center',
+        sortable: false,
+        value: 'CSTEML'
+      },
+      {
+        text: 'Address',
+        align: 'center',
+        sortable: false,
+        value: 'CSTADD'
+      },
+      {
+        text: 'Contact Details',
+        align: 'center',
+        sortable: false,
+        value: 'CSTCDL'
+      },
+      {
+        text: 'Specialty / Position',
+        align: 'center',
+        sortable: false,
+        value: 'CSTPOS'
+      },
+      {
+        text: 'Target Product',
+        align: 'center',
+        sortable: false,
+        value: 'CSTTPR'
+      },
+      // { text: 'Actions', align: 'center', value: 'name', sortable: false }
+
+    ],
+    CurCNTTableHeaders: [
+      {
+        text: 'Fullname',
+        align: 'center',
+        sortable: true,
+        value: 'CNTMCN'
+      },
+      {
+        text: 'Initial',
+        align: 'center',
+        sortable: true,
+        value: 'CNTMNN'
+      },
+      {
+        text: 'Area',
+        align: 'center',
+        sortable: true,
+        value: 'CNTARE'
+      },
+      {
+        text: 'Position',
+        align: 'center',
+        sortable: true,
+        value: 'CNTEPS'
+      },
+      {
+        text: 'Department',
+        align: 'center',
+        sortable: true,
+        value: 'CNTDPT'
+      },
+    ],
+    CurDPTItems: ["IMS", "TSGLUZON", "TSGVISMIN", "PMD", "TSR"],
+    PageNumber: 1,
+    TotalPages: 1,
+    TextFilter: '',
+    itemsAcct: []
   },
   mutations: {
+    upCurITIMSTList(state, val) {
+      state.CurITIMSTList = val;
+    },
+    upCurServiceCalendar(state, val) {
+      state.CurServiceCalendar = val;
+    },
+    upCurITIMSTListUpdate(state, val) {
+      state.CurITIMSTList.unshift(val)
+    },
+    upCurClientMID(state, val) {
+      state.CurClientMID = val;
+    },
+    upCurCSTMST(state, val) {
+      state.CurCSTMST = val;
+    },
+    upCurItemCode(state, val) {
+      state.CurItemCode = val;
+    },
     upClient(state, val) {
-      state.CurClientDetails = val
+      state.CurClientDetails = val;
+    },
+    upAllClient(state, val) {
+      state.CurClientList = val;
+    },
+    upCNTMSTList(state, val) {
+      state.CurCNTMSTList = val;
+    },
+    upCSTMSTList(state, val) {
+      state.CurCSTMSTList = val;
+    },
+    upOCCMSTList(state, val) {
+      state.CurOCCMSTList = val;
     },
     upTrdDetails(state, val) {
       state.CurThreadDetails = val
@@ -54,12 +177,27 @@ export default new Vuex.Store({
     upNotification(state, val) {
       state.Notifications = val
     },
+    upPageNumber(state, val) {
+      state.PageNumber = val.pageNumber;
+    },
+    upTotalPages(state, val) {
+      state.TotalPages = val.totPages;
+    },
+    upTextFilter(state, val) {
+      state.TextFilter = val.textSearch;
+    },
+    upCheckInAcc(state, val) {
+      state.itemsAcct.unshift(val.items);
+    },
+    upRecentVisit(state, val) {
+      state.CurRecentVisit = val;
+    }
   },
   actions: {
-    userLogin({}, credentials) {
+    userLogin({ }, credentials) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`/user/login`, {
+          .post(`/api2/USRMST`, {
             username: credentials.username,
             password: credentials.password,
           })
@@ -71,7 +209,31 @@ export default new Vuex.Store({
           })
       })
     },
-    getContacts({}, cntId) {
+    userGetPrivacy({ }, usrId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`https://inventory.mdmpi.com.ph/api2/USRMST/${usrId}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    userPrivacyAcceptanceInsert({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`/api2/USRMST/usrprv?cntmid=${val}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getContacts({ }, cntId) {
       return new Promise((resolve, reject) => {
         axios
           .get(`/contacts/${cntId}`)
@@ -83,21 +245,21 @@ export default new Vuex.Store({
           })
       })
     },
+
     getCurUserDetails({ commit }) {
       try {
         commit('upCurUserDetails', Cookies.get('user_details'))
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
       }
     },
     getCurCheckInAcc({ commit }, usrId) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`https://inventory.mdmpi.com.ph/api2/threads/activelog`, {
-            usrId,
-          })
+          .get(`/api2/ACCMST/checkin/${usrId}`)
           .then(result => {
             commit('upCurCheckInAcc', result.data)
+
             resolve(result.data)
           })
           .catch(error => {
@@ -105,11 +267,11 @@ export default new Vuex.Store({
           })
       })
     },
-    getAcc({}, accId) {
+    getAcc({ }, accId) {
       accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
-          .get(`/account/${accId}`)
+          .get(`/api2/ACCMST/${accId}`)
           .then(result => {
             resolve(result)
           })
@@ -118,10 +280,11 @@ export default new Vuex.Store({
           })
       })
     },
-    getInstrumentByAccId({}, accId) {
+    getAllAcc({ }, accId) {
+      accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
-          .get(`/account/instruments/${accId}`)
+          .get(`/api2/ACCMST`)
           .then(result => {
             resolve(result)
           })
@@ -130,10 +293,11 @@ export default new Vuex.Store({
           })
       })
     },
-    getThreadByAccountId({}, accId) {
+    getAllCNTMST({ }, accId) {
+      accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
-          .get(`/threads/${accId}`)
+          .get(`/api2/cntmst`)
           .then(result => {
             resolve(result)
           })
@@ -142,10 +306,407 @@ export default new Vuex.Store({
           })
       })
     },
-    getThreadByAccountIdWithFilter({}, data) {
+    insertCNTMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/CNTMST/',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res.data)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    getAllITIMST({ }, accId) {
+      accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
-          .get(`/threads/${data.id}${data.dept}`)
+          .get(`/api2/ITIMST`)
+          .then(result => {
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getITIMSTPerCNT({ }, accId) {
+      accId = accId !== undefined ? accId : ''
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/api2/ITIMST/cnt/` + `${accId}`)
+          .then(result => {
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getServiceCalendar({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: `/api2/TRDMST/calendar/` + `${val.cntmid}`,
+        };
+
+        axios(Opheaders)
+          .then(result => {
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    insertITIMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          // url: 'https://localhost:44361/api/ITIMST',
+          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    getITIMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/ITIMST/iti' + `/${val}`)
+          .then(result => {
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    getITIMSTValidation({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/validation',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+
+    getITIMSTTRDValidation({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/trd/validation',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+
+    getInstrumentByAccId({ }, accId) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api/instruments/account' + `/${accId}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getItemCode({ }, accId) {
+      accId = accId !== undefined ? accId : ''
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api/drops/ITEM_CODE')
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getThreadByAccountId({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/TRDMST' + `/${val.cntdpt}` + `/${val.accID}` + `?PageNumber=${val.pageNumber}&PageSize=25`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    //New Update
+    getThreadForBackTrack({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/api2/TRDMST/backtrack' + `/${val.cntare}` + `?PageNumber=${val.pageNumber}&PageSize=25`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    //OCC
+    getOCCMST({ }, val) {
+      console.log(val);
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/occmst/' + val)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    InsertOCCMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://localhost:44361/api/OCCMST',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res.status)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    InsertOCCMSTImport({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://localhost:44361/api/OCCMST/occimport',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res.status)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    //
+    //MEDREP Vist Retrieve data
+    InsertCSTMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/CSTMST/',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res.data)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    getCSTMSTPerCust({ }, cstmid) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/CSTMST/percust' + `/${cstmid}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getCSTMSTPerAcc({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/CSTMST' + `/${val.accmid}` + `/${val.cntmid}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    getCSTMSTcntacc({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/CSTMST/cntacc' + `/${val.cntmid}`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    getCSTMSTAllAcc({ }, val) {
+      console.log(val);
+      return new Promise((resolve, reject) => {
+        axios
+          .get('https://inventory.mdmpi.com.ph/api2/CSTMST')
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    getTRDMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/TRDMST/',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res.data)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    getTRLMSTOnGoing({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/TRLMST/ongoing',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    InsertTRLMST({ }, val) {
+      return new Promise((resolve, reject) => {
+        const Opheaders = {
+          method: 'POST',
+          data: val.data,
+          headers: {
+            'content-type': 'application/json',
+          },
+          url: 'https://inventory.mdmpi.com.ph/api2/TRLMST',
+        };
+        axios(Opheaders)
+          .then((res) => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error);
+          });
+      })
+    },
+    //END MEDREP
+
+    getRecentVisit({ }, val) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/api2/RCTVST/' + val.CNTMID)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    getThreadByAccountIdWithFilter({ }, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/api2/TRDMST/filter/${data.cntdpt}/${data.accmid}/${data.tosearch}?PageNumber=${data.pageNumber}&PageSize=25`)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    getThreadDetailsByTRDMID({ }, trdmtt) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/api2/TRDMST/trd/${trdmtt}`)
           .then(result => {
             resolve(result)
           })
@@ -157,7 +718,7 @@ export default new Vuex.Store({
     getThreadDetailsById({ commit }, trdId) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/threads/details/${trdId}`)
+          .get(`/api2/TRDMST/thread/${trdId}`)
           .then(result => {
             commit('upTrdDetails', result.data)
             resolve(result.data)
@@ -167,10 +728,22 @@ export default new Vuex.Store({
           })
       })
     },
+    filterAcct({ }, filter) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/api2/ACCMST/filter/${filter}`)
+          .then(result => {
+            resolve(result.data)
+          })
+          .catch(error => {
+            reject(error);
+          })
+      })
+    },
     getSRDetailsById({ commit }, trdId) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/threads/sr/${trdId}`)
+          .get(`https://sr.mdmpi.com.ph/sr/servicereport/${trdId}`)
           .then(result => {
             commit('upSRdDetails', result.data)
             resolve(result.data)
@@ -202,7 +775,7 @@ export default new Vuex.Store({
           })
       })
     },
-    getMuni({}, code) {
+    getMuni({ }, code) {
       return new Promise((resolve, reject) => {
         axios
           .get(`/psgc/province/${code}`)
@@ -214,7 +787,7 @@ export default new Vuex.Store({
           })
       })
     },
-    getBRGY({}, code) {
+    getBRGY({ }, code) {
       return new Promise((resolve, reject) => {
         axios
           .get(`/psgc/bgy/${code}`)
@@ -226,7 +799,7 @@ export default new Vuex.Store({
           })
       })
     },
-    getTransType({}, id) {
+    getTransType({ }, id) {
       return new Promise((resolve, reject) => {
         axios
           .get(`/account/department/${id}`)
@@ -238,7 +811,7 @@ export default new Vuex.Store({
           })
       })
     },
-    getRelativeTime({}, date) {
+    getRelativeTime({ }, date) {
       return new Promise((resolve, reject) => {
         try {
           let time = moment().from(date, true)
@@ -252,11 +825,11 @@ export default new Vuex.Store({
         }
       })
     },
-    getOTP({}, data) {
-      console.log(data)
+    getOTP({ }, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`/user/genOTP`, {
+          .post(`/api2/USRMST/otp`, {
+            // .post(`https://localhost:44361/api/USRMST/otp`, {
             usr_initial: data.usr_initial,
           })
           .then(result => {
@@ -268,7 +841,7 @@ export default new Vuex.Store({
       })
     },
     //Post
-    postNewAccount({}, data) {
+    postNewAccount({ }, data) {
       return new Promise((resolve, reject) => {
         axios
           .post(`/account`, data)
@@ -280,12 +853,24 @@ export default new Vuex.Store({
           })
       })
     },
-    postNewPassword({}, data) {
+    postNewUser({ }, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post('/user/change-password', {
-            username: data.username,
-            password: data.curpass,
+          .post('/user/newuser', data)
+          .then(res => {
+            resolve(res)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    postNewPassword({ }, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('api2/USRMST/change-password', {
+            USRMUI: data.username,
+            USRMPW: data.curpass,
             NewPassword: data.newpassword,
           })
           .then(res => {
@@ -296,7 +881,7 @@ export default new Vuex.Store({
           })
       })
     },
-    postComment({}, data) {
+    postComment({ }, data) {
       return new Promise((resolve, reject) => {
         axios
           .post(`/threads/details/${data.id}`, {
@@ -311,10 +896,10 @@ export default new Vuex.Store({
           })
       })
     },
-    postThread({}, data) {
+    postThread({ }, data) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`/threads/`, data)
+          .post(`/api2/TRDMST`, data)
           .then(result => {
             resolve(result)
           })
@@ -323,19 +908,7 @@ export default new Vuex.Store({
           })
       })
     },
-    postContact({}, data) {
-      return new Promise((resolve, reject) => {
-        axios
-          .patch(`/contacts/${data.id}`, data.val)
-          .then(result => {
-            resolve(result)
-          })
-          .catch(error => {
-            reject(error)
-          })
-      })
-    },
-    postContactDetails({}, data) {
+    postContact({ }, data) {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/contacts/${data.id}`, data.val)
@@ -347,7 +920,19 @@ export default new Vuex.Store({
           })
       })
     },
-    updateThreadByID({}, data) {
+    postContactDetails({ }, data) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/contacts/${data.id}`, data.val)
+          .then(result => {
+            resolve(result)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    updateThreadByID({ }, data) {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/threads/${data.id}`, data.val)
@@ -359,7 +944,7 @@ export default new Vuex.Store({
           })
       })
     },
-    updateContacts({}, data) {
+    updateContacts({ }, data) {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/contacts/${data.id}`, data.val)
@@ -378,7 +963,7 @@ export default new Vuex.Store({
       //notif
       return new Promise((resolve, reject) => {
         axios
-          .get(`/notif?USRID=${USRID}`)
+          .get(`/api2/NTFDTL/notif/${USRID}`)
           .then(result => {
             commit('upNotification', result.data)
             resolve(result)
@@ -388,11 +973,11 @@ export default new Vuex.Store({
           })
       })
     },
-    updateNotification({}, data) {
+    updateNotification({ }, data) {
       return new Promise((resolve, reject) => {
         axios
-          .patch(`/notif/${data.notif_id}`, {
-            CNTMID: data.usr_id,
+          .patch(`/api2/NTFDTL/${data.notif_id}`, {
+            NTFSBY: data.usr_id,
           })
           .then(result => {
             resolve(result.data)
@@ -403,17 +988,18 @@ export default new Vuex.Store({
       })
     },
     //Socket
-    msgSender({}, msg) {
-      this._vm.$socket.emit('SEND_MESSAGE', msg)
-    },
-    msgListener({ commit }, msg) {
-      const msgData = msg
-      if (msgData.type == 'comment' && router.currentRoute.params.TRDMTI == msgData.data.TRDCTI.TRDMTI) {
-        commit('pushCurThreadCmm', msgData.data)
-      } else if (msgData.type == 'thread' && router.currentRoute.params.ACCMID == msgData.data.TRDMAC) {
-        commit('pushCurThreads', msgData.data)
-      }
-      commit('pushNotification', msgData.notif)
-    },
+    // msgSender({ }, msg) {
+    //   this._vm.$socket.emit('SEND_MESSAGE', msg)
+    // },
+    // msgListener({ commit }, msg) {
+    //   const msgData = msg
+    //   if (msgData.type == 'comment' && router.currentRoute.params.TRDMTI == msgData.data.TRDCTI.TRDMTI) {
+    //     commit('pushCurThreadCmm', msgData.data)
+    //   } else if (msgData.type == 'thread' && router.currentRoute.params.ACCMID == msgData.data.TRDMAC) {
+    //     commit('pushCurThreads', msgData.data)
+    //   }
+    //   // commit('pushNotification', msgData.notif)
+    // },
+
   },
 })

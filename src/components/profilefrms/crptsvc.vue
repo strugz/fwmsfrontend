@@ -1,12 +1,23 @@
 <template>
   <v-container pa-3>
-    <v-layout align-space-around justify-start column fill-height>
+    <v-layout
+      align-space-around
+      justify-start
+      column
+      fill-height
+    >
       <v-flex>
         <v-card>
           <v-card-text class="pt-0">
             <v-card-title class="subheading">
-              <v-layout column wrap>
-                <v-flex class="subheader font-weight-medium" xs9>
+              <v-layout
+                column
+                wrap
+              >
+                <v-flex
+                  class="subheader font-weight-medium"
+                  xs9
+                >
                   <span class="indigo darken-1 pa-1 caption white--text mr-1">{{ CurThreadDetails.TRDSEC }}</span>
                   <span class="red darken-1 pa-1 caption white--text">{{ CurThreadDetails.TRDMTY }}</span>
                   {{ CurThreadDetails.TRDMTT }}
@@ -70,8 +81,16 @@
           <v-card-title class="subheading font-weight-medium pb-2">Comments</v-card-title>
           <v-divider></v-divider>
           <v-card-text v-if="spnr">
-            <v-layout align-center justify-center>
-              <v-progress-circular :size="80" :width="7" color="primary" indeterminate></v-progress-circular>
+            <v-layout
+              align-center
+              justify-center
+            >
+              <v-progress-circular
+                :size="80"
+                :width="7"
+                color="primary"
+                indeterminate
+              ></v-progress-circular>
             </v-layout>
           </v-card-text>
           <v-card-text v-else>
@@ -82,7 +101,13 @@
               track-by="$index"
               :key="index"
             ></com-card>
-            <v-layout v-if="!CurThreadDetails.TRDMST" align-center justify-center row fill-height>
+            <v-layout
+              v-if="!CurThreadDetails.TRDMST"
+              align-center
+              justify-center
+              row
+              fill-height
+            >
               <v-flex xs12>
                 <v-divider></v-divider>
                 <v-card-text class="title font-weight-medium text-xs-center">
@@ -96,7 +121,11 @@
     </v-layout>
     <com-footer></com-footer>
 
-    <v-dialog v-model="dialog" persistent max-width="290">
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="290"
+    >
       <v-card>
         <template v-if="CurThreadDetails.TRDMST">
           <v-card-title class="headline">Close Thread?</v-card-title>
@@ -108,8 +137,16 @@
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click="dialog = false">Cancel</v-btn>
-          <v-btn color="green darken-1" flat @click="changeStatus()">{{
+          <v-btn
+            color="green darken-1"
+            flat
+            @click="dialog = false"
+          >Cancel</v-btn>
+          <v-btn
+            color="green darken-1"
+            flat
+            @click="changeStatus()"
+          >{{
             CurThreadDetails.TRDMST == false ? 'Open' : 'Turn off'
           }}</v-btn>
         </v-card-actions>
@@ -119,10 +156,10 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
-import moment from 'moment'
-import ComFooter from '@/components/comFooter'
-import ComCard from '@/components/comCard'
+import { mapActions, mapState, mapMutations } from "vuex";
+import moment from "moment";
+import ComFooter from "@/components/comFooter";
+import ComCard from "@/components/comCard";
 
 export default {
   data() {
@@ -130,86 +167,92 @@ export default {
       spnr: true,
       detail: {},
       dialog: false,
-    }
+    };
   },
   components: {
     ComCard,
     ComFooter,
   },
   computed: {
-    ...mapState(['CurThreadDetails', 'CurUserDetails', 'CurClientDetails']),
+    ...mapState(["CurThreadDetails", "CurUserDetails", "CurClientDetails"]),
     trd_comments() {
-      const cmnt = this.CurThreadDetails.TRDCMM
+      const cmnt = this.CurThreadDetails.TRDCMM;
       // console.log(cmnt)
       if (cmnt !== undefined) {
-        return cmnt.reverse()
+        return cmnt.reverse();
       } else {
-        return cmnt
+        return cmnt;
       }
     },
   },
   mounted() {
     this.$nextTick(() => {
       setTimeout(() => {
-        this.spnr = false
-      }, 200)
-    })
+        this.spnr = false;
+      }, 200);
+    });
   },
   methods: {
-    ...mapActions(['getThreadDetailsById', 'getAcc', 'updateThreadByID']),
-    ...mapMutations(['upClient', 'upTrdDetails']),
+    ...mapActions(["getThreadDetailsById", "getAcc", "updateThreadByID"]),
+    ...mapMutations(["upClient", "upTrdDetails"]),
     openDialogStatus() {
-      this.dialog = true
+      this.dialog = true;
     },
     changeStatus() {
       const data = {
         id: this.CurThreadDetails.TRDMTI,
-        val: { TRDMST: !this.CurThreadDetails.TRDMST },
-      }
+        val: {
+          TRDMST: !this.CurThreadDetails.TRDMST,
+          TRDUPD: moment().format(),
+        },
+      };
 
       this.updateThreadByID(data).then(
         () => {
-          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST
-          this.dialog = false
+          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST;
+          this.dialog = false;
         },
-        error => {
-          console.error(error)
+        (error) => {
+          console.error(error);
         }
-      )
+      );
     },
     getRelativeTime(date) {
-      let time = moment().from(date, true)
-      if (time.endsWith('days')) {
-        return moment(date).format('MMMM Do YYYY, hh:mm a')
+      let time = moment().from(date, true);
+      if (time.endsWith("days")) {
+        return moment(date).format("MMMM Do YYYY, hh:mm a");
       } else {
-        return time + ' ago'
+        return time + " ago";
       }
     },
     comFromUser(i) {
-      return this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID == this.CurUserDetails.CNTMST.CNTMID
+      return (
+        this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID ==
+        this.CurUserDetails.CNTMST.CNTMID
+      );
     },
   },
   created() {
     this.getThreadDetailsById(this.$route.params.TRDMTI).then(
-      res => {
+      (res) => {
         if (this.CurClientDetails.ACCMID !== this.CurThreadDetails.TRDMAC) {
           // if (Object.keys(this.CurClientDetails).length == 0) {
           this.getAcc(res.TRDMAC).then(
-            acc => {
-              this.upClient(acc.data)
+            (acc) => {
+              this.upClient(acc.data);
             },
-            error => {
-              console.error(error)
+            (error) => {
+              console.error(error);
             }
-          )
+          );
         }
       },
-      error => {
-        console.error(error)
+      (error) => {
+        console.error(error);
       }
-    )
+    );
   },
-}
+};
 </script>
 
 <style>
