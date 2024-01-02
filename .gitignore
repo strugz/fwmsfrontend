@@ -21,3 +21,6 @@ yarn-error.log*
 *.sln
 *.sw?
 *.env
+*.env.example
+*.env.local
+*.env.staging
