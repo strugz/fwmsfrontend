@@ -88,9 +88,9 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG'">
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
-          <v-list-tile>
+          <!-- <v-list-tile>
             <service-card></service-card>
-          </v-list-tile>
+          </v-list-tile> -->
           <v-list-tile @click="logout()">
             <span class="v-list__tile__title body-1">{{ 'Logout' }}</span>
           </v-list-tile>
@@ -116,7 +116,7 @@ import backTrack from "@/components/SRBackTrack";
 import customerManager from "@/components/CustomerManager";
 import userManager from "@/components/UserRegistrationManager";
 import ServiceCalendar from "@/components/ServiceCalendar";
-import ServiceCard from "@/components/profilefrms/cardOcc";
+// import ServiceCard from "@/components/profilefrms/cardOcc";
 import { mapState, mapActions, mapMutations } from "vuex";
 import Cookies from "js-cookie";
 
@@ -131,7 +131,7 @@ export default {
     customerManager,
     userManager,
     ServiceCalendar,
-    ServiceCard
+    // ServiceCard
   },
   computed: {
     ...mapState(["CurClientDetails", "CurUserDetails"]),
