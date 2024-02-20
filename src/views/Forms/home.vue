@@ -116,7 +116,7 @@ import backTrack from "@/components/SRBackTrack";
 import customerManager from "@/components/CustomerManager";
 import userManager from "@/components/UserRegistrationManager";
 import ServiceCalendar from "@/components/ServiceCalendar";
-// import ServiceCard from "@/components/profilefrms/cardOcc";
+import ServiceCard from "@/components/profilefrms/cardOcc";
 import { mapState, mapActions, mapMutations } from "vuex";
 import Cookies from "js-cookie";
 
@@ -131,7 +131,7 @@ export default {
     customerManager,
     userManager,
     ServiceCalendar,
-    // ServiceCard
+    ServiceCard
   },
   computed: {
     ...mapState(["CurClientDetails", "CurUserDetails"]),

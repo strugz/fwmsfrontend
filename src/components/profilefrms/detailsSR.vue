@@ -35,7 +35,7 @@
                 </template>
                 <v-spacer></v-spacer>
                 <timer-sr v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'"></timer-sr>
-                
+                <image-report v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG'"></image-report>
                 <service-report v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE'"></service-report>
               </v-toolbar>
             </v-card>
@@ -487,7 +487,7 @@ import ComFooter from "@/components/comFooter";
 import ComCard from "@/components/comCard";
 import timerSr from "@/components/timerSR";
 import serviceReport from "../SRFormView";
-
+import imageReport from "../SRImageViewer.vue"
 export default {
   components: {
     AppLabel,
@@ -495,6 +495,7 @@ export default {
     ComCard,
     timerSr,
     serviceReport,
+    imageReport
   },
   data() {
     return {
