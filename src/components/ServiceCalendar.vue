@@ -1,14 +1,7 @@
 <template>
   <v-container>
-    <v-layout
-      app
-      wrap
-      id="printDiv"
-    >
-      <v-flex
-        xs12
-        class="ml-3 mr-3 mt-3"
-      >
+    <v-layout app wrap id="printDiv">
+      <v-flex xs12 class="ml-3 mr-3 mt-3">
         <span>
           <h4>MARSMAN DRYSDALE MEDICAL PRODUCT INC.</h4>
           <h4>EXPENSE REPORT</h4>
@@ -16,139 +9,51 @@
         <span>
           <h3>{{ myDate }}</h3>
         </span>
-        <v-layout
-          row
-          wrap
-        >
-          <v-flex
-            sm2
-            md2
-            xs12
-          >
-            <v-text-field
-              v-model="datefrom"
-              class="no-print ml-2"
-              type="date"
-              label="From"
-            ></v-text-field>
+        <v-layout row wrap>
+          <v-flex sm2 md2 xs12>
+            <v-text-field v-model="datefrom" class="no-print ml-2" type="date" label="From"></v-text-field>
           </v-flex>
-          <v-flex
-            sm2
-            md2
-            xs12
-          >
-            <v-text-field
-              v-model="dateto"
-              class="no-print ml-2"
-              type="date"
-              label="To"
-            ></v-text-field>
+          <v-flex sm2 md2 xs12>
+            <v-text-field v-model="dateto" class="no-print ml-2" type="date" label="To"></v-text-field>
           </v-flex>
-          <v-flex
-            sm1
-            md1
-            xs12
-          >
-            <v-btn
-              class="no-print primary"
-              @click="dataReload()"
-            >Load</v-btn>
+          <v-flex sm1 md1 xs12>
+            <v-btn class="no-print primary" @click="dataReload()">Load</v-btn>
 
           </v-flex>
-          <v-flex
-            sm1
-            md1
-            xs12
-          >
-            <v-btn
-              class="primary no-print"
-              @click="dialogOpen"
-            >Add Data</v-btn>
+          <v-flex sm1 md1 xs12>
+            <v-btn class="primary no-print" @click="dialogOpen">Add Data</v-btn>
           </v-flex>
-          <v-flex
-            sm1
-            md1
-            xs12
-          >
-            <v-btn
-              class="primary no-print"
-              @click="workWithDialogOpen"
-            >Work With</v-btn>
+          <v-flex sm1 md1 xs12>
+            <v-btn class="primary no-print" @click="workWithDialogOpen">Work With</v-btn>
           </v-flex>
         </v-layout>
-        <v-flex
-          sm3
-          md3
-          xs12
-        >
-          <v-btn
-            class="no-print"
-            @click="$refs.calendar.prev()"
-          >
-            <v-icon
-              dark
-              left
-            >
+        <v-flex sm3 md3 xs12>
+          <v-btn class="no-print" @click="$refs.calendar.prev()">
+            <v-icon dark left>
               keyboard_arrow_left
             </v-icon>
             Prev
           </v-btn>
-          <v-btn
-            class="no-print"
-            @click="$refs.calendar.next()"
-          >
+          <v-btn class="no-print" @click="$refs.calendar.next()">
             Next
-            <v-icon
-              right
-              dark
-            >
+            <v-icon right dark>
               keyboard_arrow_right
             </v-icon>
           </v-btn>
-          <v-btn
-            class="no-print"
-            @click="printDiv('printDiv')"
-            color="primary"
-          >Print</v-btn>
+          <v-btn class="no-print" @click="printDiv('printDiv')" color="primary">Print</v-btn>
         </v-flex>
-        <v-sheet
-          height="800"
-          class="my-event3"
-        >
-          <v-calendar
-            ref="calendar"
-            v-model="today"
-            type="month"
-            color="primary"
-          >
+        <v-sheet height="800" class="my-event3">
+          <v-calendar ref="calendar" v-model="today" type="month" color="primary">
             <template v-slot:day="{ date }">
               <template v-for="event in eventsMap[date]">
-                <v-menu
-                  :key="event.trdmti"
-                  v-model="event.open"
-                  :close-on-content-click="false"
-                  full-width
-                  offset-x
-                >
+                <v-menu :key="event.trdmti" v-model="event.open" :close-on-content-click="false" full-width offset-x>
                   <template v-slot:activator="{ on }">
-                    <div
-                      class="my-event1"
-                      v-if="!event.time"
-                      v-ripple
-                      v-on="on"
-                    >
+                    <div class="my-event1" v-if="!event.time" v-ripple v-on="on">
                       {{ event.client }}
                     </div>
-                    <div
-                      v-show="event.trdmde != ''"
-                      class="my-event2"
-                      v-if="!event.time"
-                      v-ripple
-                      v-on="on"
-                      v-for="(text, index) in event.trdmde.split('|')"
-                      :key="index"
-                    >
-                      {{  text }}
+                    <div v-show="event.trdmde != ''" class="my-event2" v-if="!event.time" v-ripple v-on="on"
+                      v-for="(text, index) in event.trdmde.split('|')" :key="index">
+                      {{ text }}
                     </div>
                   </template>
                 </v-menu>
@@ -157,11 +62,7 @@
           </v-calendar>
         </v-sheet>
       </v-flex>
-      <v-footer
-        app
-        fixed
-        class="mb-2 mr-2 ml-2"
-      >
+      <v-footer app fixed class="mb-2 mr-2 ml-2">
         <span>
           <h4>PREPARED BY{{ ": " + CurUserDetails.CNTMST.CNTMCN }}</h4>
         </span>
@@ -170,61 +71,33 @@
         <h4>{{ CurUserDetails.CNTMST.CNTMSF }} ___________________</h4>
         <h4>{{ CurUserDetails.CNTMST.CNTMBD }} ___________________</h4>
       </v-footer>
-      <v-dialog
-        v-model="DataDialog"
-        width="500"
-      >
-        <v-toolbar
-          class="primary"
-          dark
-        >
+      <v-dialog v-model="DataDialog" width="500">
+        <v-toolbar class="primary" dark>
           <v-toolbar-title>Add Data</v-toolbar-title>
         </v-toolbar>
         <v-card>
           <v-card-text>
             <v-flex xs12>
-              <v-text-field
-                v-model="mDate"
-                type="date"
-              >Date</v-text-field>
+              <v-text-field v-model="mDate" type="date">Date</v-text-field>
               <v-text-field v-model="client">Text</v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-btn
-                class="primary"
-                dark
-                flat
-                @click="addData"
-              >Add</v-btn>
+              <v-btn class="primary" dark flat @click="addData">Add</v-btn>
             </v-flex>
           </v-card-text>
         </v-card>
       </v-dialog>
-      <v-dialog
-        v-model="WorkWithDialog"
-        width="500"
-      >
-        <v-toolbar
-          class="primary"
-          dark
-        >
+      <v-dialog v-model="WorkWithDialog" width="500">
+        <v-toolbar class="primary" dark>
           <v-toolbar-title>Add Work With</v-toolbar-title>
         </v-toolbar>
         <v-card>
           <v-card-text>
             <v-flex xs12>
-              <v-text-field
-                v-model="SRNumber"
-                label="Service Number"
-              ></v-text-field>
+              <v-text-field v-model="SRNumber" label="Service Number"></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-btn
-                class="primary"
-                dark
-                flat
-                @click="addDataWorkWith"
-              >Add</v-btn>
+              <v-btn class="primary" dark flat @click="addDataWorkWith">Add</v-btn>
             </v-flex>
           </v-card-text>
         </v-card>
@@ -232,7 +105,7 @@
     </v-layout>
   </v-container>
 </template>
-      <script>
+<script>
 import { mapActions, mapState, mapMutations } from "vuex";
 import moment from "moment";
 export default {
@@ -363,7 +236,7 @@ export default {
   },
 };
 </script>
-    <style scoped>
+<style scoped>
 .my-event1 {
   border-radius: 2px;
   color: #000000;
@@ -371,6 +244,7 @@ export default {
   width: 100%;
   font-size: 10px;
 }
+
 .my-event2 {
   border-radius: 2px;
   color: #000000;
@@ -378,10 +252,12 @@ export default {
   width: 100%;
   font-size: 8px;
 }
+
 .my-event3 {
   border-color: red;
   border: 2px solid;
 }
+
 @media print {
   .no-print {
     display: none;

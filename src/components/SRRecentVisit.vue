@@ -1,62 +1,42 @@
 <template>
   <!-- <v-content> -->
-  <v-container
-    fluid
-    fill-height
-  >
+  <v-container fill-height>
+    <v-layout justify-start>
+      <v-flex xs12>
+        <v-card>
+          <v-toolbar color="grey lighten-4">
+            <v-toolbar-title>Engineer of the Month</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
     <v-layout justify-center>
-      <v-flex
-        xs12
-        sm6
-        md4
-        xl3
-      >
-        <v-card
-          color="transparent"
-          class="elevation-1"
-        >
-
+      <v-flex xs6>
+        <v-card color="transparent" class="elevation-1">
           <v-toolbar color="grey lighten-4">
             <v-toolbar-title>Recent Visit</v-toolbar-title>
           </v-toolbar>
           <v-list one-line>
-            <v-list-tile
-              v-for="item in CurRecentVisit"
-              :key="item.RCTCDT"
-              @click="GoTo(item.RCTACC)"
-            >
+            <v-list-tile v-for="item in CurRecentVisit" :key="item.RCTCDT" @click="GoTo(item.RCTACC)">
               <v-list-tile-content>
                 <v-list-tile-title>
-                  <span class="blue lighten-4">{{item.ACCMNM}}</span>
+                  <span class="blue lighten-4">{{ item.ACCMNM }}</span>
                 </v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.RCTCDT }}</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list>
-          <v-flex
-            xs12
-            v-if="CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'"
-          >
-            <v-btn
-              class="primary"
-              @click="ValidationItinerary"
-            >Go To Itinerary</v-btn>
+          <v-flex xs12 v-if="CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'">
+            <v-btn class="primary" @click="ValidationItinerary">Go To Itinerary</v-btn>
           </v-flex>
-          <v-flex
-            xs12
-            v-if="CurUserDetails.CNTMST.CNTSEC == 'TSR/ENGINEER'"
-          >
-            <v-btn
-              class="primary"
-              @click="ValidationItinerary"
-            >Go To Itinerary</v-btn>
+          <v-flex xs12 v-if="CurUserDetails.CNTMST.CNTSEC == 'TSR/ENGINEER'">
+            <v-btn class="primary" @click="ValidationItinerary">Go To Itinerary</v-btn>
           </v-flex>
         </v-card>
-        <v-alert
-          type="error"
-          icon="warning"
-          transition="scale-transition"
-        >
+        <v-alert type="error" icon="warning" transition="scale-transition">
         </v-alert>
       </v-flex>
     </v-layout>
