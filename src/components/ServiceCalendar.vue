@@ -18,13 +18,15 @@
           </v-flex>
           <v-flex sm1 md1 xs12>
             <v-btn class="no-print primary" @click="dataReload()">Load</v-btn>
-
           </v-flex>
           <v-flex sm1 md1 xs12>
             <v-btn class="primary no-print" @click="dialogOpen">Add Data</v-btn>
           </v-flex>
-          <v-flex sm1 md1 xs12>
-            <v-btn class="primary no-print" @click="workWithDialogOpen">Work With</v-btn>
+          <v-flex sm1 md1 xs12 class="ml-2">
+            <v-btn class="primary no-print " @click="workWithDialogOpen">Work With</v-btn>
+          </v-flex>
+          <v-flex sm1 md1 xs12 class="ml-4">
+            <v-btn class="red no-print" @click="removeCalendarData">Remove Data</v-btn>
           </v-flex>
         </v-layout>
         <v-flex sm3 md3 xs12>
@@ -141,6 +143,8 @@ export default {
   mounted() {
     if (localStorage.mydata != undefined) {
       this.upCurServiceCalendar(JSON.parse(localStorage.mydata).myCalendar);
+      this.datefrom = JSON.parse(localStorage.mydata).myCalendarDateFrom;
+      this.dateto = JSON.parse(localStorage.mydata).myCalendarDateTo;
     }
   },
   methods: {
@@ -150,6 +154,13 @@ export default {
       alert(event.title);
     },
     printDiv(divName) {
+      let calendar = JSON.stringify({
+        myCalendar: this.CurServiceCalendar,
+        myCalendarDateFrom: this.datefrom,
+        myCalendarDateTo: this.dateto
+      });
+      localStorage.mydata = calendar;
+
       var printContents = document.getElementById(divName).innerHTML;
       var originalContents = document.body.innerHTML;
 
@@ -172,7 +183,10 @@ export default {
     },
     dialogOpen() {
       this.DataDialog = true;
+    },
+    removeCalendarData() {
       localStorage.removeItem("mydata");
+      location.reload();
     },
     addData() {
       this.CurServiceCalendar.push({
@@ -193,6 +207,8 @@ export default {
       });
       let calendar = JSON.stringify({
         myCalendar: this.CurServiceCalendar,
+        myCalendarDateFrom: this.datefrom,
+        myCalendarDateTo: this.dateto
       });
       localStorage.mydata = calendar;
     },
@@ -228,6 +244,8 @@ export default {
           });
           let calendar = JSON.stringify({
             myCalendar: this.CurServiceCalendar,
+            myCalendarDateFrom: this.datefrom,
+            myCalendarDateTo: this.dateto
           });
           localStorage.mydata = calendar;
         }

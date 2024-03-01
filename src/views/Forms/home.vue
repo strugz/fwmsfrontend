@@ -85,7 +85,7 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
             <customer-manager></customer-manager>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'PMD'">
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
           <!-- <v-list-tile>
