@@ -27,10 +27,13 @@
                 <v-menu :key="event.itimid" v-model="event.open" :close-on-content-click="false" full-width offset-x>
                   <template v-slot:activator="{ on }">
                     <div
-                      :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : 'my-event2'"
-                      v-if="!event.time" v-ripple v-on="on">{{ event.client }}</div>
+                      :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : event.trdsts == 'LEAVE' ? 'my-event1' : 'my-event2'"
+                      v-if="!event.time" v-ripple v-on="on">
+                    <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
+                    <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                    </div>
                   </template>
-                  <v-card color="grey lighten-4" min-width="250px" max-width="350px" flat>
+                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px" flat>
                     <v-toolbar color="primary" dark>
                       <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                       <v-spacer></v-spacer>
@@ -76,6 +79,7 @@
       </template>
       <itinerary-dialog></itinerary-dialog>
       <itinerary-travel v-show="CurUserDetails.CNTMST.CNTMGP == '1'"></itinerary-travel>
+      <additional-dialog></additional-dialog>
     </v-speed-dial>
   </v-layout>
 </template>
@@ -83,11 +87,13 @@
 import { mapActions, mapState, mapMutations } from "vuex";
 import moment from "moment";
 import ItineraryDialog from "../components/MRItineraryDialog.vue";
+import AdditionalDialog from "../components/MRItineraryAdditional.vue";
 import ItineraryTravel from "../components/MedRepTravel.vue";
 export default {
   components: {
     ItineraryDialog,
     ItineraryTravel,
+    AdditionalDialog
   },
   data: () => ({
     menuOpenCLose: false,

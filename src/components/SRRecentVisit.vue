@@ -1,27 +1,16 @@
 <template>
-  <!-- <v-content> -->
   <v-container fill-height>
-    <v-layout justify-start>
-      <v-flex xs12>
-        <v-card>
-          <v-toolbar color="grey lighten-4">
-            <v-toolbar-title>Engineer of the Month</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text>
-            
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
     <v-layout justify-center>
-      <v-flex xs6>
-        <v-card color="transparent" class="elevation-1">
-          <v-toolbar color="grey lighten-4">
-            <v-toolbar-title>Recent Visit</v-toolbar-title>
+      <v-flex xs12 xl4 md5>
+        <v-card class="myCard">
+          <v-toolbar class="toolbarStyle" color="grey lighten-4">
+            <v-toolbar-title>
+              <span class="mySpan">Recent Visit</span>
+            </v-toolbar-title>
           </v-toolbar>
           <v-list one-line>
-            <v-list-tile v-for="item in CurRecentVisit" :key="item.RCTCDT" @click="GoTo(item.RCTACC)">
-              <v-list-tile-content>
+            <v-list-tile class="myList" v-for="item in CurRecentVisit" :key="item.RCTCDT" @click="GoTo(item.RCTACC)">
+              <v-list-tile-content class="myvlist">
                 <v-list-tile-title>
                   <span class="blue lighten-4">{{ item.ACCMNM }}</span>
                 </v-list-tile-title>
@@ -36,12 +25,9 @@
             <v-btn class="primary" @click="ValidationItinerary">Go To Itinerary</v-btn>
           </v-flex>
         </v-card>
-        <v-alert type="error" icon="warning" transition="scale-transition">
-        </v-alert>
       </v-flex>
     </v-layout>
   </v-container>
-  <!-- </v-content> -->
 </template>
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
@@ -78,6 +64,7 @@ export default {
       console.log(this.today);
     },
     GoTo(accmid) {
+
       this.getAcc(accmid).then(
         (res) => {
           this.upClient(res.data);
@@ -97,3 +84,30 @@ export default {
   },
 };
 </script>
+<style>
+.toolbarStyle {
+  background-image: -webkit-linear-gradient(green, lightgrey);
+}
+
+.myCard {
+  border-end-start-radius: 10%;
+  border-end-end-radius: 10%;
+  height: 100%;
+  width: 100%;
+}
+
+.tile-title {
+  border-radius: 50%;
+}
+
+
+.myList {
+  display: flex;
+  justify-content: center;
+}
+
+.myList:hover {
+  transition: all 300ms;
+  transform: scale(1.3);
+}
+</style>

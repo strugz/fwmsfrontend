@@ -140,6 +140,8 @@ export default {
         this.$router.push({ name: "ttp", params: { TRDMTI: srid } });
       } else if (this.data.TRDSEC == "Itinerary") {
         this.$router.push({ name: "itinerary", params: { TRDMTI: srid } });
+      } else if (this.data.TRDSEC = "Collection") {
+        this.$router.push({ name: "collection", params: { TRDMTI: srid } });
       } else {
         this.$router.push({ name: "sr", params: { TRDMTI: srid } });
       }

@@ -113,7 +113,7 @@ export default new Router({
           name: 'servicecalendar',
           path: '/servicecalendar/:CNTMID',
           component: servicecalendar
-        }
+        },
       ],
     },
   ],
