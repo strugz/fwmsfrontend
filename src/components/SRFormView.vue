@@ -1,107 +1,42 @@
 
 <template>
-  <v-layout
-    mt-0
-    row
-    justify-end
-  >
-    <v-dialog
-      v-model="pdfDialog"
-      persistent
-    >
+  <v-layout mt-0 row justify-end>
+    <v-dialog v-model="pdfDialog" persistent>
       <template v-slot:activator="{ on }">
-        <v-btn
-          small
-          flat
-          icon
-          color="indigo"
-          class="ma-0"
-          dark
-          v-on="on"
-          @click="PrintPreview"
-        >
+        <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on" @click="PrintPreview">
           <v-icon>print</v-icon>
         </v-btn>
       </template>
       <v-card>
-        <v-card-title
-          primary-title
-          class="primary lighten-2"
-        >
+        <v-card-title primary-title class="primary lighten-2">
           Print Preview
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn
-                small
-                flat
-                icon
-                color="indigo"
-                class="mr-2"
-                dark
-                v-on="on"
-                @click="LoadPdf"
-              >
+              <v-btn small flat icon color="indigo" class="mr-2" dark v-on="on" @click="LoadPdf">
                 <v-icon large>file_download</v-icon>
               </v-btn>
             </template>
             <span>Download SR</span>
           </v-tooltip>
-          <v-btn
-            small
-            flat
-            icon
-            color="indigo"
-            class="ma-0"
-            dark
-            @click="close"
-          >
+          <v-btn small flat icon color="indigo" class="ma-0" dark @click="close">
             <v-icon>close</v-icon>
           </v-btn>
         </v-card-title>
         <v-card-text class="pa-0">
-          <v-container
-            fluid
-            class="pa-1"
-          >
-            <v-layout
-              row
-              wrap
-              align-center
-            >
+          <v-container fluid class="pa-1">
+            <v-layout row wrap align-center>
 
-              <v-flex
-                xs12
-                sm6
-                md3
-              >
-                <v-text-field
-                  v-model="EmailReceiver"
-                  label="Email Address"
-                  ref="email"
-                  :rules="[rules.email]"
-                  placeholder="Customer Email"
-                ></v-text-field>
+              <v-flex xs12 sm6 md3>
+                <v-text-field v-model="EmailReceiver" label="Email Address" ref="email" :rules="[rules.email]"
+                  placeholder="Customer Email"></v-text-field>
               </v-flex>
-              <v-flex
-                xs12
-                md1
-                xl1
-                class="pa-0 ma-0"
-              >
-                <v-btn
-                  class="btn primary"
-                  @click="Emailvalidation"
-                  :disabled="sendBTNDisbled"
-                >Send to Email</v-btn>
+              <v-flex xs12 md1 xl1 class="pa-0 ma-0">
+                <v-btn class="btn primary" @click="Emailvalidation" :disabled="sendBTNDisbled">Send to Email</v-btn>
               </v-flex>
               <v-flex xs12>
                 <span v-show="sendBTNDisbled">Sending please wait...</span>
-                <v-progress-circular
-                  v-show="sendBTNDisbled"
-                  indeterminate
-                  color="primary"
-                ></v-progress-circular>
+                <v-progress-circular v-show="sendBTNDisbled" indeterminate color="primary"></v-progress-circular>
               </v-flex>
             </v-layout>
           </v-container>
@@ -325,11 +260,13 @@ export default {
   width: 100%;
   aspect-ratio: inherit;
 }
+
 .aspect-ratio iframe {
   position: relative;
   height: 700px;
   width: 850px;
 }
+
 .btn {
   width: 95%;
 }

@@ -10,7 +10,7 @@
       </template>
       <v-card class="hide-overflow" style="position: relative;">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
-          <v-toolbar-title>TTP Form</v-toolbar-title>
+          <v-toolbar-title>Collection Visit Details</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="dialog = !dialog">
             <v-icon>close</v-icon>
@@ -40,15 +40,13 @@ export default {
   },
   methods: {
     clientClick(id) {
-      console.log(id);
       this.$router.push({ path: `/customer/${id}` });
     },
   },
   computed: {
     ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails"]),
     srFormURL() {
-      return `https://sr.mdmpi.com.ph/#/ttp/${this.CurClientDetails.ACCMID}/
-      ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
+      return `https://sr.mdmpi.com.ph/#/collection/${this.CurClientDetails.ACCMID}/
       ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`;
     },
   },

@@ -1,98 +1,58 @@
 <template>
   <v-layout wrap>
-    <v-flex
-      xs12
-      class="mb-3"
-    >
+    <v-flex xs12 class="mb-3">
       <div id="printDiv">
         <span>
           <h1>{{ myDate }}</h1>
         </span>
-        <v-flex
-          sm4
-          xs12
-        >
+        <v-flex sm4 xs12>
           <v-btn @click="$refs.calendar.prev()">
-            <v-icon
-              dark
-              left
-            >
+            <v-icon dark left>
               keyboard_arrow_left
             </v-icon>
             Prev
           </v-btn>
           <v-btn @click="$refs.calendar.next()">
             Next
-            <v-icon
-              right
-              dark
-            >
+            <v-icon right dark>
               keyboard_arrow_right
             </v-icon>
           </v-btn>
         </v-flex>
         <v-sheet height="500">
-          <v-calendar
-            ref="calendar"
-            v-model="today"
-            type="month"
-            color="primary"
-          >
+          <v-calendar ref="calendar" v-model="today" type="month" color="primary">
             <template v-slot:day="{ date }">
               <template v-for="event in eventsMap[date]">
-                <v-menu
-                  :key="event.itimid"
-                  v-model="event.open"
-                  :close-on-content-click="false"
-                  full-width
-                  offset-x
-                >
+                <v-menu :key="event.itimid" v-model="event.open" :close-on-content-click="false" full-width offset-x>
                   <template v-slot:activator="{ on }">
                     <div
-                      :class="event.trdsts == 'START' ? 'my-event': event.trdsts == 'WORK COMPLETE' ? 'my-event1':'my-event2'"
-                      v-if="!event.time"
-                      v-ripple
-                      v-on="on"
-                    >{{ event.client }}</div>
+                      :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : event.trdsts == 'LEAVE' ? 'my-event1' : 'my-event2'"
+                      v-if="!event.time" v-ripple v-on="on">
+                      <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
+                      <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                    </div>
                   </template>
-                  <v-card
-                    color="grey lighten-4"
-                    min-width="250px"
-                    max-width="350px"
-                    flat
-                  >
-                    <v-toolbar
-                      color="primary"
-                      dark
-                    >
-                      <v-toolbar-title>{{ event.title  }}</v-toolbar-title>
+                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
+                    flat>
+                    <v-toolbar color="primary" dark>
+                      <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                       <v-spacer></v-spacer>
                     </v-toolbar>
                     <v-card-title primary-title>
                       <v-flex xs12>
                         <p>
                           <span style="color:blue;font-weight:bold">Customer:</span>
-                          {{ ' '+ event.customer }}
+                          {{ ' ' + event.customer }}
                         </p>
                       </v-flex>
-                      <v-flex
-                        xs12
-                        v-show="event.itiobj"
-                      >
+                      <v-flex xs12 v-show="event.itiobj">
                         <p>
                           <span style="color:blue;font-weight:bold">Objective:</span>
-                          {{ ' '+ event.itiobj }}
+                          {{ ' ' + event.itiobj }}
                         </p>
                       </v-flex>
-                      <v-btn
-                        v-show="event.itists == '1'"
-                        :disabled="enableStart"
-                        color="primary"
-                      >Not Yet Visited</v-btn>
-                      <v-btn
-                        color="primary"
-                        v-show="event.itists != '1'"
-                      >Visited</v-btn>
+                      <v-btn v-show="event.itists == '1'" :disabled="enableStart" color="primary">Not Yet Visited</v-btn>
+                      <v-btn color="primary" v-show="event.itists != '1'">Visited</v-btn>
                     </v-card-title>
                     <v-card-actions>
                     </v-card-actions>
@@ -107,7 +67,7 @@
 
   </v-layout>
 </template>
-    <script>
+<script>
 import { mapActions, mapState, mapMutations } from "vuex";
 import moment from "moment";
 import ItineraryDialog from "../components/MRItineraryDialog.vue";
@@ -259,7 +219,7 @@ export default {
         TRDLOC: this.lat + " " + this.long,
         TRDITI: item.itimid,
       });
-      setTimeout(function () {
+      setTimeout(function() {
         console.log(data);
       }, 1000);
 
@@ -298,7 +258,7 @@ export default {
   },
 };
 </script>
-  <style scoped>
+<style scoped>
 .my-event {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -315,6 +275,7 @@ export default {
   inline-size: 100%;
   overflow-wrap: break-word;
 }
+
 .my-event1 {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -331,6 +292,7 @@ export default {
   inline-size: 100%;
   overflow-wrap: break-word;
 }
+
 .my-event2 {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -347,6 +309,7 @@ export default {
   inline-size: 100%;
   overflow-wrap: break-word;
 }
+
 @media print {
   .no-print {
     display: none;

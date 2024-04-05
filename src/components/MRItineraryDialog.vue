@@ -1,143 +1,52 @@
 <template>
-  <v-layout
-    mt-0
-    row
-    justify-center
-  >
-    <v-dialog
-      v-model="dialog"
-      width="500"
-      persistent
-      transition="dialog-bottom-transition"
-    >
+  <v-layout mt-0 row justify-center>
+    <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn
-          v-if="type == 'icon'"
-          small
-          icon
-          flat
-          round
-          dark
-          color="teal"
-          v-on="on"
-        >
+        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn
-          v-else
-          small
-          round
-          dark
-          color="teal"
-          v-on="on"
-        >
+        <v-btn v-else small round dark color="teal" v-on="on">
           Visit
         </v-btn>
       </template>
       <v-flex xs12>
-        <v-card
-          color="grey lighten-4"
-          min-width="350px"
-          flat
-          class="mt-0"
-        >
-          <v-toolbar
-            color="primary"
-            dark
-          >
+        <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
+          <v-toolbar color="primary" dark>
             <v-toolbar-title>Itinerary</v-toolbar-title>
             <v-spacer></v-spacer>
           </v-toolbar>
           <v-card-title primary-title>
             <v-flex xs12>
-              <v-combobox
-                v-model="clientSelected"
-                label="Client"
-                :items="CurClientList"
-                item-text="ACCMNM"
-                item-value="ACCMID"
-                hide-details
-                @change="getCustomer"
-              ></v-combobox>
+              <v-combobox v-model="clientSelected" label="Client" :items="CurClientList" item-text="ACCMNM"
+                item-value="ACCMID" hide-details @change="getCustomer"></v-combobox>
             </v-flex>
             <v-flex xs12>
-              <v-combobox
-                v-model="customerSelected"
-                :items="CurCSTMSTList"
-                item-text="CSTNME"
-                item-value="CSTMID"
-                hide-details
-                label="Customer"
-              ></v-combobox>
+              <v-combobox v-model="customerSelected" :items="CurCSTMSTList" item-text="CSTNME" item-value="CSTMID"
+                hide-details label="Customer"></v-combobox>
             </v-flex>
             <v-flex xs12>
-              <v-select
-                v-model="TSRObjectiveSelected"
-                :items="TSRObjectiveList"
-                item-text="ObjectiveName"
-                item-value="ObjectiveName"
-                hide-details
-                multiple
-                no-data-text
-                label="Objective"
-                @change="ObjectiveSelectedItems"
-              ></v-select>
+              <v-select v-model="TSRObjectiveSelected" :items="TSRObjectiveList" item-text="ObjectiveName"
+                item-value="ObjectiveName" hide-details multiple no-data-text label="Objective"
+                @change="ObjectiveSelectedItems"></v-select>
             </v-flex>
-            <v-flex
-              xs12
-              v-if="TSRObjectiveSelected.includes('Others')"
-            >
-              <v-text-field
-                v-model="TSRObjectiveSelectOthers"
-                label="Please specify Others"
-              ></v-text-field>
+            <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
+              <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              lg6
-            >
-              <v-menu
-                ref="menu1"
-                v-model="menu1"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
+            <v-flex xs12 lg6>
+              <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
+                transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
                 <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="dateFormatted"
-                    label="Visit Date"
-                    hint="MM/DD/YYYY format"
-                    persistent-hint
-                    prepend-icon="event"
-                    @blur="date = parseDate(dateFormatted)"
-                    v-on="on"
-                  ></v-text-field>
+                  <v-text-field v-model="dateFormatted" label="Visit Date" hint="MM/DD/YYYY format" persistent-hint
+                    prepend-icon="event" @blur="date = parseDate(dateFormatted)" v-on="on"></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="date"
-                  no-title
-                  @input="menu1 = false"
-                ></v-date-picker>
+                <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
               </v-menu>
             </v-flex>
           </v-card-title>
           <v-card-actions>
-            <v-btn
-              color="primary"
-              :disabled="enableStart"
-              @click="SaveItineraryValidation"
-            >Save</v-btn>
+            <v-btn color="primary" :disabled="enableStart" @click="SaveItineraryValidation">Save</v-btn>
             <v-spacer></v-spacer>
-            <v-btn
-              color="primary"
-              @click="dialog = false"
-            >
+            <v-btn color="primary" @click="dialog = false">
               Cancel
             </v-btn>
           </v-card-actions>
@@ -146,7 +55,7 @@
     </v-dialog>
   </v-layout>
 </template>
-  <script>
+<script>
 import { stringify } from "querystring";
 import { mapActions, mapMutations, mapState } from "vuex";
 export default {

@@ -29,11 +29,12 @@
                     <div
                       :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : event.trdsts == 'LEAVE' ? 'my-event1' : 'my-event2'"
                       v-if="!event.time" v-ripple v-on="on">
-                    <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
-                    <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                      <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
+                      <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
                     </div>
                   </template>
-                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px" flat>
+                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
+                    flat>
                     <v-toolbar color="primary" dark>
                       <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                       <v-spacer></v-spacer>

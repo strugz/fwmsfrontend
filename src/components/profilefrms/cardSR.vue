@@ -47,11 +47,14 @@
         </v-chip>
         {{ TRDMDE }}
       </v-flex>
-      <v-flex style="white-space: pre-line;" v-show="!ITIOBJ" v-else>
+      <v-flex style="white-space: pre-line;" v-show="!ITIOBJ && data.TRDSEC != 'COLLECT'" v-else>
         {{ TRDMDE }}
       </v-flex>
-      <v-flex style="white-space: pre-line;" v-show="!ITIOBJ">
+      <v-flex style="white-space: pre-line;" v-show="!ITIOBJ && data.TRDSEC != 'TTP'">
         <span class="font-weight-medium">Purpose of Visits:</span> {{ "\r\n" }} {{ POVDetails }}
+      </v-flex>
+      <v-flex style="white-space: pre-line;" v-show="data.TRDSEC == 'TTP'">
+        <span class="font-weight-medium">Concern:</span> {{ "\r\n" }} {{ data.TRDCRN }}
       </v-flex>
       <v-flex v-show="ITIOBJ">
         <p>
@@ -140,8 +143,8 @@ export default {
         this.$router.push({ name: "ttp", params: { TRDMTI: srid } });
       } else if (this.data.TRDSEC == "Itinerary") {
         this.$router.push({ name: "itinerary", params: { TRDMTI: srid } });
-      } else if (this.data.TRDSEC = "Collection") {
-        this.$router.push({ name: "collection", params: { TRDMTI: srid } });
+      } else if (this.data.TRDSEC == "COLLECT") {
+        this.$router.push({ name: "clt", params: { TRDMTI: srid } });
       } else {
         this.$router.push({ name: "sr", params: { TRDMTI: srid } });
       }

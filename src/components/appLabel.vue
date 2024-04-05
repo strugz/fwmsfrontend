@@ -16,7 +16,7 @@
 export default {
   computed: {
     details() {
-      if (this.detail == undefined || this.detail == '' || this.detail == null) {
+      if (this.detail == undefined || this.detail == "" || this.detail == null) {
         return ' ----- '
       } else {
         return this.detail

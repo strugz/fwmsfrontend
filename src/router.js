@@ -9,6 +9,7 @@ import cservice from '@/components/profilefrms/cservice.vue'
 import crptsvc from '@/components/profilefrms/crptsvc.vue'
 import detailsSR from '@/components/profilefrms/detailsSR.vue'
 import detailsTTP from '@/components/profilefrms/detailsTTP.vue'
+import detailsCollection from '@/components/profilefrms/detailsCollection.vue'
 import medRepVisit from '@/components/profilefrms/detailsItinerary.vue'
 // import cardOcc from '@/components/profilefrms/cardOcc.vue'
 import accmanager from '@/components/accmanager.vue'
@@ -88,6 +89,11 @@ export default new Router({
           name: 'ttp',
           path: '/ttp/:TRDMTI',
           component: detailsTTP,
+        },
+        {
+          name: "clt",
+          path: 'clt/:TRDMTI',
+          component: detailsCollection
         },
         {
           name: 'itinerary',

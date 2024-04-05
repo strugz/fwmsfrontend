@@ -7,7 +7,7 @@
       <v-flex v-for="(thread, key) in CurThreads" :key="key" xs12>
         <v-badge color="red" left overlap style="width: 100%;">
           <card-thread
-            v-if="thread.TRDMTY !== 'Service Report' && thread.TRDMTY !== 'TTP' && thread.TRDMTY !== 'MedRep Visit' && thread.TRDMTY !== 'PA Service Report'"
+            v-if="thread.TRDMTY !== 'Service Report' && thread.TRDMTY !== 'TTP' && thread.TRDMTY !== 'MedRep Visit' && thread.TRDMTY !== 'PA Service Report' && thread.TRDMTY !== 'Collection Visit'"
             :thread="thread"></card-thread>
           <card-sr v-else :data="thread"></card-sr>
         </v-badge>
@@ -20,15 +20,15 @@
           <v-icon>close</v-icon>
         </v-btn>
       </template>
-      <my-TTP v-show="CurUserDetails.CNTMST.CNTSEC != 'TSR'"></my-TTP>
+      <my-TTP v-show="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"></my-TTP>
       <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSG'"></new-sreport>
       <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMS'"></new-sreport>
       <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/ENGINEER'"></new-sreport>
-      <checkInOut v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR'"></checkInOut>
+      <checkInOut v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"></checkInOut>
       <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'PS'"></ps-form>
       <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMG'"></ps-form>
       <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'"></ps-form>
-      <collection-visit v-if="CurUserDetails.CNTMST.CNTSEC == 'COLLECTOR'"></collection-visit>
+      <collection-visit class="mb-2" v-if="CurUserDetails.CNTMST.CNTSEC == 'COLLECTOR'"></collection-visit>
     </v-speed-dial>
     <div class="text-xs-center">
       <v-pagination v-model="pageNumber" :length="TotalPages" circle></v-pagination>
