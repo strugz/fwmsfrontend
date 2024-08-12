@@ -91,11 +91,16 @@ export default {
         userID: this.CurUserDetails.CNTMST.CNTMID,
         CustomerID: this.CurClientDetails.ACCMID,
         SRFormType: "COLLECT",
-        pov: this.itemPOV
+        pov: this.itemPOV,
+        TRDLOC: this.lat + " " + this.long
       });
       this.InsertStartCollection({ data: Collection }).then(res => {
-        if (res == 201) {
+        if (res.status == 201) {
           this.Sample();
+        } else if (res.status == 200) {
+          if (res.data.message == "PENDING") {
+            alert("Another Activity is still Pending!");
+          }
         }
       })
         .catch((error) => {
@@ -141,6 +146,10 @@ export default {
       axios(OpheadersTwo).then((res) => {
         if (res.status == 200) {
           this.dialog = false;
+
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
         }
       });
     },

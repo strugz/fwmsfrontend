@@ -49,7 +49,7 @@
           style="max-height: 600px;"
         >
           <iframe
-            allow="geolocation https://sr.mdmpi.com.ph"
+            allow="geolocation https://sr.mdmpi.com.ph; camera"
             v-if="dialog"
             :src="srFormURL"
           ></iframe>

@@ -19,6 +19,11 @@
           <v-flex sm1 md1 xs12>
             <v-btn class="no-print primary" @click="dataReload()">Load</v-btn>
           </v-flex>
+          <v-flex sm2 md2 xs12>
+            <itinerary-dialog></itinerary-dialog>
+          </v-flex>
+        </v-layout>
+        <v-layout row wrap>
           <v-flex sm1 md1 xs12>
             <v-btn class="primary no-print" @click="dialogOpen">Add Data</v-btn>
           </v-flex>
@@ -58,6 +63,38 @@
                       {{ text }}
                     </div>
                   </template>
+                  <!-- <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
+                    flat>
+                    <v-toolbar color="primary" dark>
+                      <v-toolbar-title>{{ event.title }}</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                    </v-toolbar>
+                    <v-card-title primary-title>
+                      <v-flex xs12>
+                        <p>
+                          <span style="color:blue;font-weight:bold">Customer:</span>
+                          {{ ' ' + event.customer }}
+                        </p>
+                      </v-flex>
+                      <v-flex xs12 v-show="event.itiobj">
+                        <p>
+                          <span style="color:blue;font-weight:bold">Objective:</span>
+                          {{ ' ' + event.itiobj }}
+                        </p>
+                      </v-flex>
+                      <v-flex xs12>
+                        <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"><i>
+                            <h5>Verify your location.</h5>
+                          </i></a>
+                      </v-flex>
+                      <v-btn v-show="event.itists == '1'" @click="EndTravelValidation(event)" :disabled="enableStart"
+                        color="primary">START</v-btn>
+                      <v-btn color="primary" v-show="event.itists != '1'" @click="goToCustomer(event.accmid)">View</v-btn>
+                      <v-progress-circular v-show="progValue" indeterminate color="primary"></v-progress-circular>
+                    </v-card-title>
+                    <v-card-actions>
+                    </v-card-actions>
+                  </v-card> -->
                 </v-menu>
               </template>
             </template>
@@ -110,7 +147,11 @@
 <script>
 import { mapActions, mapState, mapMutations } from "vuex";
 import moment from "moment";
+import ItineraryDialog from "../components/SRItineraryDialog.vue";
 export default {
+  components: {
+    ItineraryDialog
+  },
   data: () => ({
     menuOpenCLose: false,
     menu: false,
@@ -211,6 +252,7 @@ export default {
         myCalendarDateTo: this.dateto
       });
       localStorage.mydata = calendar;
+      console.log(this.CurServiceCalendar);
     },
     workWithDialogOpen() {
       this.WorkWithDialog = true;

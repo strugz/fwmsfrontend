@@ -2,12 +2,7 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
-          <v-icon color="white lighten-1">timer_off</v-icon>
-        </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Visit
-        </v-btn>
+        <v-btn class="no-print primary" v-on="on">Add Itinerary</v-btn>
       </template>
       <v-flex xs12>
         <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
@@ -22,11 +17,11 @@
             </v-flex>
             <v-flex xs12>
               <v-combobox v-model="customerSelected" :items="CurCSTMSTList" item-text="CSTNME" item-value="CSTMID"
-                hide-details label="Customer"></v-combobox>
+                hide-details label="Instrument"></v-combobox>
             </v-flex>
             <v-flex xs12>
               <v-select v-model="TSRObjectiveSelected" :items="TSRObjectiveList" item-text="ObjectiveName"
-                item-value="ObjectiveName" hide-details multiple no-data-text label="Objective"
+                item-value="ObjectiveName" hide-details multiple no-data-text label="Purpose of Visit"
                 @change="ObjectiveSelectedItems"></v-select>
             </v-flex>
             <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
@@ -56,6 +51,7 @@
   </v-layout>
 </template>
 <script>
+//   import { stringify } from "querystring";
 import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   data() {
@@ -68,6 +64,7 @@ export default {
       menu1: false,
       TSRObjectiveSelectOthers: "",
       TSRObjectiveSelected: [],
+      //CREATE A POV
       TSRObjectiveList: [
         { ID: 1, ObjectiveName: "Prospecting" },
         { ID: 2, ObjectiveName: "OCC" },
@@ -225,4 +222,4 @@ export default {
   },
 };
 </script>
-  
+    
