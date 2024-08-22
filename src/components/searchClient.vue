@@ -13,7 +13,7 @@
     prepend-inner-icon="search"
     placeholder="Search by: Client name or Initial"
     @focus="$event.target.select()"
-  >
+    >
   </v-combobox>
 </template>
 <script>

@@ -12,20 +12,18 @@
           </v-toolbar>
           <v-card-title primary-title>
             <v-flex xs12>
-              <v-combobox v-model="clientSelected" label="Client" :items="CurClientList" item-text="ACCMNM"
-                item-value="ACCMID" hide-details @change="getCustomer"></v-combobox>
+              <v-combobox v-model="fieldSearch" label="Client" :items="ClientSearch" item-text="ACCMNM"
+                item-value="ACCMID"></v-combobox>
             </v-flex>
             <v-flex xs12>
-              <v-combobox v-model="customerSelected" :items="CurCSTMSTList" item-text="CSTNME" item-value="CSTMID"
-                hide-details label="Instrument"></v-combobox>
+              <v-combobox v-model="customerSelected" :items="ClientInstrument" item-text="DESCRIPTION"
+                item-value="SERIAL_NO" hide-details label="Instrument" @change="setInstrumentSerialNumber"></v-combobox>
+              <v-text-field label="Serial Number" v-model="TextFieldSerialNumber"
+                :disabled="enableSerialNumber"></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-select v-model="TSRObjectiveSelected" :items="TSRObjectiveList" item-text="ObjectiveName"
-                item-value="ObjectiveName" hide-details multiple no-data-text label="Purpose of Visit"
-                @change="ObjectiveSelectedItems"></v-select>
-            </v-flex>
-            <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
-              <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
+              <v-combobox v-model="TSRPurposeOfVisit" :items="TSRPurposeOfVisitList" item-text="PVDescription"
+                item-value="PVID" hide-details multiple no-data-text label="Purpose of Visit"></v-combobox>
             </v-flex>
             <v-flex xs12 lg6>
               <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
@@ -63,29 +61,30 @@ export default {
       dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
       menu1: false,
       TSRObjectiveSelectOthers: "",
-      TSRObjectiveSelected: [],
+      TSRPurposeOfVisit: [],
       //CREATE A POV
-      TSRObjectiveList: [
-        { ID: 1, ObjectiveName: "Prospecting" },
-        { ID: 2, ObjectiveName: "OCC" },
-        { ID: 3, ObjectiveName: "Quotation" },
-        { ID: 4, ObjectiveName: "Pre-Procurement" },
-        { ID: 5, ObjectiveName: "Pre-Bid" },
-        { ID: 6, ObjectiveName: "Pre-Qualification Demo" },
-        { ID: 7, ObjectiveName: "Product Presentation" },
-        { ID: 8, ObjectiveName: "Demo – Evaluation" },
-        { ID: 9, ObjectiveName: "Bidding" },
-        { ID: 10, ObjectiveName: "Negotiation" },
-        { ID: 11, ObjectiveName: "Post-Qualification Demo" },
-        { ID: 12, ObjectiveName: "Contract Signing" },
-        { ID: 13, ObjectiveName: "NOA" },
-        { ID: 14, ObjectiveName: "NTP/WON" },
-        { ID: 15, ObjectiveName: "Contract Signed" },
-        { ID: 16, ObjectiveName: "Installation" },
-        { ID: 17, ObjectiveName: "P.O." },
-        { ID: 18, ObjectiveName: "Others" },
+      TSRPurposeOfVisitList: [
+        {
+          PVID: 5,
+          PVDescription: "Monthly Maintenance",
+          PVRemarks: ""
+        },
+        {
+          PVID: 6,
+          PVDescription: "Preventive Maintenance",
+          PVRemarks: ""
+        }
       ],
       enableStart: false,
+      fieldSearch: "" ? [] : "",
+      ClientSearch: [],
+      ClientCurDetails: [],
+      ClientInstrument: [],
+      ClientCurInstrument: [],
+      SerialNumber: "",
+      TextFieldSerialNumber: "",
+      TextFieldInstrumentModel: "",
+      enableSerialNumber: false,
     };
   },
   mounted() {
@@ -99,13 +98,13 @@ export default {
     date(val) {
       this.dateFormatted = this.formatDate(this.date);
     },
+    fieldSearch() {
+      this.verifier();
+    },
   },
   computed: {
     ...mapState([
-      "CurClientList",
-      "CurCSTMSTList",
       "CurUserDetails",
-      "CurITIMSTList",
     ]),
     computedDateFormatted() {
       return this.formatDate(this.date);
@@ -113,85 +112,101 @@ export default {
   },
   methods: {
     ...mapActions([
-      "getAllAcc",
-      "getCSTMSTPerAcc",
-      "insertITIMST",
+      "insertITIMSTTSG",
       "getCSTMSTcntacc",
-      "getITIMSTValidation",
+      "getAccItinerary",
+      "filterAcctItinerary",
+      "getInstrumentByAccId"
     ]),
-    ...mapMutations(["upAllClient", "upCSTMSTList", "upCurITIMSTListUpdate"]),
-    getCustomer(item) {
-      this.upCSTMSTList([]);
-      this.customerSelected = [];
-      this.getCSTMSTPerAcc({
-        accmid: item.ACCMID,
-        cntmid: this.CurUserDetails.USRDTL.USRDCI,
-      }).then((res) => {
-        this.upCSTMSTList(res.data);
-      });
+    ...mapMutations(["upAllClient", "upCurServiceCalendarUpdate"]),
+    getClientInstruments() {
+      this.getInstrumentByAccId(this.ClientCurDetails.ACCMID).then(res => {
+        this.ClientInstrument = res.data.tbinstruments;
+      })
     },
-    ObjectiveSelectedItems(item) {
-      console.log(item);
-    },
-    SaveItineraryValidation() {
-      if (this.customerSelected.CSTMID == undefined) {
-        alert("Missing Customer.");
-      } else if (this.clientSelected.ACCMID == undefined) {
-        alert("Missing Client.");
-      } else if (
-        this.TSRObjectiveSelected.includes("OTHERS") &&
-        this.TSRObjectiveSelectOthers == ""
-      ) {
-        alert("Missing Others.");
+    setInstrumentSerialNumber(item) {
+      console.log(item, 'kekekeke');
+      if (item.SERIAL_NO == undefined) {
+        this.TextFieldInstrumentModel = item;
+        console.log(this.TextFieldSerialNumber);
       } else {
-        var ObjectiveTemp = "";
-        this.TSRObjectiveSelected.forEach((x) => {
-          if (ObjectiveTemp == "") {
-            ObjectiveTemp = x;
+        this.TextFieldSerialNumber = item.SERIAL_NO;
+      }
+      this.enableStart = false;
+    },
+    verifier() {
+      if (this.fieldSearch != null) {
+        if (this.fieldSearch != "") {
+          if (this.fieldSearch.ACCMNM != undefined) {
+            this.getFilteredAcct(this.fieldSearch.ACCMNM);
           } else {
-            ObjectiveTemp = ObjectiveTemp + "," + x;
+            this.getFilteredAcct(this.fieldSearch);
           }
-        });
-        if (this.TSRObjectiveSelectOthers != "") {
-          ObjectiveTemp = ObjectiveTemp + "," + this.TSRObjectiveSelectOthers;
         }
-        let myValidation = JSON.stringify({
-          itidte: this.date,
-          iticst: this.customerSelected.CSTMID,
-          iticnt: this.CurUserDetails.USRDTL.USRDCI,
-          itiacc: this.clientSelected.ACCMID,
-          itiobj: ObjectiveTemp,
-        });
-        this.getITIMSTValidation({ data: myValidation })
-          .then((res) => {
-            if (res.data == 0) {
-              this.enableStart = true;
-              this.SaveItinerary(ObjectiveTemp);
-            } else {
-              alert("The data is already in the database.");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            this.enableStart = false;
-          });
       }
     },
+    getFilteredAcct(e) {
+      console.log(1);
+      console.time();
+      this.filterAcctItinerary(e).then(
+        (res) => {
+          console.log(res);
+          res.forEach((element) => {
+            this.ClientSearch = element;
+          });
+          this.clientClick(this.fieldSearch.ACCMID);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+      console.timeEnd();
+    },
+    clientClick(id) {
+      if (id != undefined) {
+        this.getAccItinerary(id).then(
+          (res) => {
+            console.log(res.data, "Hey");
+            this.ClientCurDetails = res.data;
+            this.getClientInstruments();
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
+      }
+    },
+    //You are here
+    SaveItineraryValidation() {
+      var ObjectiveTemp = "";
+      this.TSRPurposeOfVisit.forEach((x) => {
+        if (ObjectiveTemp == "") {
+          ObjectiveTemp = x.PVDescription;
+        } else {
+          ObjectiveTemp = ObjectiveTemp + "," + x.PVDescription;
+        }
+      });
+      this.enableStart = true;
+      this.SaveItinerary(ObjectiveTemp);
+    },
     SaveItinerary(ObjectiveTemp) {
+      let strModel = "";
+      let serialModel = "";
+      strModel = this.TextFieldSerialNumber;
+      serialModel = this.TextFieldInstrumentModel + " - (SN: " + strModel + ")"
       let data = JSON.stringify({
         itidte: this.date,
-        iticst: this.customerSelected.CSTMID,
         iticnt: this.CurUserDetails.USRDTL.USRDCI,
-        itiacc: this.clientSelected.ACCMID,
+        itiacc: this.ClientCurDetails.ACCMID,
         itiexp: this.date,
         itiobj: ObjectiveTemp,
+        itiins: serialModel
       });
-      this.insertITIMST({ data: data })
+      this.insertITIMSTTSG({ data: data })
         .then((res) => {
           if (res.status == 200) {
-            this.clientSelected = [];
-            this.customerSelected = [];
-            this.upCurITIMSTListUpdate(res.data);
+            this.ClientCurDetails = [];
+            this.upCurServiceCalendarUpdate(res.data);
             alert("Itinerary Save.");
             this.enableStart = false;
           }
