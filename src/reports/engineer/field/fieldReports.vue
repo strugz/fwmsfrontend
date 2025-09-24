@@ -32,9 +32,9 @@
                             <div>{{ CurSRDetails.header.callDateTime }}</div>
                         </template>
                         <strong>SERVICE BY</strong>
-                        <div>{{ CurThreadDetails.TRDMUI.CNTMCN }}</div>
+                        <div>{{ sentenceCase(CurThreadDetails.TRDMUI.CNTMCN) }}</div>
                         <strong>Instrument</strong>
-                        <div>{{ CurSRDetails.header.instrumentModelID }}</div>
+                        <div>{{ sentenceCase(CurSRDetails.header.instrumentModelID) }}</div>
                         <div>Arrival: {{ CurSRDetails.meterReading.arrival }}</div>
                         <div>Departure: {{ CurSRDetails.meterReading.departure }}</div>
                     </v-flex>
@@ -49,31 +49,31 @@
             <v-layout row wrap class="section">
                 <v-flex xs6>
                     <strong>CUSTOMER NAME</strong>
-                    <div>{{ CurClientDetails.ACCMNM }}</div>
+                    <div>{{ sentenceCase(CurClientDetails.ACCMNM) }}</div>
                 </v-flex>
                 <v-flex xs6>
                     <strong>ADDRESS</strong>
-                    <div>{{ CurClientDetails.ACCMAD }}</div>
+                    <div>{{ sentenceCase(CurClientDetails.ACCMAD) }}</div>
                 </v-flex>
             </v-layout>
 
             <v-layout row wrap class="section">
                 <v-flex xs6>
                     <strong>SERVICE TYPE</strong>
-                    <div>{{ CurSRDetails.serviceTypes[0].srTypeDescription }}</div>
+                    <div>{{ sentenceCase(CurSRDetails.serviceTypes[0].srTypeDescription) }}</div>
                 </v-flex>
                 <v-flex xs6>
                     <strong>PURPOSE OF VISIT</strong>
                     <div v-for="pv in CurSRDetails.purposeOfVisits" :key="pv.pvid">
                         <v-card-text>
-                            {{ pv.pvDescription }} <span v-if="pv.pvRemarks">- {{ pv.pvRemarks }}</span>
+                            {{ sentenceCase(pv.pvDescription) }} <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
                         </v-card-text>
                     </div>
                 </v-flex>
             </v-layout>
 
             <!-- Action Taken -->
-            <v-card flat class="section card-no-elevation">
+            <v-card flat class="section card-no-elevation compact-actions">
                 <v-card-title primary-title>
                     <h3 class="headline mb-0">Action Taken</h3>
                 </v-card-title>
@@ -87,11 +87,11 @@
                                     :key="'action-' + i">
                                     <!-- Show description -->
                                     <span class="desc-col wrap-text">
-                                        {{ action.atDescription }}
+                                        {{ sentenceCase(action.atDescription) }}
                                     </span>
                                     <!-- If it's OTHERS and has remarks, append them -->
                                     <span v-if="action.atDescription === 'OTHERS' && action.atRemarks">
-                                        - {{ action.atRemarks }}
+                                        - {{ sentenceCase(action.atRemarks) }}
                                     </span>
                                 </li>
                             </ul>
@@ -112,7 +112,7 @@
 
                                 <div v-for="(tp, idx) in testedPartsList" :key="'tp-' + idx" class="tested-parts-row">
                                     <span class="part-col">{{ formatTestedParts(tp).partNumber }}</span>
-                                    <span class="desc-col">{{ formatTestedParts(tp).description }}</span>
+                                    <span class="desc-col">{{ sentenceCase(formatTestedParts(tp).description) }}</span>
                                 </div>
                             </div>
                         </v-flex>
@@ -126,20 +126,20 @@
                     <h3 class="headline mb-0">Significant Remarks</h3>
                 </v-card-title>
                 <v-card-text>
-                    <div>{{ CurSRDetails.remarks.srRemarks }}</div>
+                    <div>{{ sentenceCase(CurSRDetails.remarks.srRemarks) }}</div>
                 </v-card-text>
             </v-card>
 
             <!-- Parts used - table with borders -->
-            <v-card flat class="section card-no-elevation">
+            <v-card flat class="section card-no-elevation compact-box">
                 <v-card-title primary-title>
                     <h3 class="headline mb-0">Parts Used</h3>
                 </v-card-title>
 
-                <v-data-table :headers="partsHeaders" :items="CurSRDetails.partsUsed" hide-actions class="parts-table">
+                <v-data-table :headers="partsHeaders" :items="CurSRDetails.partsUsed" hide-actions class="parts-table" disable-sort>
                     <template slot="items" slot-scope="props">
                         <tr>
-                            <td>{{ props.item.puDescription }}</td>
+                            <td>{{ sentenceCase(props.item.puDescription) }}</td>
                             <td>{{ props.item.puPartNo }}</td>
                             <td class="text-right">{{ props.item.puqty }}</td>
                         </tr>
@@ -159,7 +159,7 @@
                     <div class="signature-block">
                         <v-img :src="CurSRDetails.footerSignature.srFooterAcceptance" class="signature-img" />
                         <div class="signature-name">
-                            {{ CurSRDetails.footer.customerUserID }}
+                            {{ sentenceCase(CurSRDetails.footer.customerUserID) }}
                         </div>
                     </div>
                     <div class="signature-meta">{{ CurSRDetails.footer.srfDateTimeIn }}</div>
@@ -169,7 +169,7 @@
 
             <div class="bottom-divider"></div>
 
-            <div class="sr-footer">Result: {{ CurSRDetails.results[0].srResultDescription }}</div>
+            <div class="sr-footer">Result: {{ sentenceCase(CurSRDetails.results[0].srResultDescription) }}</div>
 
             <div class="sr-footer">SR No.
                 <span style="color: red;">
@@ -200,9 +200,9 @@ export default {
             actions: [],
             remarks: [],
             partsHeaders: [
-                { text: 'Description', value: 'puDescription' },
-                { text: 'Part Number', value: 'puPartNo' },
-                { text: 'Qty', value: 'puqty' }
+                { text: 'Description', value: 'puDescription', sortable: false },
+                { text: 'Part Number', value: 'puPartNo', sortable: false },
+                { text: 'Qty', value: 'puqty', sortable: false }
             ],
             parts: [],
             preparedBy: {},
@@ -231,6 +231,18 @@ export default {
                 description: description && description !== 'undefined' ? description : ''
             }
         },
+        sentenceCase(value) {
+            if (value === null || value === undefined) return '';
+            // If it's not a string, just return as-is (numbers, codes)
+            if (typeof value !== 'string') return value;
+
+            const trimmed = value.trim();
+            if (!trimmed) return '';
+
+            // Lowercase everything then uppercase first letter
+            const lower = trimmed.toLowerCase();
+            return lower.charAt(0).toUpperCase() + lower.slice(1);
+        },
         isValidDate(value) {
             if (!value) return false;
 
@@ -244,29 +256,23 @@ export default {
             const date = new Date(val);
             return date instanceof Date && !isNaN(date.getTime());
         },
-        // Your new generatePDF method
-        async generatePDF() {
+        // Reusable helper: renders the report section to a jsPDF instance
+        async renderReportPdf() {
+            const reportEl = document.getElementById('printSection');
+            if (!reportEl) throw new Error('Report section not found!');
+
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'inline-block';
+            wrapper.style.background = 'white';
+            wrapper.style.padding = '10px';
+            wrapper.appendChild(reportEl.cloneNode(true));
+            document.body.appendChild(wrapper);
+
             try {
-                const reportEl = document.getElementById('printSection');
-                if (!reportEl) throw new Error('Report section not found!');
-
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'inline-block';
-                wrapper.style.background = 'white';
-                wrapper.style.padding = '10px';
-                wrapper.appendChild(reportEl.cloneNode(true));
-                document.body.appendChild(wrapper);
-
                 const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true });
-                document.body.removeChild(wrapper);
-
                 const imgData = canvas.toDataURL('image/png');
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'letter'
-                });
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
 
                 const pageWidth = pdf.internal.pageSize.getWidth();
                 const imgProps = pdf.getImageProperties(imgData);
@@ -274,6 +280,15 @@ export default {
 
                 pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pdfHeight);
 
+                return pdf;
+            } finally {
+                // Always clean up the wrapper even on error
+                document.body.removeChild(wrapper);
+            }
+        },
+        async generatePDF() {
+            try {
+                const pdf = await this.renderReportPdf();
                 const fileName = `${this.CurSRDetails.header.srid}.pdf`;
                 pdf.save(fileName);
             } catch (err) {
@@ -282,32 +297,7 @@ export default {
         },
         async emailPDF() {
             try {
-                const reportEl = document.getElementById('printSection');
-                if (!reportEl) throw new Error('Report section not found!');
-
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'inline-block';
-                wrapper.style.background = 'white';
-                wrapper.style.padding = '10px';
-                wrapper.appendChild(reportEl.cloneNode(true));
-                document.body.appendChild(wrapper);
-
-                const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true });
-                document.body.removeChild(wrapper);
-
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'mm',
-                    format: 'letter'
-                });
-
-                const pageWidth = pdf.internal.pageSize.getWidth();
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-
-                pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pdfHeight);
+                const pdf = await this.renderReportPdf();
 
                 // Get PDF as Blob
                 const pdfBlob = pdf.output('blob');
@@ -337,6 +327,13 @@ export default {
 </script>
 
 <style scoped>
+/* Force Times New Roman for everything inside this component */
+.report-wrapper,
+.report-container,
+.report-container * {
+    font-family: "Times New Roman", Times, serif !important;
+}
+
 .report-wrapper {
     display: flex;
     justify-content: center;
@@ -407,6 +404,53 @@ export default {
     font-size: 13px;
 }
 
+/* Compact styling for the Action Taken card to reduce font sizes and spacing */
+.compact-actions {
+    font-size: 12px;
+}
+.compact-actions .v-card__title {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+.compact-actions .actions-list {
+    margin: 0;
+    padding-left: 14px;
+}
+.compact-actions .actions-list li {
+    margin-bottom: 2px;
+    font-size: 12px;
+    line-height: 1.2;
+}
+.compact-actions .tested-parts-header,
+.compact-actions .tested-parts-row {
+    font-size: 12px;
+}
+.compact-actions strong {
+    font-size: 12px;
+}
+
+/* Unified title and subtitle styling: make card titles and section labels consistent */
+h3.headline,
+.v-card__title .headline,
+.v-card-title .headline,
+.section strong,
+.compact-box h3.headline,
+.compact-actions h3.headline {
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+    line-height: 1.2;
+}
+
+/* Ensure strong labels inside sections use the same weight and spacing */
+.section strong {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
 .part-col {
     width: 100px;
 }
@@ -415,11 +459,53 @@ export default {
     flex: 1;
 }
 
-/* Parts table borders - smaller font */
 .parts-table table {
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
+}
+
+/* Compact box modifier - applied to the Parts Used card to save vertical space */
+.compact-box {
+    padding: 6px !important;
+    margin-bottom: 4px !important;
+}
+.compact-box .v-card__title {
+    padding: 2px 6px !important;
+}
+.compact-box .v-card__text,
+.compact-box .v-data-table {
+    padding: 2px 6px !important;
+}
+.compact-box h3.headline {
+    margin: 0;
+    font-size: 14px;
+}
+.compact-box .parts-table table td,
+.compact-box .parts-table table th {
+    padding: 2px 4px;
+    font-size: 11px;
+    line-height: 1.1;
+}
+
+/* Remove extra gap between title and table inside the compact box */
+.compact-box .v-card__title {
+    margin-bottom: 0;
+}
+.compact-box .v-card__title + .v-data-table,
+.compact-box .v-card__title + .v-card__text + .v-data-table {
+    margin-top: 0;
+}
+.compact-box .v-data-table {
+    margin-top: 0;
+}
+.compact-box .v-data-table .v-data-table__wrapper {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.compact-box .v-data-table__actions {
+    margin: 0;
+    padding: 0;
 }
 
 .parts-table th,
