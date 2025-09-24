@@ -26,45 +26,77 @@
               <template v-for="event in eventsMap[date]">
                 <v-menu :key="event.itimid" v-model="event.open" :close-on-content-click="false" full-width offset-x>
                   <template v-slot:activator="{ on }">
-                    <div
-                      :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : event.trdsts == 'LEAVE' ? 'my-event1' : 'my-event2'"
-                      v-if="!event.time" v-ripple v-on="on">
-                      <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
-                      <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                    <div v-if="event.validation == 'NOT APPROVE'">
+                      <div class='my-event3' v-if="!event.time" v-ripple v-on="on">
+                        <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
+                        <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                      </div>
+                    </div>
+                    <div v-else>
+                      <div v-show="event.trdsts != 'LEAVE'">
+                        <div :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : 'my-event2'" v-if="!event.time" v-ripple v-on="on">
+                          <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
+                          <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                          <span v-show="event.trdsts == 'WORK COMPLETE'">{{ ' - ' }} {{ new Date(event.trdmcd).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit', hour12: false }) }} {{ ' to ' }} {{ new Date(event.trdupd).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit', hour12: false }) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-show="event.trdsts == 'LEAVE'" class='my-event1' v-ripple v-on="on">
+                      {{ event.title }}
                     </div>
                   </template>
-                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
-                    flat>
-                    <v-toolbar color="primary" dark>
-                      <v-toolbar-title>{{ event.title }}</v-toolbar-title>
-                      <v-spacer></v-spacer>
-                    </v-toolbar>
-                    <v-card-title primary-title>
-                      <v-flex xs12>
-                        <p>
-                          <span style="color:blue;font-weight:bold">Customer:</span>
-                          {{ ' ' + event.customer }}
-                        </p>
-                      </v-flex>
-                      <v-flex xs12 v-show="event.itiobj">
-                        <p>
-                          <span style="color:blue;font-weight:bold">Objective:</span>
-                          {{ ' ' + event.itiobj }}
-                        </p>
-                      </v-flex>
-                      <v-flex xs12>
-                        <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"><i>
-                            <h5>Verify your location.</h5>
-                          </i></a>
-                      </v-flex>
-                      <v-btn v-show="event.itists == '1'" @click="EndTravelValidation(event)" :disabled="enableStart"
-                        color="primary">START</v-btn>
-                      <v-btn color="primary" v-show="event.itists != '1'" @click="goToCustomer(event.accmid)">View</v-btn>
-                      <v-progress-circular v-show="progValue" indeterminate color="primary"></v-progress-circular>
-                    </v-card-title>
-                    <v-card-actions>
-                    </v-card-actions>
-                  </v-card>
+                  <v-layout wrap row>
+                    <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
+                      flat>
+                      <v-toolbar color="primary" dark>
+                        <v-toolbar-title>{{ event.title }}</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                      </v-toolbar>
+                      <v-card-title primary-title>
+                        <v-flex xs12>
+                          <p>
+                            <span style="color:blue;font-weight:bold">Customer:</span>
+                            {{ ' ' + event.customer }}
+                          </p>
+                        </v-flex>
+                        <v-flex xs12 v-show="event.itiobj">
+                          <p>
+                            <span style="color:blue;font-weight:bold">Objective:</span>
+                            {{ ' ' + event.itiobj }}
+                          </p>
+                        </v-flex>
+                        <v-flex xs12 v-if="event.validation != 'NOT APPROVE'">
+                          <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank"
+                            color="success"><i>
+                              <h5>Verify your location.</h5>
+                            </i></a>
+                        </v-flex>
+                        <div v-if="event.validation != 'NOT APPROVE'">
+                          <v-btn v-show="event.itists == '1'" @click="EndTravelValidation(event)"
+                            :disabled="enableStart" color="primary">START</v-btn>
+                        </div>
+                        <v-btn color="primary" v-show="event.itists != '1'"
+                          @click="goToCustomer(event.accmid)">View</v-btn>
+                          <v-btn v-show="event.trdsts != 'WORK COMPLETE' && event.trdsts != 'START'" 
+                          color="primary" @click="cancelItineraryTSR(event)">DELETE</v-btn>
+                        <v-progress-circular v-show="progValue" indeterminate color="primary"></v-progress-circular>
+                      </v-card-title>
+                      <v-card-actions>
+                      </v-card-actions>
+                    </v-card>
+                    <v-card v-show="event.trdsts == 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
+                      flat>
+                      <v-toolbar color="primary" dark>
+                        <v-toolbar-title>{{ event.title }}</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                      </v-toolbar>
+                      <v-card-title>
+                        <v-btn color="primary" @click="CancelAddedData(event)">Cancel Added Data</v-btn>
+                      </v-card-title>
+                      <v-card-actions>
+                      </v-card-actions>
+                    </v-card>
+                  </v-layout>
                 </v-menu>
               </template>
             </template>
@@ -128,9 +160,49 @@ export default {
       "getITIMSTPerCNT",
       "getTRDMST",
       "getITIMSTTRDValidation",
-      "getTRLMSTOnGoing",
+      "getTRLMSTOnGoing", "deleteITITSR","deleteLVETSR"
     ]),
-    ...mapMutations(["upCurITIMSTList"]),
+    ...mapMutations(["upCurITIMSTList","upCurServiceCalendarDeleteItem"]),
+    cancelItineraryTSR(item) {
+      this.deleteITITSR({ itimid: item.itimid }).then(res => {
+        if (res.status == 200) {
+          alert("Itinerary Cancelled!");
+          this.removeCalendarData();
+          this.dataReload();
+
+        }
+      })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+    removeCalendarData() {
+      localStorage.removeItem("mydata");
+      location.reload();
+    },
+    CancelAddedData(item) {
+      this.deleteLVETSR({
+        lvecnt: this.CurUserDetails.CNTMST.CNTMID,
+        lvedte: item.date,
+        lvedsc: item.title,
+      }).then(res => {
+        if (res.status == 200) {
+          this.upCurServiceCalendarDeleteItem(item);
+          let calendar = JSON.stringify({
+            myCalendar: this.CurServiceCalendar,
+            myCalendarDateFrom: this.datefrom,
+            myCalendarDateTo: this.dateto
+          });
+          localStorage.mydata = calendar;
+          this.removeCalendarData();
+          this.dataReload();
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    },
     open(event) {
       alert(event.title);
     },
@@ -188,13 +260,13 @@ export default {
       }
     },
     StartItineraryValidation(item) {
-      this.progValue = true;
       if (this.lat == "") {
         alert("Location is Required!");
         this.enableStart = false;
       } else {
         let confirmAction = confirm("Start visit?");
         if (confirmAction) {
+          this.progValue = true;
           this.enableStart = true;
           this.StartTTPItinerary(item);
           this.progValue = false;
@@ -243,6 +315,8 @@ export default {
             this.enableStart = false;
             this.progValue = false;
           }
+          this.enableStart = false;
+          this.progValue = false;
         })
         .catch((error) => {
           alert(error);
@@ -251,10 +325,12 @@ export default {
         });
     },
     Sample(item) {
+      console.log(item);
       let dataTwo = JSON.stringify({
         RECEIVER: this.CurUserDetails.CNTMST.CNTTGP,
         SENDER: this.CurUserDetails.CNTMST.CNTMNN,
-        MESSAGE: "Visited " + item.customer + " at " + item.client,
+        MESSAGE: "Visited " + item.customer + " at " + item.client +
+          " Objective: " + item.itiobj,
       });
       console.log(dataTwo, "sample");
       const OpheadersTwo = {
@@ -273,7 +349,12 @@ export default {
         if (res.status == 200) {
           this.dialog = false;
         }
-      });
+        this.dialog = false;
+      })
+        .catch(error => {
+          console.log(error);
+          this.dialog = false;
+        })
     },
   },
 };
@@ -314,6 +395,23 @@ export default {
 }
 
 .my-event2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 2px;
+  background-color: hsl(54, 92%, 52%); 
+  color: #000000;
+  border: 1px solid #1867c0;
+  width: 100%;
+  font-size: 12px;
+  padding: 3px;
+  cursor: pointer;
+  margin-bottom: 1px;
+  inline-size: 100%;
+  overflow-wrap: break-word;
+}
+
+.my-event3 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

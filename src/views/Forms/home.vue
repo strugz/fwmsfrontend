@@ -76,7 +76,7 @@
           <v-list-tile>
             <change-pass></change-pass>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'TL'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'TL' && CurUserDetails.CNTMST.CNTDPT != 'IMG'">
             <back-track></back-track>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
@@ -85,8 +85,29 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
             <customer-manager></customer-manager>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'PMD' || CurUserDetails.CNTMST.CNTSEC.includes('PS')">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'PMD' || CurUserDetails.CNTMST.CNTSEC.includes('PS') || CurUserDetails.CNTMST.CNTSEC.includes('IMS')">
             <span @click="goTo">Service Calendar</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
+            <span @click="goTo">Service Calendar</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'BUVISMIN'">
+            <span @click="goToViewer">Itinerary Viewer</span>
+          </v-list-tile>
+           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'TSRVISMIN'">
+            <span @click="goToViewer">Itinerary Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'AHBU'">
+            <span @click="goToViewer">Itinerary Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">
+            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
+          </v-list-tile> 
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON'">
+            <span @click="goToPSCalendarViewer">PS Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'IMG'">
+            <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
           <!-- <v-list-tile>
             <service-card></service-card>
@@ -119,6 +140,7 @@ import ServiceCalendar from "@/components/ServiceCalendar";
 import ServiceCard from "@/components/profilefrms/cardOcc";
 import { mapState, mapActions, mapMutations } from "vuex";
 import Cookies from "js-cookie";
+import ItineraryForms from "@/components/ItineraryForms";
 
 export default {
   components: {
@@ -131,7 +153,8 @@ export default {
     customerManager,
     userManager,
     ServiceCalendar,
-    ServiceCard
+    ServiceCard,
+    ItineraryForms
   },
   computed: {
     ...mapState(["CurClientDetails", "CurUserDetails"]),
@@ -197,6 +220,15 @@ export default {
     },
     goTo() {
       this.$router.push({ path: `/servicecalendar/${this.CurUserDetails.USRDTL.USRDCI}` });
+    },
+    goToViewer() {
+      this.$router.push({ path: `/itineraryviewer` });
+    },
+    goToServiceCalendarViewer() {
+      this.$router.push({ path: `/servicecalendarviewer` });
+    },
+    goToPSCalendarViewer() {
+      this.$router.push({ path: `/pscalendarviewer` });
     },
     backToHomePage() {
       this.$router.push({

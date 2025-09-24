@@ -170,7 +170,7 @@ export default {
     sendOTP() {
       this.getOTP({ usr_initial: this.CurUserDetails.CNTMST.CNTMNN })
         .then((hash) => {
-          let otp = JSON.parse(hash.data);
+          let otp = hash.data;
           this.OTPhash = otp.OTP;
         })
         .catch((error) => {
@@ -186,7 +186,7 @@ export default {
           clearInterval(cnt);
         }
         this.otpcntr--;
-      }, 1000);
+      }, 6000);
     },
     save() {
       bcrypt

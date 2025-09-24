@@ -1,42 +1,32 @@
 <template>
   <v-layout mt-0 row justify-end>
-    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+    <v-dialog v-model="SRTimerDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on">
+        <v-btn @click="upSRTimerDialog(true)" small flat icon color="indigo" class="ma-0" dark v-on="on">
           <v-icon>timer</v-icon>
         </v-btn>
       </template>
       <v-card class="hide-overflow" style="position: relative;">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Service Report Form</v-toolbar-title>
-          <!-- <span>{{ srFormURL }}</span> -->
           <v-spacer></v-spacer>
           <v-btn icon @click="threadReload">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
         <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
-          <iframe allow="geolocation https://sr.mdmpi.com.ph; camera" v-if="dialog" :src="srFormURL"></iframe>
+          <iframe allow="geolocation https://sr.mdmpi.com.ph; camera" v-if="SRTimerDialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
   </v-layout>
 </template>
-
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      dialog: false,
     };
-  },
-  watch: {
-    dialog: function() {
-      if (this.dialog == false) {
-        this.clientClick(this.CurClientDetails.ACCMID);
-      }
-    },
   },
   methods: {
     ...mapActions(["getAcc", "getThreadByAccountId"]),
@@ -45,18 +35,8 @@ export default {
       "upCurThreads",
       "upCurClientMID",
       "upTotalPages",
+      "upSRTimerDialog"
     ]),
-    clientClick(id) {
-      this.getAcc(id).then(
-        (res) => {
-          this.upClient(res.data);
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-      // this.$router.push({ path: `/customer/${id}` });
-    },
     threadReload() {
       this.upCurThreads([]);
       const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : "";
@@ -74,11 +54,11 @@ export default {
           console.error(error);
         }
       );
-      this.dialog = false;
+      this.upSRTimerDialog(!this.SRTimerDialog);
     },
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails"]),
+    ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails", "SRTimerDialog"]),
     srFormURL() {
       if (this.CurThreadDetails.TRDMTY == "Service Report") {
         return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
@@ -94,5 +74,4 @@ export default {
 };
 </script>
 
-<style>
-</style> 
+<style></style>

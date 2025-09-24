@@ -2,7 +2,9 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn class="no-print primary" v-on="on">Add Itinerary</v-btn>
+        <v-btn class="no-print" v-on="on" small round dark color="teal">
+          Add Itinerary
+        </v-btn>
       </template>
       <v-flex xs12>
         <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
@@ -13,16 +15,17 @@
           <v-card-title primary-title>
             <v-flex xs12>
               <v-combobox v-model="fieldSearch" label="Client" :items="ClientSearch" item-text="ACCMNM"
-                item-value="ACCMID"></v-combobox>
+                item-value="ACCMID" prepend-inner-icon="search" placeholder="Search by: Client name or Initial"
+                @focus="$event.target.select()"></v-combobox>
             </v-flex>
             <v-flex xs12>
               <v-combobox v-model="customerSelected" :items="ClientInstrument" item-text="DESCRIPTION"
-                item-value="SERIAL_NO" hide-details label="Instrument" @change="setInstrumentSerialNumber"></v-combobox>
+                item-value="SERIAL_NO" label="Instrument" @change="setInstrumentSerialNumber"></v-combobox>
               <v-text-field label="Serial Number" v-model="TextFieldSerialNumber"
                 :disabled="enableSerialNumber"></v-text-field>
             </v-flex>
             <v-flex xs12>
-              <v-combobox v-model="TSRPurposeOfVisit" :items="TSRPurposeOfVisitList" item-text="PVDescription"
+              <v-combobox v-model="TSRPurposeOfVisit" :items="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG' ? TSRPurposeOfVisitList : PSPurposeOfVisitList" item-text="PVDescription"
                 item-value="PVID" hide-details multiple no-data-text label="Purpose of Visit"></v-combobox>
             </v-flex>
             <v-flex xs12 lg6>
@@ -72,6 +75,58 @@ export default {
         {
           PVID: 6,
           PVDescription: "Preventive Maintenance",
+          PVRemarks: ""
+        },
+      ],
+      PSPurposeOfVisitList: [
+        {
+          PVID: 1,
+          PVDescription: "Demo",
+          PVRemarks: ""
+        },
+        {
+          PVID: 2,
+          PVDescription: "Training",
+          PVRemarks: ""
+        },
+        {
+          PVID: 3,
+          PVDescription: "Monitoring",
+          PVRemarks: ""
+        },
+        {
+          PVID: 4,
+          PVDescription: "Troubleshooting",
+          PVRemarks: ""
+        },
+        {
+          PVID: 5,
+          PVDescription: "Application",
+          PVRemarks: ""
+        },
+        {
+          PVID: 6,
+          PVDescription: "Maintenance",
+          PVRemarks: ""
+        },
+        {
+          PVID: 7,
+          PVDescription: "QC Running",
+          PVRemarks: ""
+        },
+        {
+          PVID: 8,
+          PVDescription: "Calibration Running",
+          PVRemarks: ""
+        },
+        {
+          PVID: 9,
+          PVDescription: "Reagent Concerns",
+          PVRemarks: ""
+        },
+        {
+          PVID: 10,
+          PVDescription: "Admin Concerns",
           PVRemarks: ""
         }
       ],
@@ -125,11 +180,10 @@ export default {
       })
     },
     setInstrumentSerialNumber(item) {
-      console.log(item, 'kekekeke');
       if (item.SERIAL_NO == undefined) {
         this.TextFieldInstrumentModel = item;
-        console.log(this.TextFieldSerialNumber);
       } else {
+        this.TextFieldInstrumentModel = item.ITEM_CODE;
         this.TextFieldSerialNumber = item.SERIAL_NO;
       }
       this.enableStart = false;
@@ -150,9 +204,8 @@ export default {
       console.time();
       this.filterAcctItinerary(e).then(
         (res) => {
-          console.log(res);
           res.forEach((element) => {
-            this.ClientSearch = element;
+            this.ClientSearch.unshift(element);
           });
           this.clientClick(this.fieldSearch.ACCMID);
         },
@@ -166,7 +219,6 @@ export default {
       if (id != undefined) {
         this.getAccItinerary(id).then(
           (res) => {
-            console.log(res.data, "Hey");
             this.ClientCurDetails = res.data;
             this.getClientInstruments();
           },
@@ -204,7 +256,17 @@ export default {
       });
       this.insertITIMSTTSG({ data: data })
         .then((res) => {
+          console.log(res.status);
           if (res.status == 200) {
+            this.ClientCurDetails = [];
+            this.upCurServiceCalendarUpdate(res.data);
+            alert("Itinerary Save.");
+            this.enableStart = false;
+          }
+          if (res.status == 400) {
+            alert("Please re-select the Client!")
+          }
+          if (res.status == 204) {
             this.ClientCurDetails = [];
             this.upCurServiceCalendarUpdate(res.data);
             alert("Itinerary Save.");
@@ -212,7 +274,7 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          alert("Please re-select the Client!", error)
           this.enableStart = false;
         });
     },
@@ -237,4 +299,3 @@ export default {
   },
 };
 </script>
-    

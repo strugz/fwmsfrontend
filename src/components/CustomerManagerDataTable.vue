@@ -29,7 +29,7 @@
       </v-flex>
     </v-layout>
   </v-container>
-</template>>
+</template>
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {

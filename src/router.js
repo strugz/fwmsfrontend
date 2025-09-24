@@ -17,6 +17,9 @@ import recentvisit from '@/components/SRRecentVisit.vue'
 import mritinerary from './components/MRItinerary.vue'
 import itineraryViewer from './components/ItineraryViewer.vue'
 import servicecalendar from './components/ServiceCalendar.vue'
+import itineraryheadviewer from './components/MRItineraryHeadViewer.vue'
+import servicecalendarviewer from './components/ServiceCalendarViewer.vue'
+import pscalendarviewer from './components/PSCalendarViewer.vue'
 import p404 from './views/404.vue'
 
 import Cookies from 'js-cookie'
@@ -119,6 +122,21 @@ export default new Router({
           name: 'servicecalendar',
           path: '/servicecalendar/:CNTMID',
           component: servicecalendar
+        },
+        {
+          name: 'itineraryviewer',
+          path: '/itineraryviewer',
+          component: itineraryheadviewer
+        },
+        {
+          name: 'servicecalendarviewer',
+          path: '/servicecalendarviewer',
+          component: servicecalendarviewer
+        },
+        {
+          name: 'pscalendarviewer',
+          path: '/pscalendarviewer',
+          component: pscalendarviewer
         },
       ],
     },

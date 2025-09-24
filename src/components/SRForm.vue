@@ -1,58 +1,22 @@
 <template>
-  <v-layout
-    mt-0
-    row
-    justify-center
-  >
-    <v-dialog
-      v-model="dialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
+  <v-layout mt-0 row justify-center>
+    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn
-          small
-          round
-          dark
-          color="teal"
-          v-on="on"
-        >
+        <v-btn small round dark color="teal" v-on="on">
           Service Report
         </v-btn>
       </template>
-      <v-card
-        class="hide-overflow"
-        style="position: relative;"
-      >
-        <v-toolbar
-          absolute
-          color="primary"
-          dense
-          dark
-          scroll-off-screen
-          scroll-target="#scrolling-techniques"
-        >
+      <v-card class="hide-overflow" style="position: relative;">
+        <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Service Report Form</v-toolbar-title>
           <!-- <span>{{ srFormURL }}</span> -->
           <v-spacer></v-spacer>
-          <v-btn
-            icon
-            @click="threadReload"
-          >
+          <v-btn icon @click="threadReload">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div
-          id="scrolling-techniques"
-          class="scroll-y my-4"
-          style="max-height: 600px;"
-        >
-          <iframe
-            allow="geolocation https://sr.mdmpi.com.ph"
-            v-if="dialog"
-            :src="srFormURL"
-          ></iframe>
+        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
+          <iframe allow="geolocation https://sr.mdmpi.com.ph" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
@@ -67,8 +31,9 @@ export default {
     };
   },
   watch: {
-    dialog: function () {
+    dialog: function() {
       if (this.dialog == false) {
+
         this.clientClick(this.CurClientDetails.ACCMID);
       }
     },
@@ -92,6 +57,7 @@ export default {
         }
       );
       this.$router.push({ path: `/customer/${id}` });
+      location.reload();
     },
     threadReload() {
       this.upCurThreads([]);

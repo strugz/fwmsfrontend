@@ -9,40 +9,69 @@
           Visit
         </v-btn>
       </template>
-      <v-flex xs12>
-        <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
-          <v-toolbar color="primary" dark>
-            <v-toolbar-title>Itinerary</v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
-          <v-card-title primary-title>
-            <v-flex xs12>
-              <v-combobox v-model="clientSelected" label="Client" :items="CurClientList" item-text="ACCMNM"
-                item-value="ACCMID" hide-details @change="getCustomer"></v-combobox>
-            </v-flex>
-            <v-flex xs12>
-              <v-combobox v-model="customerSelected" :items="CurCSTMSTList" item-text="CSTNME" item-value="CSTMID"
-                hide-details label="Customer"></v-combobox>
-            </v-flex>
-            <v-flex xs12>
-              <v-select v-model="TSRObjectiveSelected" :items="TSRObjectiveList" item-text="ObjectiveName"
-                item-value="ObjectiveName" hide-details multiple no-data-text label="Objective"
-                @change="ObjectiveSelectedItems"></v-select>
-            </v-flex>
-            <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
-              <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
-            </v-flex>
-            <v-flex xs12 lg6>
-              <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
-                transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
-                <template v-slot:activator="{ on }">
-                  <v-text-field v-model="dateFormatted" label="Visit Date" hint="MM/DD/YYYY format" persistent-hint
-                    prepend-icon="event" @blur="date = parseDate(dateFormatted)" v-on="on"></v-text-field>
-                </template>
-                <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
-              </v-menu>
-            </v-flex>
-          </v-card-title>
+      <v-toolbar color="primary" dark class="fixed-toolbar">
+        <v-toolbar-title>Itinerary</v-toolbar-title>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+      <v-card color="grey lighten-4" flat>
+        <v-container fluid>
+          <v-flex xs12 class="mt-2">
+            <v-card color="grey lighten-4" flat class="mt-0">
+              <v-flex xs12>
+                <v-text-field v-model="searchQuery" label="Search Client"></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-card color="grey lighten-4" class="mt-3 mb-3">
+                  <v-card-title class="custom-card-title">Client</v-card-title>
+                  <v-card-text style="max-height: 150px; overflow-y: auto;">
+                    <v-radio-group v-model="clientSelected" column @change="getCustomer">
+                      <v-radio v-for="item in filteredClients" :key="item.ACCMID" :label="item.ACCMNM"
+                        :value="item.ACCMID"></v-radio>
+                    </v-radio-group>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-card>
+          </v-flex>
+          <v-flex xs12>
+            <v-card color="grey lighten-4" class="mt-3 mb-3">
+              <v-card-title class="custom-card-title">
+                <b>Customer</b>
+              </v-card-title>
+              <v-card-text style="max-height: 150px; overflow-y: auto;">
+                <v-radio-group v-model="customerSelected" column>
+                  <v-radio v-for="item in customerList" :key="item.CSTMID" :label="item.CSTNME"
+                    :value="item.CSTMID"></v-radio>
+                </v-radio-group>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex xs12>
+            <v-card color="grey lighten-4" class="mt-1 mb-1">
+              <v-card-title class="custom-card-title">
+                <b>Objective</b>
+              </v-card-title>
+              <v-card-text style="max-height: 150px; overflow-y: auto;">
+                <div v-for="item in TSRObjectiveList" :key="item.ObjectiveName" class="custom-checkbox">
+                  <v-checkbox :label="item.ObjectiveName" :value="item.ObjectiveName"
+                    v-model="TSRObjectiveSelected"></v-checkbox>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
+            <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
+          </v-flex>
+          <v-flex xs12 lg6>
+            <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
+              transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
+              <template v-slot:activator="{ on }">
+                <v-text-field v-model="dateFormatted" label="Visit Date" hint="MM/DD/YYYY format" persistent-hint
+                  prepend-icon="event" @blur="date = parseDate(dateFormatted)" v-on="on" readonly></v-text-field>
+              </template>
+              <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
+            </v-menu>
+          </v-flex>
           <v-card-actions>
             <v-btn color="primary" :disabled="enableStart" @click="SaveItineraryValidation">Save</v-btn>
             <v-spacer></v-spacer>
@@ -50,8 +79,8 @@
               Cancel
             </v-btn>
           </v-card-actions>
-        </v-card>
-      </v-flex>
+        </v-container>
+      </v-card>
     </v-dialog>
   </v-layout>
 </template>
@@ -62,7 +91,10 @@ export default {
     return {
       dialog: false,
       clientSelected: [],
-      customerSelected: [],
+      searchQuery: '',
+      filteredClients: [],
+      customerSelected: "",
+      customerList: [],
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
       menu1: false,
@@ -87,6 +119,7 @@ export default {
         { ID: 16, ObjectiveName: "Installation" },
         { ID: 17, ObjectiveName: "P.O." },
         { ID: 18, ObjectiveName: "Others" },
+        { ID: 19, ObjectiveName: "Collection" },
       ],
       enableStart: false,
     };
@@ -95,12 +128,17 @@ export default {
     this.getCSTMSTcntacc({ cntmid: this.CurUserDetails.USRDTL.USRDCI }).then(
       (res) => {
         this.upAllClient(res.data);
+        this.filteredClients = res.data
       }
     );
+
   },
   watch: {
     date(val) {
       this.dateFormatted = this.formatDate(this.date);
+    },
+    searchQuery(val) {
+      this.filterClients(val);
     },
   },
   computed: {
@@ -125,75 +163,85 @@ export default {
     ...mapMutations(["upAllClient", "upCSTMSTList", "upCurITIMSTListUpdate"]),
     getCustomer(item) {
       this.upCSTMSTList([]);
-      this.customerSelected = [];
+      this.customerSelected = "";
       this.getCSTMSTPerAcc({
-        accmid: item.ACCMID,
+        accmid: item,
         cntmid: this.CurUserDetails.USRDTL.USRDCI,
       }).then((res) => {
-        this.upCSTMSTList(res.data);
+        this.customerList = res.data;
       });
     },
-    ObjectiveSelectedItems(item) {
-      console.log(item);
+    filterClients() {
+      const query = this.searchQuery.toLowerCase();
+      this.filteredClients = this.CurClientList.filter(client =>
+        client.ACCMNM.toLowerCase().includes(query)
+      );
     },
     SaveItineraryValidation() {
-      if (this.customerSelected.CSTMID == undefined) {
+      if (this.customerSelected == "") {
         alert("Missing Customer.");
-      } else if (this.clientSelected.ACCMID == undefined) {
+      } else if (this.clientSelected == undefined) {
         alert("Missing Client.");
       } else if (
-        this.TSRObjectiveSelected.includes("OTHERS") &&
+        this.TSRObjectiveSelected == "Others" &&
         this.TSRObjectiveSelectOthers == ""
       ) {
         alert("Missing Others.");
       } else {
-        var ObjectiveTemp = "";
-        this.TSRObjectiveSelected.forEach((x) => {
-          if (ObjectiveTemp == "") {
-            ObjectiveTemp = x;
-          } else {
-            ObjectiveTemp = ObjectiveTemp + "," + x;
-          }
-        });
-        if (this.TSRObjectiveSelectOthers != "") {
-          ObjectiveTemp = ObjectiveTemp + "," + this.TSRObjectiveSelectOthers;
-        }
-        let myValidation = JSON.stringify({
-          itidte: this.date,
-          iticst: this.customerSelected.CSTMID,
-          iticnt: this.CurUserDetails.USRDTL.USRDCI,
-          itiacc: this.clientSelected.ACCMID,
-          itiobj: ObjectiveTemp,
-        });
-        this.getITIMSTValidation({ data: myValidation })
-          .then((res) => {
-            if (res.data == 0) {
-              this.enableStart = true;
-              this.SaveItinerary(ObjectiveTemp);
+        if (this.TSRObjectiveSelected != "") {
+          var ObjectiveTemp = "";
+          this.TSRObjectiveSelected.forEach((x) => {
+            if (ObjectiveTemp == "") {
+              ObjectiveTemp = x;
             } else {
-              alert("The data is already in the database.");
+              ObjectiveTemp = ObjectiveTemp + "," + x;
             }
-          })
-          .catch((error) => {
-            console.log(error);
-            this.enableStart = false;
           });
+          if (this.TSRObjectiveSelectOthers != "") {
+            ObjectiveTemp = ObjectiveTemp + "," + this.TSRObjectiveSelectOthers;
+          }
+          let myValidation = JSON.stringify({
+            itidte: this.date,
+            iticst: this.customerSelected,
+            iticnt: this.CurUserDetails.USRDTL.USRDCI,
+            itiacc: this.clientSelected,
+            itiobj: ObjectiveTemp,
+          });
+
+          this.getITIMSTValidation({ data: myValidation })
+            .then((res) => {
+              if (res.data == 0) {
+                this.enableStart = true;
+                this.SaveItinerary(ObjectiveTemp);
+              } else {
+                alert("The data is already in the database.");
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+              this.enableStart = false;
+            });
+        } else {
+          alert("Insert Objective!")
+        }
+
       }
     },
     SaveItinerary(ObjectiveTemp) {
       let data = JSON.stringify({
         itidte: this.date,
-        iticst: this.customerSelected.CSTMID,
+        iticst: this.customerSelected,
         iticnt: this.CurUserDetails.USRDTL.USRDCI,
-        itiacc: this.clientSelected.ACCMID,
+        itiacc: this.clientSelected,
         itiexp: this.date,
         itiobj: ObjectiveTemp,
       });
       this.insertITIMST({ data: data })
         .then((res) => {
           if (res.status == 200) {
-            this.clientSelected = [];
-            this.customerSelected = [];
+            this.upCSTMSTList([]);
+            this.clientSelected = "";
+            this.customerSelected = "";
             this.upCurITIMSTListUpdate(res.data);
             alert("Itinerary Save.");
             this.enableStart = false;
@@ -225,4 +273,22 @@ export default {
   },
 };
 </script>
-  
+<style scoped>
+.custom-checkbox {
+  margin-bottom: 1px;
+  /* Adjust this value to change the spacing */
+}
+
+.custom-card-title {
+  padding: 0px 16px;
+  /* Remove any default margin */
+}
+
+.fixed-toolbar {
+  position: fixed;
+  top: 0;
+  width: 87.5%;
+  /* This line was missing the property */
+  z-index: 1000;
+}
+</style>

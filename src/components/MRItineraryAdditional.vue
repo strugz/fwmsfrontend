@@ -10,14 +10,20 @@
                 </v-btn>
             </template>
             <v-flex xs12>
-                <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
+                <v-card color="grey lighten-4" flat class="mt-0">
                     <v-toolbar color="primary" dark>
                         <v-toolbar-title>Leave Details</v-toolbar-title>
                         <v-spacer></v-spacer>
                     </v-toolbar>
                     <v-card-title primary-title>
+
                         <v-flex xs12>
-                            <v-text-field v-model="details" placeholder="Description"></v-text-field>
+                            <v-select v-model="TSRObjectiveSelected" :items="TSRObjectiveList" item-text="ObjectiveName"
+                                item-value="ObjectiveName" clearable hide-details no-data-text
+                                label="SL,VL, Holiday, etc."></v-select>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-text-field v-model="details" label="Others"></v-text-field>
                         </v-flex>
                         <v-flex xs12 lg6>
                             <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
@@ -25,7 +31,7 @@
                                 <template v-slot:activator="{ on }">
                                     <v-text-field v-model="dateFormatted" label="Date Leave" hint="MM/DD/YYYY format"
                                         persistent-hint prepend-icon="event" @blur="date = parseDate(dateFormatted)"
-                                        v-on="on"></v-text-field>
+                                        v-on="on" readonly></v-text-field>
                                 </template>
                                 <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
                             </v-menu>
@@ -53,7 +59,16 @@ export default {
             dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
             menu1: false,
             enableStart: false,
-            details: ""
+            details: "",
+            TSRObjectiveSelected: [],
+            TSRObjectiveList: [
+                { ID: 1, ObjectiveName: "VL" },
+                { ID: 2, ObjectiveName: "SL" },
+                { ID: 3, ObjectiveName: "Holiday" },
+                { ID: 4, ObjectiveName: "Convention" },
+                { ID: 5, ObjectiveName: "MDMPI Office" },
+                { ID: 6, ObjectiveName: "EnRoute" },
+            ],
         };
     },
     watch: {
@@ -73,21 +88,30 @@ export default {
         ...mapActions(["insertLVEMST"]),
         ...mapMutations(["upCurITIMSTList"]),
         SaveAdditionalItinerary() {
-            let myValidation = JSON.stringify({
-                LVEDSC: this.details,
-                LVECNT: this.CurUserDetails.USRDTL.USRDCI,
-                LVEDTE: this.date
-            });
-            this.insertLVEMST({ data: myValidation }).then(res => {
-                if (res.status == 200) {
-                    this.details = "";
-                    this.upCurITIMSTList(res.data);
-                    alert("Save Successfully");
+            if (this.TSRObjectiveSelected == "" && this.details == "") {
+                alert("Details not provided.")
+            } else {
+                if (this.TSRObjectiveSelected != "" && this.details != "") {
+                    alert("Please select only One Details.")
                 }
-            })
-                .catch((error) => {
-                    console.log(error);
-                });
+                else {
+                    let myValidation = JSON.stringify({
+                        LVEDSC: this.details == "" ? this.TSRObjectiveSelected : this.details,
+                        LVECNT: this.CurUserDetails.USRDTL.USRDCI,
+                        LVEDTE: this.date
+                    });
+                    this.insertLVEMST({ data: myValidation }).then(res => {
+                        if (res.status == 200) {
+                            this.details = "";
+                            this.upCurITIMSTList(res.data);
+                            alert("Save Successfully");
+                        }
+                    })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                }
+            }
         },
         ObjectiveSelectedItems(item) {
             console.log(item);
@@ -113,4 +137,3 @@ export default {
     },
 };
 </script>
-    

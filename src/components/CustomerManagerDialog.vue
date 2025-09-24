@@ -1,211 +1,67 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="700"
-    hide-overlay
-    persistent
-  >
+  <v-dialog v-model="dialog" width="700" hide-overlay persistent>
     <template v-slot:activator="{ on }">
-      <v-btn
-        v-on="on"
-        class="primary mt-3"
-      >Add New Customer</v-btn>
+      <v-btn v-on="on" class="primary mt-3">Add New Customer</v-btn>
     </template>
     <v-card>
 
       <v-container>
-        <v-layout
-          row
-          wrap
-        >
-
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTTCD"
-              placeholder="Terr Code"
-            ></v-text-field>
+        <v-layout row wrap>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-combobox v-model="CustomerStatusValueSelected" label="Customer Remarks" :items="CustomerStatusValueList"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="cntmstSelected"
-              label="Assign To"
-              :items="CurCNTMSTList"
-              item-text="CNTMCN"
-              item-value="CNTMID"
-              @change="cntSelectedItem"
-            ></v-combobox>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTTCD" placeholder="Terr Code"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="clientSelected"
-              label="Client"
-              :items="CurClientList"
-              item-text="ACCMNM"
-              item-value="ACCMID"
-              hide-details
-              @change="clientSelectedItem"
-            ></v-combobox>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-combobox v-model="cntmstSelected" label="Assign To" :items="CurCNTMSTList" item-text="CNTMCN"
+              item-value="CNTMID" @change="cntSelectedItem"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTNME"
-              label="Fullname"
-            ></v-text-field>
+          <v-flex xs12 class="pr-1">
+            <v-combobox v-model="clientSelected" label="Client" :items="CurClientList" item-text="ACCMNM"
+              item-value="ACCMID" hide-details @change="clientSelectedItem"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTEML"
-              label="Email Address"
-            ></v-text-field>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTNME" label="Fullname"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTADD"
-              label="Address"
-            ></v-text-field>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTEML" label="Email Address"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTCDL"
-              label="Contact Details"
-            ></v-text-field>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTADD" label="Address"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-text-field
-              v-model="CSTDOB"
-              label="BirthDate"
-            ></v-text-field>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTCDL" label="Contact Details"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md6
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="itemOneSelected"
-              :items="itemOne"
-              label="Specialty / Position"
-            ></v-combobox>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-text-field v-model="CSTDOB" label="BirthDate"></v-text-field>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md4
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="itemCodeSelected"
-              :items="CurItemCode"
-              label="Target Product"
-              multiple
-              @change="cntSelectedItemCode"
-            ></v-combobox>
+          <v-flex xs12 xl6 md6 class="pr-1">
+            <v-combobox v-model="itemOneSelected" :items="itemOne" label="Specialty / Position"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl3
-            md3
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="itemTwoSelected"
-              :items="itemTwo"
-              label="Status"
-            ></v-combobox>
+          <v-flex xs12 xl6 md4 class="pr-1">
+            <v-combobox v-model="itemCodeSelected" :items="CurItemCode" label="Target Product" multiple
+              @change="cntSelectedItemCode"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md3
-            class="pr-1"
-          >
-            <v-combobox
-              v-model="CSTCFR"
-              :items="itemCallFrequency"
-              label="Call Frequency"
-            ></v-combobox>
+          <v-flex xs12 xl3 md3 class="pr-1">
+            <v-combobox v-model="itemTwoSelected" :items="itemTwo" label="Status"></v-combobox>
           </v-flex>
-          <v-flex
-            xs12
-            xl6
-            md2
-          >
-            <v-combobox
-              v-model="CSTCLS"
-              :items="ItemThree"
-              label="Classification"
-            ></v-combobox>
+          <v-flex xs12 xl6 md3 class="pr-1">
+            <v-combobox v-model="CSTCFR" :items="itemCallFrequency" label="Call Frequency"></v-combobox>
+          </v-flex>
+          <v-flex xs12 xl6 md2>
+            <v-combobox v-model="CSTCLS" :items="ItemThree" label="Classification"></v-combobox>
           </v-flex>
           <v-flex xs12>
-            <v-textarea
-              label="Customer Description"
-              v-model="CSTREM"
-              style="height: 50%;"
-            ></v-textarea>
+            <v-textarea label="Customer Description" v-model="CSTREM" style="height: 50%;"></v-textarea>
           </v-flex>
-          <v-flex
-            xs12
-            md6
-            xl6
-            class="pr-1"
-          >
-            <v-btn
-              class="btn primary"
-              @click="dialog = !dialog"
-            >
+          <v-flex xs12 md6 xl6 class="pr-1">
+            <v-btn class="btn primary" @click="dialog = !dialog">
               Cancel
             </v-btn>
           </v-flex>
-          <v-flex
-            xs12
-            md6
-            xl6
-            class="pr-1"
-          >
-            <v-btn
-              :disabled="saveBTNEnable"
-              class="btn primary"
-              @click="SaveCSTMSTValidation"
-            >Save</v-btn>
+          <v-flex xs12 md6 xl6 class="pr-1">
+            <v-btn :disabled="saveBTNEnable" class="btn primary" @click="SaveCSTMSTValidation">Save</v-btn>
           </v-flex>
         </v-layout>
       </v-container>
@@ -237,10 +93,24 @@ export default {
       cntmstSelected: [],
       itemOne: [
         "Pathologist",
-        "CMT",
-        "Section Head",
-        "MT",
-        "Purchasing Manager",
+        "Chief Medical Technologist",
+        "Chief Rad Tech",
+        "Chief Respiratory Therapist",
+        "Medical Technologist",
+        "Section Head - Chemistry",
+        "Section Head - Hematology",
+        "Section Head - Immunology","Chief Pathologist",
+        "Section Head - Radiology","Section Head - Urinalysis", 
+        "Section Head - Blood Bank","Assistant Section Head - Chemistry",
+        "Assistant Section Head - Immunology",
+        "Accounting Officer","Accounting Head","Procurement Head",
+        "Purchasing Manager","Finance Manager ",
+        "Accounting","Finance Associate",
+        "BAC Officer","Bac Chairperson", "Purchasing Assistant","Purchasing Manager",
+        "Purchasing Officer","Owner","Clinic Manager","Cardiologist",
+        "Cardiologist Department Head", "Cardiologist-OIC","Cashier",
+        "Supply Officer", "BAC - Head", "ADMIN", "Rad Tech"
+        
       ],
       itemOneSelected: "",
       itemTwo: ["User", "Non-User"],
@@ -250,7 +120,8 @@ export default {
       itemCodeSelected: [],
       itemCallFrequency: ["2", "4"],
       itemCallFrequencySelected: [],
-
+      CustomerStatusValueList: ['','INCIDENTAL', 'INCLUDE'],
+      CustomerStatusValueSelected: '',
       rules: {
         required: (value) => !!value || "Required.",
         email: (value) => {
@@ -268,6 +139,7 @@ export default {
     this.clientList();
     this.cntmstList();
     this.itemCodeList();
+    this.CustomerStatusValueList[2];
   },
   methods: {
     ...mapActions([
@@ -349,6 +221,7 @@ export default {
         CSTTCD: this.CSTTCD,
         CSTCFR: this.CSTCFR,
         CSTREM: this.CSTREM,
+        CSTVAL: this.CustomerStatusValueSelected
       });
       this.InsertCSTMST({ data: data });
       this.getAllCSTMST();
@@ -356,19 +229,19 @@ export default {
     getAllCSTMST() {
       this.getCSTMSTAllAcc().then((res) => {
         this.CSTNME = "";
-        this.CSTEML = "";
-        this.cntmstSelected = [];
+        // this.CSTEML = "";
+        // this.cntmstSelected = [];
         this.clientSelected = [];
-        this.CSTADD = "";
-        this.CSTCDL = "";
-        this.CSTDOB = "";
-        this.itemOneSelected = "";
-        this.itemCodeSelected = "";
-        this.itemTwoSelected = "";
-        this.CSTCLS = "";
-        this.CSTTCD = "";
-        this.CSTCFR = "";
-        this.CSTREM = "";
+        // this.CSTADD = "";
+        // this.CSTCDL = "";
+        // this.CSTDOB = "";
+        // this.itemOneSelected = "";
+        // this.itemCodeSelected = "";
+        // this.itemTwoSelected = "";
+        // this.CSTCLS = "";
+        // this.CSTTCD = "";
+        // this.CSTCFR = "";
+        // this.CSTREM = "";
         this.upCSTMSTList(res.data);
         alert("Save Successfully");
         this.saveBTNEnable = false;
