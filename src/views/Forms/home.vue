@@ -1,49 +1,20 @@
 <template>
   <v-content app>
-    <v-toolbar
-      flat
-      prominent
-      color="grey lighten-4"
-      app
-      dense
-      :extension-height="32"
-    >
-      <v-flex
-        xs1
-        class="hidden-xs-only"
-      >
+    <v-toolbar flat prominent color="grey lighten-4" app dense :extension-height="32">
+      <v-flex xs1 class="hidden-xs-only">
 
-        <v-toolbar-title
-          style="cursor: pointer"
-          @click="backToHomePage"
-        >
+        <v-toolbar-title style="cursor: pointer" @click="backToHomePage">
           <span class="hidden-sm-and-down">Thread</span>
         </v-toolbar-title>
 
       </v-flex>
-      <v-flex
-        xs11
-        md6
-        sm6
-        class="mb-3 mt-3"
-      >
+      <v-flex xs11 md6 sm6 class="mb-3 mt-3">
         <client-search></client-search>
       </v-flex>
       <v-spacer></v-spacer>
-      <v-menu
-        v-if="isAdmin"
-        transition="slide-y-transition"
-        bottom
-        offset-y
-      >
+      <v-menu v-if="isAdmin" transition="slide-y-transition" bottom offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn
-            small
-            flat
-            icon
-            color="teal lighten-1"
-            v-on="on"
-          >
+          <v-btn small flat icon color="teal lighten-1" v-on="on">
             <v-icon>settings</v-icon>
           </v-btn>
         </template>
@@ -56,19 +27,9 @@
           </v-list-tile>
         </v-list>
       </v-menu>
-      <v-menu
-        transition="slide-y-transition"
-        bottom
-        offset-y
-      >
+      <v-menu transition="slide-y-transition" bottom offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn
-            small
-            flat
-            icon
-            color="teal lighten-1"
-            v-on="on"
-          >
+          <v-btn small flat icon color="teal lighten-1" v-on="on">
             <v-icon>account_circle</v-icon>
           </v-btn>
         </template>
@@ -85,29 +46,39 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
             <customer-manager></customer-manager>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0,3) == 'PMD' || CurUserDetails.CNTMST.CNTSEC.includes('PS') || CurUserDetails.CNTMST.CNTSEC.includes('IMS')">
+          <v-list-tile
+            v-if="CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' || CurUserDetails.CNTMST.CNTSEC.includes('PS') || CurUserDetails.CNTMST.CNTSEC.includes('IMS')">
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'BUVISMIN'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'BUVISMIN'">
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
-           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'TSRVISMIN'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSRVISMIN'">
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'AHBU'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'AHBU'">
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">
             <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
-          </v-list-tile> 
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON'">
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'IMS'">
+            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
+            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON'">
             <span @click="goToPSCalendarViewer">PS Viewer</span>
           </v-list-tile>
-          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' &&  CurUserDetails.CNTMST.CNTDPT == 'IMG'">
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'IMG'">
             <span @click="goToViewer">Itinerary Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT && CurUserDetails.CNTMST.CNTDPT.includes('TSG')">
+            <span @click="gotoSROutbox">Outbox</span>
           </v-list-tile>
           <!-- <v-list-tile>
             <service-card></service-card>
@@ -125,7 +96,7 @@
     <!-- <app-drawer v-model="drawer"></app-drawer> -->
     <router-view :key="$route.fullPath" />
   </v-content>
-</template> 
+</template>
 <script>
 /* eslint-disable */
 import appDrawer from "@/components/drawer";
@@ -230,6 +201,9 @@ export default {
     goToPSCalendarViewer() {
       this.$router.push({ path: `/pscalendarviewer` });
     },
+    gotoSROutbox() {
+      this.$router.push({ name: 'sroutbox' });
+    },
     backToHomePage() {
       this.$router.push({
         name: "recentvisit",
@@ -270,5 +244,4 @@ export default {
   },
 };
 </script>
-<style>
-</style>
+<style></style>

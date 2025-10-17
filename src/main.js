@@ -25,3 +25,14 @@ new Vue({
   Vuelidate,
   render: h => h(App),
 }).$mount('#app')
+
+// Register service worker for PWA (only in production or localhost)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Use a relative path so it works when app is served from a subpath
+    navigator.serviceWorker.register('service-worker.js').catch(err => {
+      // eslint-disable-next-line no-console
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}

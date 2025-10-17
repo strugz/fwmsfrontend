@@ -21,6 +21,7 @@ import itineraryheadviewer from './components/MRItineraryHeadViewer.vue'
 import servicecalendarviewer from './components/ServiceCalendarViewer.vue'
 import pscalendarviewer from './components/PSCalendarViewer.vue'
 import p404 from './views/404.vue'
+import SROutbox from '@/components/SROutbox.vue'
 
 import Cookies from 'js-cookie'
 import jwt from 'jsonwebtoken'
@@ -73,6 +74,16 @@ export default new Router({
       component: home,
       beforeEnter: ifAuthenticated,
       children: [
+        {
+          name: 'sroutbox',
+          path: 'sroutbox',
+          component: SROutbox,
+          props: route => ({
+            iframeUrl: route.query.url || 'http://localhost:8081/#/outbox',
+            // iframeUrl: route.query.url || 'https://sr.mdmpi.com.ph/#/outbox',
+            title: route.query.title || 'Service Report Outbox'
+          })
+        },
         {
           name: 'customer',
           path: '/customer/:ACCMID',

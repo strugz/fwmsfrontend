@@ -5,6 +5,15 @@
         wrap
         class="bg-2"
       >
+        <v-btn
+          v-if="canInstall"
+          color="primary"
+          small
+          style="position: fixed; right: 16px; bottom: 16px; z-index: 1000;"
+          @click="installPWA"
+        >
+          Install App
+        </v-btn>
         <router-view />
       </v-layout>
     </div>
@@ -14,12 +23,26 @@
 import { mapState, mapMutations, mapActions } from "vuex";
 export default {
   name: "App",
+  data() {
+    return {
+      deferredPrompt: null,
+      canInstall: false,
+    };
+  },
   computed: {
     ...mapState(["CurUserDetails", "CurThreadDetails", "Notifications"]),
   },
   methods: {
     ...mapActions(["getCurUserDetails", "getAcc", "getNotifications"]),
     ...mapMutations(["upClient"]),
+    installPWA() {
+      if (!this.deferredPrompt) return;
+      this.deferredPrompt.prompt();
+      this.deferredPrompt.userChoice.then(() => {
+        this.deferredPrompt = null;
+        this.canInstall = false;
+      });
+    },
   },
   created() {
     this.getCurUserDetails();
@@ -32,6 +55,23 @@ export default {
           console.error(error);
         }
       );
+    }
+    // PWA install prompt handling (Android/Chrome)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.canInstall = true;
+    });
+    // Hide button if already installed (Chrome)
+    window.addEventListener('appinstalled', () => {
+      this.deferredPrompt = null;
+      this.canInstall = false;
+    });
+    // iOS: Add to Home Screen is via Safari Share; we won't show the button on iOS
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isIOS || isInStandalone) {
+      this.canInstall = false;
     }
   },
 };

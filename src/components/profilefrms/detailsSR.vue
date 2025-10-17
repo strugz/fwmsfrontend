@@ -49,7 +49,7 @@
                             <template v-if="CurSRDetails.header">
                               <v-flex v-if="CurThreadDetails.TRDSEC != 'InHouse'">
                                 <app-label header="Service Time:"
-                                  :detail="getRelativeTime(CurThreadDetails.TRDMCD)"></app-label>
+                                  :detail="getRelativeTime(CurSRDetails.footer.srfDateTimeIn)"></app-label>
                               </v-flex>
                             </template>
                           </v-flex>
@@ -64,18 +64,7 @@
                       <v-flex xs12 pb-0 v-if="CurSRDetails.meterReading">
                         <v-layout align-center justify-start row fill-height wrap>
                           <v-flex xs6>
-                            <span class="font-weight-bold black--text text-xs-left pa-0">
-                              Meter Reading
-                            </span>
-                            <v-layout style="margin-top: -10px; margin-left: 2px;" justify-start wrap>
-                              <v-flex md3 xs6>
-                                <app-label header="Arrival:" :detail="CurSRDetails.meterReading.arrival"></app-label>
-                              </v-flex>
-                              <v-flex md3 xs6>
-                                <app-label header="Departure:"
-                                  :detail="CurSRDetails.meterReading.departure"></app-label>
-                              </v-flex>
-                            </v-layout>
+                            <app-label header="Instrument Model:" :detail="CurThreadDetails.TRDMDE"></app-label>
                           </v-flex>
                           <v-flex xs6>
                             <app-label header="Service Type:"
@@ -174,9 +163,6 @@
                       <v-card width="300" class="ml-2" v-if="CurSRDetails.partsUsedSignature">
                         <v-img :src="`${CurSRDetails.partsUsedSignature.puCustomerAcceptance}`" />
                       </v-card>
-                      <!-- <v-card width="300" class="ml-2" v-if="CurSRDetails.partsUsedSignature">
-                        <v-img :src="`${CurSRDetails.partsUsedSignature.puCustomerAcceptance}`" contain />
-                      </v-card> -->
                     </v-flex>
                     <v-flex xs12>
                       <app-label style="white-space: pre-line" header="Significant Remarks:"
@@ -217,8 +203,7 @@
                       </v-flex>
                       <v-card width="300" class="ml-2">
                         <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
-                        <!-- <img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" alt="Italian Trulli" /> -->
-                      </v-card>
+                        </v-card>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -226,36 +211,6 @@
             </v-expansion-panel>
           </v-flex>
         </v-layout>
-      </v-flex>
-      <v-flex md4 xs12>
-        <v-card class="hide-overflow" style="position: fixed;">
-          <v-toolbar flat dense absolute color="teal lighten-3" dark scroll-off-screen
-            scroll-target="#scrolling-techniques">
-            <v-toolbar-title>Comments</v-toolbar-title>
-          </v-toolbar>
-          <div id="scrolling-techniques" class="scroll-y" style="height: 540px;">
-            <v-card style="min-height: 490px; min-width: 330px; margin-top: 50px">
-              <v-card-text v-if="spnr">
-                <v-layout align-center justify-center>
-                  <v-progress-circular :size="80" :width="7" color="primary" indeterminate></v-progress-circular>
-                </v-layout>
-              </v-card-text>
-              <v-card-text v-else>
-                <com-card v-for="(comment, index) in trd_comments" :curUser="comFromUser(index)" :value="comment"
-                  :key="index"></com-card>
-                <v-layout v-if="!CurThreadDetails.TRDMST" align-center justify-center row fill-height>
-                  <v-flex xs12>
-                    <v-divider></v-divider>
-                    <v-card-text class="title font-weight-medium text-xs-center">
-                      ( Comments are disabled )
-                    </v-card-text>
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-card>
-          </div>
-          <com-footer :app="false" />
-        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
@@ -392,7 +347,6 @@ export default {
       );
     },
     getRelativeTime(date) {
-      // console.log(this.CurSRDetails.header.callDateTime);
       let time = moment().from(date, true);
       if (time.endsWith("days")) {
         return moment(date).format("MMMM Do YYYY, hh:mm a");

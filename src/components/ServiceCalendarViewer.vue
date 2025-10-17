@@ -164,6 +164,14 @@ export default {
             this.datefrom = JSON.parse(localStorage.mydata).myCalendarDateFrom;
             this.dateto = JSON.parse(localStorage.mydata).myCalendarDateTo;
         }
+
+        if (this.CurUserDetails.CNTMST.CNTDPT == "IMS") {
+            this.departmentList = [{ DPTNME: "IMS" }]
+        } else if (this.CurUserDetails.CNTMST.CNTDPT == "COLLECTOR") {
+            this.departmentList = [{ DPTNME: "COLLECTOR" }]
+        } else {
+            this.departmentList = [{ DPTNME: "TSGLUZON" }, { DPTNME: "TSGVISMIN" }]
+        }
     },
     methods: {
         ...mapActions(["getServiceCalendar", "getUserByDepartment"]),
