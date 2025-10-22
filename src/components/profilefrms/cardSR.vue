@@ -6,19 +6,44 @@
           <span class="indigo darken-1 pa-1 caption white--text mr-1">{{ data.TRDSEC }}</span>
           <span class="red darken-1 pa-1 caption white--text">{{ data.TRDMTY }}</span>
           <span class="hoverClick"> SR: #{{ data.TRDMTT }} </span>
-          <v-chip v-if="data.TRDSTS == 'START'" label color="green darken-1" text-color="white" small
-            class="absolute top right">
+          <v-chip
+            v-if="data.TRDSTS == 'START'"
+            label
+            color="green darken-1"
+            text-color="white"
+            small
+            class="absolute top right"
+          >
             <v-icon size="15" class="pr-2">cached</v-icon> Ongoing
           </v-chip>
-          <v-chip v-if="data.TRDSTS == 'STOP'" label color="red darken-1" text-color="white" small
-            class="absolute top right">
+          <v-chip
+            v-if="data.TRDSTS == 'STOP'"
+            label
+            color="red darken-1"
+            text-color="white"
+            small
+            class="absolute top right"
+          >
             <v-icon size="15" class="pr-2">pause_circle_filled</v-icon> Onhold
           </v-chip>
-          <v-chip v-if="data.TRDSTS == 'DONE'" label color="warning" text-color="white" small class="absolute top right">
+          <v-chip
+            v-if="data.TRDSTS == 'DONE'"
+            label
+            color="warning"
+            text-color="white"
+            small
+            class="absolute top right"
+          >
             <v-icon size="15" class="pr-2">info</v-icon> Finalizing
           </v-chip>
-          <v-chip v-if="data.TRDSTS == 'WORK COMPLETE'" label color="indigo darken-1" text-color="white" small
-            class="absolute top right">
+          <v-chip
+            v-if="data.TRDSTS == 'WORK COMPLETE'"
+            label
+            color="indigo darken-1"
+            text-color="white"
+            small
+            class="absolute top right"
+          >
             <v-icon size="15" class="pr-2">done_all</v-icon> Work Complete
           </v-chip>
         </v-flex>
@@ -51,10 +76,10 @@
         {{ TRDMDE }}
       </v-flex>
       <v-flex style="white-space: pre-line;" v-show="!ITIOBJ && data.TRDSEC != 'TTP'">
-        <span class="font-weight-medium">Purpose of Visits:</span> {{ "\r\n" }} {{ POVDetails }}
+        <span class="font-weight-medium">Purpose of Visits:</span> {{ '\r\n' }} {{ POVDetails }}
       </v-flex>
       <v-flex style="white-space: pre-line;" v-show="data.TRDSEC == 'TTP'">
-        <span class="font-weight-medium">Concern:</span> {{ "\r\n" }} {{ data.TRDCRN }}
+        <span class="font-weight-medium">Concern:</span> {{ '\r\n' }} {{ data.TRDCRN }}
       </v-flex>
       <v-flex v-show="ITIOBJ">
         <p>
@@ -92,61 +117,66 @@
 </template>
 
 <script>
-import moment from "moment";
-import { mapActions } from "vuex";
+import moment from 'moment'
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      TRDMDE: "",
-      ITIOBJ: "",
-      POVDetails: ""
-    };
+      TRDMDE: '',
+      ITIOBJ: '',
+      POVDetails: '',
+    }
   },
   created() {
-    this.getMMRCust(this.data.TRDMDE);
-
+    this.getMMRCust(this.data.TRDMDE)
   },
   methods: {
-    ...mapActions(["getCSTMSTPerCust", "getITIMST"]),
+    ...mapActions(['getCSTMSTPerCust', 'getITIMST']),
     getRelativeTime(date) {
-      let time = moment().from(date, true);
-      if (time.endsWith("days")) {
-        return moment(date).format("MMMM Do YYYY, hh:mm a");
+      let time = moment().from(date, true)
+      if (time.endsWith('days')) {
+        return moment(date).format('MMMM Do YYYY, hh:mm a')
       } else {
-        return moment(date).format("MMMM Do YYYY, hh:mm a");
+        return moment(date).format('MMMM Do YYYY, hh:mm a')
       }
     },
     getMMRCust(cstmid) {
-      if (this.data.TRDSEC == "Itinerary") {
-        this.getCSTMSTPerCust(cstmid).then((res) => {
-          let tempData = res.data;
-          this.TRDMDE = tempData.CSTNME;
-        });
-        this.getITIMST(this.data.TRDITI).then((res) => {
-          this.ITIOBJ = res.itiobj;
-        });
+      if (this.data.TRDSEC == 'Itinerary') {
+        this.getCSTMSTPerCust(cstmid).then(res => {
+          let tempData = res.data
+          this.TRDMDE = tempData.CSTNME
+        })
+        this.getITIMST(this.data.TRDITI).then(res => {
+          this.ITIOBJ = res.itiobj
+        })
       } else {
-        this.TRDMDE = cstmid;
+        this.TRDMDE = cstmid
         this.data.purposeOfVisits.forEach(x => {
-          if (x.pvRemarks == "") {
-            this.POVDetails = this.POVDetails == "" ? x.pvDescription : this.POVDetails + "\r\n " + x.pvDescription;
+          if (x.pvRemarks == '') {
+            this.POVDetails = this.POVDetails == '' ? x.pvDescription : this.POVDetails + '\r\n ' + x.pvDescription
+          } else {
+            this.POVDetails =
+              this.POVDetails == ''
+                ? x.pvDescription + ': ' + x.pvRemarks
+                : this.POVDetails + '\r\n ' + x.pvDescription + ': ' + x.pvRemarks
           }
-          else {
-            this.POVDetails = this.POVDetails == "" ? x.pvDescription + ": " + x.pvRemarks : this.POVDetails + "\r\n " + x.pvDescription + ": " + x.pvRemarks;
-          }
-        });
+        })
       }
     },
 
     toDetails(srid) {
-      if (this.data.TRDSEC == "TTP") {
-        this.$router.push({ name: "ttp", params: { TRDMTI: srid } });
-      } else if (this.data.TRDSEC == "Itinerary") {
-        this.$router.push({ name: "itinerary", params: { TRDMTI: srid } });
-      } else if (this.data.TRDSEC == "COLLECT") {
-        this.$router.push({ name: "clt", params: { TRDMTI: srid } });
+      if (this.data.TRDSEC == 'TTP') {
+        this.$router.push({ name: 'ttp', params: { TRDMTI: srid } })
+      } else if (this.data.TRDSEC == 'Itinerary') {
+        this.$router.push({ name: 'itinerary', params: { TRDMTI: srid } })
+      } else if (this.data.TRDSEC == 'COLLECT') {
+        this.$router.push({ name: 'clt', params: { TRDMTI: srid } })
       } else {
-        this.$router.push({ name: "sr", params: { TRDMTI: srid } });
+        if (this.data.TRDMTY == 'Service Report' && this.data.TRDSTS == 'WORK COMPLETE') {
+          this.$router.push({ name: 'fieldreport', params: { ClientID: this.data.TRDMAC, SRID: this.data.TRDMTT } })
+        } else {
+          this.$router.push({ name: 'sr', params: { TRDMTI: srid } })
+        }
       }
     },
   },
@@ -155,8 +185,7 @@ export default {
       type: Object,
     },
   },
-};
+}
 </script>
 
-<style>
-</style>
+<style></style>

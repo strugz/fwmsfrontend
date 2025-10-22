@@ -388,7 +388,7 @@ export default {
         this.data.TRDMDE = this.TRDMDE
         this.data.TRDSEC = this.TRDSEC
         this.data.TRDADT = this.TRDADT
-        console.log(this.data);
+        console.log(this.data)
 
         this.postThread(this.data).then(
           () => {

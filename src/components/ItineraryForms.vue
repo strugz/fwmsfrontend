@@ -16,10 +16,20 @@
           <v-layout row wrap>
             <v-flex xs12 class="mt-4">
               <!-- Combobox -->
-              <v-combobox v-model="selectedItemDepartment" :items="departmentList" item-text="DPTNME"
-                item-value="DPTNME" label="Select Department"></v-combobox>
-              <v-combobox v-model="selectedItemUser" :items="userList" item-text="CNTMNN" item-value="CNTMID"
-                label="Select User"></v-combobox>
+              <v-combobox
+                v-model="selectedItemDepartment"
+                :items="departmentList"
+                item-text="DPTNME"
+                item-value="DPTNME"
+                label="Select Department"
+              ></v-combobox>
+              <v-combobox
+                v-model="selectedItemUser"
+                :items="userList"
+                item-text="CNTMNN"
+                item-value="CNTMID"
+                label="Select User"
+              ></v-combobox>
               <!-- Datatable -->
               <v-data-table :headers="headers" :items="itineraryList">
                 <template v-slot:items="props">
@@ -42,7 +52,7 @@
   </v-layout>
 </template>
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -50,7 +60,7 @@ export default {
       selectedItemUser: null,
       selectedItemDepartment: null,
       userList: [],
-      departmentList: [{ DPTNME: "TSRLUZON" }, { DPTNME: "TSRVISMIN" }],
+      departmentList: [{ DPTNME: 'TSRLUZON' }, { DPTNME: 'TSRVISMIN' }],
       itineraryList: [],
       headers: [
         { text: 'Date', value: 'ITIDTE', width: '100px' },
@@ -58,63 +68,56 @@ export default {
         { text: 'Customer Name', value: 'CSTNME' },
         { text: 'Objective', value: 'ITIOBJ' },
         { text: 'Client Address', value: 'CSTADD' },
-        { text: 'Initial', value: 'CNTMNN' }
+        { text: 'Initial', value: 'CNTMNN' },
       ],
-    };
+    }
   },
   watch: {
     selectedItemDepartment() {
-      this.getUserByDepartment(this.selectedItemDepartment.DPTNME).then(
-        res => {
-          this.userList = res.data;
-        }
-      )
+      this.getUserByDepartment(this.selectedItemDepartment.DPTNME)
+        .then(res => {
+          this.userList = res.data
+        })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     },
     selectedItemUser() {
-      this.getUserItinerary(this.selectedItemUser.CNTMID).then(
-        res => {
-          if (res.data.data != "") {
-            this.itineraryList = res.data;
+      this.getUserItinerary(this.selectedItemUser.CNTMID)
+        .then(res => {
+          if (res.data.data != '') {
+            this.itineraryList = res.data
+          } else {
+            this.itineraryList = []
           }
-          else {
-            this.itineraryList = [];
-          }
-        }
-      )
-        .catch(error => {
-          console.log(error);
         })
-    }
+        .catch(error => {
+          console.log(error)
+        })
+    },
   },
-  computed: {
-  },
+  computed: {},
   methods: {
-    ...mapActions(["getAllCNTMST", "getUserByDepartment", "getUserItinerary", "updateForApproval"]),
+    ...mapActions(['getAllCNTMST', 'getUserByDepartment', 'getUserItinerary', 'updateForApproval']),
     ...mapMutations([]),
     approveItem(item) {
-      const index = this.itineraryList.indexOf(item);
+      const index = this.itineraryList.indexOf(item)
       if (index > -1) {
-
-        this.updateForApproval(item.ITIMID).then(
-          res => {
+        this.updateForApproval(item.ITIMID)
+          .then(res => {
             if (res.status == 200) {
-              this.itineraryList.splice(index, 1);
+              this.itineraryList.splice(index, 1)
+            } else {
+              alert('Please try Again!')
             }
-            else {
-              alert("Please try Again!");
-            }
-          }
-        )
+          })
           .catch(error => {
-            alert("Please try Again!", error);
+            alert('Please try Again!', error)
           })
       }
     },
   },
-};
+}
 </script>
 
 <style>

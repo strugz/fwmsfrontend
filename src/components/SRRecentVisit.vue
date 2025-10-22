@@ -30,59 +30,67 @@
   </v-container>
 </template>
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
-import moment from "moment";
+import { mapState, mapMutations, mapActions } from 'vuex'
+import moment from 'moment'
 export default {
   data() {
     return {
-      currentDate: new Date().toJSON().slice(0, 10).replace(/-/g, "/"),
-      today: "",
-      yesterday: "",
-      weekAgo: "",
-    };
+      currentDate: new Date()
+        .toJSON()
+        .slice(0, 10)
+        .replace(/-/g, '/'),
+      today: '',
+      yesterday: '',
+      weekAgo: '',
+    }
   },
   computed: {
-    ...mapState(["CurRecentVisit", "CurUserDetails"]),
+    ...mapState(['CurRecentVisit', 'CurUserDetails']),
   },
   mounted() {
-    this.getYesterdayDate();
-    this.getTodayDate();
+    this.getYesterdayDate()
+    this.getTodayDate()
   },
   methods: {
-    ...mapActions(["getAcc"]),
-    ...mapMutations(["upClient"]),
+    ...mapActions(['getAcc']),
+    ...mapMutations(['upClient']),
     getYesterdayDate() {
-      var date = new Date();
-      date.setDate(date.getDate() - 1);
-      date = date.toJSON().slice(0, 10).replace(/-/g, "/");
-      this.yesterday = moment(date).format("MM/DD/YYYY");
+      var date = new Date()
+      date.setDate(date.getDate() - 1)
+      date = date
+        .toJSON()
+        .slice(0, 10)
+        .replace(/-/g, '/')
+      this.yesterday = moment(date).format('MM/DD/YYYY')
     },
     getTodayDate() {
-      var date = new Date();
-      date = date.toJSON().slice(0, 10).replace(/-/g, "/");
-      this.today = moment(date).format("MM/DD/YYYY");
-      console.log(this.today);
+      var date = new Date()
+      date = date
+        .toJSON()
+        .slice(0, 10)
+        .replace(/-/g, '/')
+      this.today = moment(date).format('MM/DD/YYYY')
+      console.log(this.today)
     },
     GoTo(accmid) {
-
       this.getAcc(accmid).then(
-        (res) => {
-          this.upClient(res.data);
+        res => {
+          this.upClient(res.data)
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.$router.push({ path: `/customer/${accmid}` });
+      )
+      this.$router.push({ path: `/customer/${accmid}` })
     },
     ValidationItinerary() {
       this.$router.push({
-        name: "mritinerary",
+        name: 'mritinerary',
         params: { CNTMID: this.CurUserDetails.USRDTL.USRDCI },
-      });
+      })
     },
   },
-};
+}
 </script>
 <style>
 .toolbarStyle {
@@ -99,7 +107,6 @@ export default {
 .tile-title {
   border-radius: 50%;
 }
-
 
 .myList {
   display: flex;

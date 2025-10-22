@@ -4,22 +4,38 @@
       <v-btn v-on="on" class="primary mt-3">Add New Customer</v-btn>
     </template>
     <v-card>
-
       <v-container>
         <v-layout row wrap>
           <v-flex xs12 xl6 md6 class="pr-1">
-            <v-combobox v-model="CustomerStatusValueSelected" label="Customer Remarks" :items="CustomerStatusValueList"></v-combobox>
+            <v-combobox
+              v-model="CustomerStatusValueSelected"
+              label="Customer Remarks"
+              :items="CustomerStatusValueList"
+            ></v-combobox>
           </v-flex>
           <v-flex xs12 xl6 md6 class="pr-1">
             <v-text-field v-model="CSTTCD" placeholder="Terr Code"></v-text-field>
           </v-flex>
           <v-flex xs12 xl6 md6 class="pr-1">
-            <v-combobox v-model="cntmstSelected" label="Assign To" :items="CurCNTMSTList" item-text="CNTMCN"
-              item-value="CNTMID" @change="cntSelectedItem"></v-combobox>
+            <v-combobox
+              v-model="cntmstSelected"
+              label="Assign To"
+              :items="CurCNTMSTList"
+              item-text="CNTMCN"
+              item-value="CNTMID"
+              @change="cntSelectedItem"
+            ></v-combobox>
           </v-flex>
           <v-flex xs12 class="pr-1">
-            <v-combobox v-model="clientSelected" label="Client" :items="CurClientList" item-text="ACCMNM"
-              item-value="ACCMID" hide-details @change="clientSelectedItem"></v-combobox>
+            <v-combobox
+              v-model="clientSelected"
+              label="Client"
+              :items="CurClientList"
+              item-text="ACCMNM"
+              item-value="ACCMID"
+              hide-details
+              @change="clientSelectedItem"
+            ></v-combobox>
           </v-flex>
           <v-flex xs12 xl6 md6 class="pr-1">
             <v-text-field v-model="CSTNME" label="Fullname"></v-text-field>
@@ -40,8 +56,13 @@
             <v-combobox v-model="itemOneSelected" :items="itemOne" label="Specialty / Position"></v-combobox>
           </v-flex>
           <v-flex xs12 xl6 md4 class="pr-1">
-            <v-combobox v-model="itemCodeSelected" :items="CurItemCode" label="Target Product" multiple
-              @change="cntSelectedItemCode"></v-combobox>
+            <v-combobox
+              v-model="itemCodeSelected"
+              :items="CurItemCode"
+              label="Target Product"
+              multiple
+              @change="cntSelectedItemCode"
+            ></v-combobox>
           </v-flex>
           <v-flex xs12 xl3 md3 class="pr-1">
             <v-combobox v-model="itemTwoSelected" :items="itemTwo" label="Status"></v-combobox>
@@ -69,140 +90,142 @@
   </v-dialog>
 </template>
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
       saveBTNEnable: false,
       dialog: false,
-      CSTNME: "",
-      CSTEML: "",
-      CSTCNT: "",
-      CSTACC: "",
-      CSTADD: "",
-      CSTCDL: "",
-      CSTDOB: "",
-      CSTPOS: "",
-      CSTTPR: "",
-      CSTSTS: "",
-      CSTCLS: "",
-      CSTTCD: "",
-      CSTCFR: "",
-      CSTREM: "",
+      CSTNME: '',
+      CSTEML: '',
+      CSTCNT: '',
+      CSTACC: '',
+      CSTADD: '',
+      CSTCDL: '',
+      CSTDOB: '',
+      CSTPOS: '',
+      CSTTPR: '',
+      CSTSTS: '',
+      CSTCLS: '',
+      CSTTCD: '',
+      CSTCFR: '',
+      CSTREM: '',
       clientSelected: [],
       cntmstSelected: [],
       itemOne: [
-        "Pathologist",
-        "Chief Medical Technologist",
-        "Chief Rad Tech",
-        "Chief Respiratory Therapist",
-        "Medical Technologist",
-        "Section Head - Chemistry",
-        "Section Head - Hematology",
-        "Section Head - Immunology","Chief Pathologist",
-        "Section Head - Radiology","Section Head - Urinalysis", 
-        "Section Head - Blood Bank","Assistant Section Head - Chemistry",
-        "Assistant Section Head - Immunology",
-        "Accounting Officer","Accounting Head","Procurement Head",
-        "Purchasing Manager","Finance Manager ",
-        "Accounting","Finance Associate",
-        "BAC Officer","Bac Chairperson", "Purchasing Assistant","Purchasing Manager",
-        "Purchasing Officer","Owner","Clinic Manager","Cardiologist",
-        "Cardiologist Department Head", "Cardiologist-OIC","Cashier",
-        "Supply Officer", "BAC - Head", "ADMIN", "Rad Tech"
-        
+        'Pathologist',
+        'Chief Medical Technologist',
+        'Chief Rad Tech',
+        'Chief Respiratory Therapist',
+        'Medical Technologist',
+        'Section Head - Chemistry',
+        'Section Head - Hematology',
+        'Section Head - Immunology',
+        'Chief Pathologist',
+        'Section Head - Radiology',
+        'Section Head - Urinalysis',
+        'Section Head - Blood Bank',
+        'Assistant Section Head - Chemistry',
+        'Assistant Section Head - Immunology',
+        'Accounting Officer',
+        'Accounting Head',
+        'Procurement Head',
+        'Purchasing Manager',
+        'Finance Manager ',
+        'Accounting',
+        'Finance Associate',
+        'BAC Officer',
+        'Bac Chairperson',
+        'Purchasing Assistant',
+        'Purchasing Manager',
+        'Purchasing Officer',
+        'Owner',
+        'Clinic Manager',
+        'Cardiologist',
+        'Cardiologist Department Head',
+        'Cardiologist-OIC',
+        'Cashier',
+        'Supply Officer',
+        'BAC - Head',
+        'ADMIN',
+        'Rad Tech',
       ],
-      itemOneSelected: "",
-      itemTwo: ["User", "Non-User"],
-      itemTwoSelected: "",
-      ItemThree: ["A", "B"],
-      itemThreeSelected: "",
+      itemOneSelected: '',
+      itemTwo: ['User', 'Non-User'],
+      itemTwoSelected: '',
+      ItemThree: ['A', 'B'],
+      itemThreeSelected: '',
       itemCodeSelected: [],
-      itemCallFrequency: ["2", "4"],
+      itemCallFrequency: ['2', '4'],
       itemCallFrequencySelected: [],
-      CustomerStatusValueList: ['','INCIDENTAL', 'INCLUDE'],
+      CustomerStatusValueList: ['', 'INCIDENTAL', 'INCLUDE'],
       CustomerStatusValueSelected: '',
       rules: {
-        required: (value) => !!value || "Required.",
-        email: (value) => {
-          const pattern =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(value) || "Invalid e-mail.";
+        required: value => !!value || 'Required.',
+        email: value => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
         },
       },
-    };
+    }
   },
   computed: {
-    ...mapState(["CurClientList", "CurCNTMSTList", "CurItemCode"]),
+    ...mapState(['CurClientList', 'CurCNTMSTList', 'CurItemCode']),
   },
   mounted() {
-    this.clientList();
-    this.cntmstList();
-    this.itemCodeList();
-    this.CustomerStatusValueList[2];
+    this.clientList()
+    this.cntmstList()
+    this.itemCodeList()
+    this.CustomerStatusValueList[2]
   },
   methods: {
-    ...mapActions([
-      "getAllAcc",
-      "getAllCNTMST",
-      "getItemCode",
-      "InsertCSTMST",
-      "getCSTMSTAllAcc",
-    ]),
-    ...mapMutations([
-      "upAllClient",
-      "upCNTMSTList",
-      "upCurItemCode",
-      "upCSTMSTList",
-    ]),
+    ...mapActions(['getAllAcc', 'getAllCNTMST', 'getItemCode', 'InsertCSTMST', 'getCSTMSTAllAcc']),
+    ...mapMutations(['upAllClient', 'upCNTMSTList', 'upCurItemCode', 'upCSTMSTList']),
     clientList() {
-      this.getAllAcc({ accId: "" }).then((res) => {
-        this.upAllClient(res.data);
-      });
+      this.getAllAcc({ accId: '' }).then(res => {
+        this.upAllClient(res.data)
+      })
     },
     cntmstList() {
-      this.getAllCNTMST({ accId: "" }).then((res) => {
-        this.upCNTMSTList(res.data);
-      });
+      this.getAllCNTMST({ accId: '' }).then(res => {
+        this.upCNTMSTList(res.data)
+      })
     },
     itemCodeList() {
-      this.getItemCode({ accId: "" }).then((res) => {
-        let tempData = res.data;
-        console.log(tempData.ITEM_CODE);
-        this.upCurItemCode(tempData.ITEM_CODE);
-      });
+      this.getItemCode({ accId: '' }).then(res => {
+        let tempData = res.data
+        console.log(tempData.ITEM_CODE)
+        this.upCurItemCode(tempData.ITEM_CODE)
+      })
     },
     clientSelectedItem(item) {
       if (item.ACCMNM == undefined) {
-        alert("Please select Client!");
+        alert('Please select Client!')
       }
     },
     cntSelectedItem(item) {
       if (item.CNTMCN == undefined) {
-        alert("Please select Med Rep!");
+        alert('Please select Med Rep!')
       }
     },
     cntSelectedItemCode(item) {
-      if (item == "") {
-        alert("Please select Target Product!");
+      if (item == '') {
+        alert('Please select Target Product!')
       }
     },
     SaveCSTMSTValidation() {
-      this.saveBTNEnable = true;
-      if (this.CSTTCD == "") {
-        alert("Missing Terr Code");
-      } else if (
-        this.cntmstSelected.CNTMID == [] ||
-        this.cntmstSelected.CNTMID == undefined
-      ) {
-        alert("Missing Assignt To");
-      } else if (
-        this.clientSelected.ACCMID == null ||
-        this.clientSelected.ACCMID == undefined
-      ) {
-        alert("Missing Missing Client");
+      this.saveBTNEnable = true
+      if (this.CSTTCD == '') {
+        this.saveBTNEnable = false
+        alert('Missing Terr Code')
+      } else if (this.cntmstSelected.CNTMID == [] || this.cntmstSelected.CNTMID == undefined) {
+        this.saveBTNEnable = false
+        alert('Missing Assignt To')
+      } else if (this.clientSelected.ACCMID == null || this.clientSelected.ACCMID == undefined) {
+        this.saveBTNEnable = false
+        alert('Missing Missing Client')
       } else {
-        this.saveCSTMST();
+        this.saveCSTMST()
       }
     },
     saveCSTMST() {
@@ -221,17 +244,17 @@ export default {
         CSTTCD: this.CSTTCD,
         CSTCFR: this.CSTCFR,
         CSTREM: this.CSTREM,
-        CSTVAL: this.CustomerStatusValueSelected
-      });
-      this.InsertCSTMST({ data: data });
-      this.getAllCSTMST();
+        CSTVAL: this.CustomerStatusValueSelected,
+      })
+      this.InsertCSTMST({ data: data })
+      this.getAllCSTMST()
     },
     getAllCSTMST() {
-      this.getCSTMSTAllAcc().then((res) => {
-        this.CSTNME = "";
+      this.getCSTMSTAllAcc().then(res => {
+        this.CSTNME = ''
         // this.CSTEML = "";
         // this.cntmstSelected = [];
-        this.clientSelected = [];
+        this.clientSelected = []
         // this.CSTADD = "";
         // this.CSTCDL = "";
         // this.CSTDOB = "";
@@ -242,13 +265,13 @@ export default {
         // this.CSTTCD = "";
         // this.CSTCFR = "";
         // this.CSTREM = "";
-        this.upCSTMSTList(res.data);
-        alert("Save Successfully");
-        this.saveBTNEnable = false;
-      });
+        this.upCSTMSTList(res.data)
+        alert('Save Successfully')
+        this.saveBTNEnable = false
+      })
     },
   },
-};
+}
 </script>
 <style>
 .btn {

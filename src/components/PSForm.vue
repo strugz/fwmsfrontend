@@ -1,131 +1,92 @@
 <template>
-  <v-layout
-    mt-0
-    row
-    justify-center
-  >
-    <v-dialog
-      v-model="dialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
+  <v-layout mt-0 row justify-center>
+    <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn
-          small
-          round
-          dark
-          color="teal"
-          v-on="on"
-        >
+        <v-btn small round dark color="teal" v-on="on">
           PS Report
         </v-btn>
       </template>
-      <v-card
-        class="hide-overflow"
-        style="position: relative;"
-      >
-        <v-toolbar
-          absolute
-          color="primary"
-          dense
-          dark
-          scroll-off-screen
-          scroll-target="#scrolling-techniques"
-        >
+      <v-card class="hide-overflow" style="position: relative;">
+        <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>PS Report Form</v-toolbar-title>
           <!-- <span>{{ srFormURL }}</span> -->
           <v-spacer></v-spacer>
-          <v-btn
-            icon
-            @click="threadReload"
-          >
+          <v-btn icon @click="threadReload">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div
-          id="scrolling-techniques"
-          class="scroll-y my-4"
-          style="max-height: 600px;"
-        >
-          <iframe
-            allow="geolocation https://sr.mdmpi.com.ph; camera"
-            v-if="dialog"
-            :src="srFormURL"
-          ></iframe>
+        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
+          <iframe allow="geolocation https://sr.mdmpi.com.ph; camera" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
   </v-layout>
 </template>
-  <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+<script>
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
   data() {
     return {
-      dialog: false
-    };
+      dialog: false,
+    }
   },
   watch: {
-    dialog: function () {
+    dialog: function() {
       if (this.dialog == false) {
-        this.clientClick(this.CurClientDetails.ACCMID);
+        this.clientClick(this.CurClientDetails.ACCMID)
       }
     },
   },
-  mounted(){
+  mounted() {
     // this.GetMyCoordinates();
   },
   methods: {
-    ...mapActions(["getAcc", "getThreadByAccountId"]),
-    ...mapMutations([
-      "upClient",
-      "upCurThreads",
-      "upCurClientMID",
-      "upTotalPages",
-    ]),
+    ...mapActions(['getAcc', 'getThreadByAccountId']),
+    ...mapMutations(['upClient', 'upCurThreads', 'upCurClientMID', 'upTotalPages']),
     clientClick(id) {
       this.getAcc(id).then(
-        (res) => {
-          this.upClient(res.data);
+        res => {
+          this.upClient(res.data)
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
+      )
       // this.$router.push({ path: `/customer/${id}` });
     },
     threadReload() {
-      this.upCurThreads([]);
-      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : "";
+      this.upCurThreads([])
+      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
       this.getThreadByAccountId({
         cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
         accID: accID,
         pageNumber: this.PageNumber,
       }).then(
-        (res) => {
-          this.upCurClientMID(this.$route.params.ACCMID);
-          this.upCurThreads(res.data.data.threads);
-          this.upTotalPages({ totPages: res.data.totalPages });
+        res => {
+          this.upCurClientMID(this.$route.params.ACCMID)
+          this.upCurThreads(res.data.data.threads)
+          this.upTotalPages({ totPages: res.data.totalPages })
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.dialog = false;
+      )
+      this.dialog = false
     },
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "PageNumber"]),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'PageNumber']),
     srFormURL() {
       // return `http://localhost:8081/#/psstartservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
-      return `https://sr.mdmpi.com.ph/#/psstartservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
+      return `https://sr.mdmpi.com.ph/#/psstartservice/${this.CurClientDetails.ACCMID}/${
+        this.CurClientDetails.ACCMNM
+      }/${this.CurUserDetails.CNTMST.CNTMID}`
     },
   },
-};
+}
 </script>
-  
-  <style>
+
+<style>
 iframe {
   border: none;
   position: absolute;
@@ -134,4 +95,3 @@ iframe {
   height: 100%;
 }
 </style>
-  

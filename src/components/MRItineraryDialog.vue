@@ -25,8 +25,12 @@
                   <v-card-title class="custom-card-title">Client</v-card-title>
                   <v-card-text style="max-height: 150px; overflow-y: auto;">
                     <v-radio-group v-model="clientSelected" column @change="getCustomer">
-                      <v-radio v-for="item in filteredClients" :key="item.ACCMID" :label="item.ACCMNM"
-                        :value="item.ACCMID"></v-radio>
+                      <v-radio
+                        v-for="item in filteredClients"
+                        :key="item.ACCMID"
+                        :label="item.ACCMNM"
+                        :value="item.ACCMID"
+                      ></v-radio>
                     </v-radio-group>
                   </v-card-text>
                 </v-card>
@@ -40,8 +44,12 @@
               </v-card-title>
               <v-card-text style="max-height: 150px; overflow-y: auto;">
                 <v-radio-group v-model="customerSelected" column>
-                  <v-radio v-for="item in customerList" :key="item.CSTMID" :label="item.CSTNME"
-                    :value="item.CSTMID"></v-radio>
+                  <v-radio
+                    v-for="item in customerList"
+                    :key="item.CSTMID"
+                    :label="item.CSTNME"
+                    :value="item.CSTMID"
+                  ></v-radio>
                 </v-radio-group>
               </v-card-text>
             </v-card>
@@ -53,8 +61,11 @@
               </v-card-title>
               <v-card-text style="max-height: 150px; overflow-y: auto;">
                 <div v-for="item in TSRObjectiveList" :key="item.ObjectiveName" class="custom-checkbox">
-                  <v-checkbox :label="item.ObjectiveName" :value="item.ObjectiveName"
-                    v-model="TSRObjectiveSelected"></v-checkbox>
+                  <v-checkbox
+                    :label="item.ObjectiveName"
+                    :value="item.ObjectiveName"
+                    v-model="TSRObjectiveSelected"
+                  ></v-checkbox>
                 </div>
               </v-card-text>
             </v-card>
@@ -63,11 +74,29 @@
             <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
           </v-flex>
           <v-flex xs12 lg6>
-            <v-menu ref="menu1" v-model="menu1" :close-on-content-click="false" :nudge-right="40" lazy
-              transition="scale-transition" offset-y full-width max-width="290px" min-width="290px">
+            <v-menu
+              ref="menu1"
+              v-model="menu1"
+              :close-on-content-click="false"
+              :nudge-right="40"
+              lazy
+              transition="scale-transition"
+              offset-y
+              full-width
+              max-width="290px"
+              min-width="290px"
+            >
               <template v-slot:activator="{ on }">
-                <v-text-field v-model="dateFormatted" label="Visit Date" hint="MM/DD/YYYY format" persistent-hint
-                  prepend-icon="event" @blur="date = parseDate(dateFormatted)" v-on="on" readonly></v-text-field>
+                <v-text-field
+                  v-model="dateFormatted"
+                  label="Visit Date"
+                  hint="MM/DD/YYYY format"
+                  persistent-hint
+                  prepend-icon="event"
+                  @blur="date = parseDate(dateFormatted)"
+                  v-on="on"
+                  readonly
+                ></v-text-field>
               </template>
               <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
             </v-menu>
@@ -85,7 +114,7 @@
   </v-layout>
 </template>
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
@@ -93,112 +122,93 @@ export default {
       clientSelected: [],
       searchQuery: '',
       filteredClients: [],
-      customerSelected: "",
+      customerSelected: '',
       customerList: [],
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
       menu1: false,
-      TSRObjectiveSelectOthers: "",
+      TSRObjectiveSelectOthers: '',
       TSRObjectiveSelected: [],
       TSRObjectiveList: [
-        { ID: 1, ObjectiveName: "Prospecting" },
-        { ID: 2, ObjectiveName: "OCC" },
-        { ID: 3, ObjectiveName: "Quotation" },
-        { ID: 4, ObjectiveName: "Pre-Procurement" },
-        { ID: 5, ObjectiveName: "Pre-Bid" },
-        { ID: 6, ObjectiveName: "Pre-Qualification Demo" },
-        { ID: 7, ObjectiveName: "Product Presentation" },
-        { ID: 8, ObjectiveName: "Demo – Evaluation" },
-        { ID: 9, ObjectiveName: "Bidding" },
-        { ID: 10, ObjectiveName: "Negotiation" },
-        { ID: 11, ObjectiveName: "Post-Qualification Demo" },
-        { ID: 12, ObjectiveName: "Contract Signing" },
-        { ID: 13, ObjectiveName: "NOA" },
-        { ID: 14, ObjectiveName: "NTP/WON" },
-        { ID: 15, ObjectiveName: "Contract Signed" },
-        { ID: 16, ObjectiveName: "Installation" },
-        { ID: 17, ObjectiveName: "P.O." },
-        { ID: 18, ObjectiveName: "Others" },
-        { ID: 19, ObjectiveName: "Collection" },
+        { ID: 1, ObjectiveName: 'Prospecting' },
+        { ID: 2, ObjectiveName: 'OCC' },
+        { ID: 3, ObjectiveName: 'Quotation' },
+        { ID: 4, ObjectiveName: 'Pre-Procurement' },
+        { ID: 5, ObjectiveName: 'Pre-Bid' },
+        { ID: 6, ObjectiveName: 'Pre-Qualification Demo' },
+        { ID: 7, ObjectiveName: 'Product Presentation' },
+        { ID: 8, ObjectiveName: 'Demo – Evaluation' },
+        { ID: 9, ObjectiveName: 'Bidding' },
+        { ID: 10, ObjectiveName: 'Negotiation' },
+        { ID: 11, ObjectiveName: 'Post-Qualification Demo' },
+        { ID: 12, ObjectiveName: 'Contract Signing' },
+        { ID: 13, ObjectiveName: 'NOA' },
+        { ID: 14, ObjectiveName: 'NTP/WON' },
+        { ID: 15, ObjectiveName: 'Contract Signed' },
+        { ID: 16, ObjectiveName: 'Installation' },
+        { ID: 17, ObjectiveName: 'P.O.' },
+        { ID: 18, ObjectiveName: 'Others' },
+        { ID: 19, ObjectiveName: 'Collection' },
       ],
       enableStart: false,
-    };
+    }
   },
   mounted() {
-    this.getCSTMSTcntacc({ cntmid: this.CurUserDetails.USRDTL.USRDCI }).then(
-      (res) => {
-        this.upAllClient(res.data);
-        this.filteredClients = res.data
-      }
-    );
-
+    this.getCSTMSTcntacc({ cntmid: this.CurUserDetails.USRDTL.USRDCI }).then(res => {
+      this.upAllClient(res.data)
+      this.filteredClients = res.data
+    })
   },
   watch: {
     date(val) {
-      this.dateFormatted = this.formatDate(this.date);
+      this.dateFormatted = this.formatDate(this.date)
     },
     searchQuery(val) {
-      this.filterClients(val);
+      this.filterClients(val)
     },
   },
   computed: {
-    ...mapState([
-      "CurClientList",
-      "CurCSTMSTList",
-      "CurUserDetails",
-      "CurITIMSTList",
-    ]),
+    ...mapState(['CurClientList', 'CurCSTMSTList', 'CurUserDetails', 'CurITIMSTList']),
     computedDateFormatted() {
-      return this.formatDate(this.date);
+      return this.formatDate(this.date)
     },
   },
   methods: {
-    ...mapActions([
-      "getAllAcc",
-      "getCSTMSTPerAcc",
-      "insertITIMST",
-      "getCSTMSTcntacc",
-      "getITIMSTValidation",
-    ]),
-    ...mapMutations(["upAllClient", "upCSTMSTList", "upCurITIMSTListUpdate"]),
+    ...mapActions(['getAllAcc', 'getCSTMSTPerAcc', 'insertITIMST', 'getCSTMSTcntacc', 'getITIMSTValidation']),
+    ...mapMutations(['upAllClient', 'upCSTMSTList', 'upCurITIMSTListUpdate']),
     getCustomer(item) {
-      this.upCSTMSTList([]);
-      this.customerSelected = "";
+      this.upCSTMSTList([])
+      this.customerSelected = ''
       this.getCSTMSTPerAcc({
         accmid: item,
         cntmid: this.CurUserDetails.USRDTL.USRDCI,
-      }).then((res) => {
-        this.customerList = res.data;
-      });
+      }).then(res => {
+        this.customerList = res.data
+      })
     },
     filterClients() {
-      const query = this.searchQuery.toLowerCase();
-      this.filteredClients = this.CurClientList.filter(client =>
-        client.ACCMNM.toLowerCase().includes(query)
-      );
+      const query = this.searchQuery.toLowerCase()
+      this.filteredClients = this.CurClientList.filter(client => client.ACCMNM.toLowerCase().includes(query))
     },
     SaveItineraryValidation() {
-      if (this.customerSelected == "") {
-        alert("Missing Customer.");
+      if (this.customerSelected == '') {
+        alert('Missing Customer.')
       } else if (this.clientSelected == undefined) {
-        alert("Missing Client.");
-      } else if (
-        this.TSRObjectiveSelected == "Others" &&
-        this.TSRObjectiveSelectOthers == ""
-      ) {
-        alert("Missing Others.");
+        alert('Missing Client.')
+      } else if (this.TSRObjectiveSelected == 'Others' && this.TSRObjectiveSelectOthers == '') {
+        alert('Missing Others.')
       } else {
-        if (this.TSRObjectiveSelected != "") {
-          var ObjectiveTemp = "";
-          this.TSRObjectiveSelected.forEach((x) => {
-            if (ObjectiveTemp == "") {
-              ObjectiveTemp = x;
+        if (this.TSRObjectiveSelected != '') {
+          var ObjectiveTemp = ''
+          this.TSRObjectiveSelected.forEach(x => {
+            if (ObjectiveTemp == '') {
+              ObjectiveTemp = x
             } else {
-              ObjectiveTemp = ObjectiveTemp + "," + x;
+              ObjectiveTemp = ObjectiveTemp + ',' + x
             }
-          });
-          if (this.TSRObjectiveSelectOthers != "") {
-            ObjectiveTemp = ObjectiveTemp + "," + this.TSRObjectiveSelectOthers;
+          })
+          if (this.TSRObjectiveSelectOthers != '') {
+            ObjectiveTemp = ObjectiveTemp + ',' + this.TSRObjectiveSelectOthers
           }
           let myValidation = JSON.stringify({
             itidte: this.date,
@@ -206,25 +216,24 @@ export default {
             iticnt: this.CurUserDetails.USRDTL.USRDCI,
             itiacc: this.clientSelected,
             itiobj: ObjectiveTemp,
-          });
+          })
 
           this.getITIMSTValidation({ data: myValidation })
-            .then((res) => {
+            .then(res => {
               if (res.data == 0) {
-                this.enableStart = true;
-                this.SaveItinerary(ObjectiveTemp);
+                this.enableStart = true
+                this.SaveItinerary(ObjectiveTemp)
               } else {
-                alert("The data is already in the database.");
+                alert('The data is already in the database.')
               }
             })
-            .catch((error) => {
-              console.log(error);
-              this.enableStart = false;
-            });
+            .catch(error => {
+              console.log(error)
+              this.enableStart = false
+            })
         } else {
-          alert("Insert Objective!")
+          alert('Insert Objective!')
         }
-
       }
     },
     SaveItinerary(ObjectiveTemp) {
@@ -235,43 +244,43 @@ export default {
         itiacc: this.clientSelected,
         itiexp: this.date,
         itiobj: ObjectiveTemp,
-      });
+      })
       this.insertITIMST({ data: data })
-        .then((res) => {
+        .then(res => {
           if (res.status == 200) {
-            this.upCSTMSTList([]);
-            this.clientSelected = "";
-            this.customerSelected = "";
-            this.upCurITIMSTListUpdate(res.data);
-            alert("Itinerary Save.");
-            this.enableStart = false;
+            this.upCSTMSTList([])
+            this.clientSelected = ''
+            this.customerSelected = ''
+            this.upCurITIMSTListUpdate(res.data)
+            alert('Itinerary Save.')
+            this.enableStart = false
           }
         })
-        .catch((error) => {
-          console.log(error);
-          this.enableStart = false;
-        });
+        .catch(error => {
+          console.log(error)
+          this.enableStart = false
+        })
     },
     formatDate(date) {
-      if (!date) return null;
+      if (!date) return null
 
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
+      const [year, month, day] = date.split('-')
+      return `${month}/${day}/${year}`
     },
     parseDate(date) {
-      if (!date) return null;
+      if (!date) return null
 
-      const [month, day, year] = date.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      const [month, day, year] = date.split('/')
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
     },
   },
   props: {
     type: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-};
+}
 </script>
 <style scoped>
 .custom-checkbox {

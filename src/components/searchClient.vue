@@ -13,81 +13,80 @@
     prepend-inner-icon="search"
     placeholder="Search by: Client name or Initial"
     @focus="$event.target.select()"
-    >
+  >
   </v-combobox>
 </template>
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
-      fieldSearch: "" ? [] : "",
+      fieldSearch: '' ? [] : '',
       show: true,
-    };
+    }
   },
   computed: {
-    ...mapState(["CurCheckInAcc", "itemsAcct"]),
+    ...mapState(['CurCheckInAcc', 'itemsAcct']),
   },
   watch: {
     fieldSearch() {
-      this.verifier();
+      this.verifier()
     },
     $route(to) {
-      if (to.path == "/") {
-        this.fieldSearch = "";
+      if (to.path == '/') {
+        this.fieldSearch = ''
       }
     },
   },
   methods: {
-    ...mapActions(["filterAcct", "getAcc"]),
-    ...mapMutations(["upClient", "upCheckInAcc"]),
+    ...mapActions(['filterAcct', 'getAcc']),
+    ...mapMutations(['upClient', 'upCheckInAcc']),
     verifier() {
       if (this.fieldSearch != null) {
-        if (this.fieldSearch != "") {
+        if (this.fieldSearch != '') {
           if (this.fieldSearch.ACCMNM != undefined) {
-            this.getFilteredAcct(this.fieldSearch.ACCMNM);
+            this.getFilteredAcct(this.fieldSearch.ACCMNM)
           } else {
-            this.getFilteredAcct(this.fieldSearch);
+            this.getFilteredAcct(this.fieldSearch)
           }
         }
       }
     },
     clickSearch() {
-      this.$router.push({ path: `/` });
+      this.$router.push({ path: `/` })
     },
     getFilteredAcct(e) {
-      console.log(1);
-      console.time();
+      console.log(1)
+      console.time()
       this.filterAcct(e).then(
-        (res) => {
-          console.log(res);
-          res.forEach((element) => {
-            
-            this.upCheckInAcc({ items: element });
-          });
-          this.clientClick(this.fieldSearch.ACCMID);
+        res => {
+          console.log(res)
+          res.forEach(element => {
+            this.upCheckInAcc({ items: element })
+          })
+          this.clientClick(this.fieldSearch.ACCMID)
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      console.timeEnd();
+      )
+      console.timeEnd()
     },
     clientClick(id) {
       if (id != undefined) {
         this.getAcc(id).then(
-          (res) => {
-            this.upClient(res.data);
+          res => {
+            this.upClient(res.data)
           },
-          (error) => {
-            console.error(error);
+          error => {
+            console.error(error)
           }
-        );
-        this.$router.push({ path: `/customer/${id}` });
+        )
+        this.$router.push({ path: `/customer/${id}` })
       }
     },
   },
-};
+}
 </script>
 <style>
 .v-combobox {

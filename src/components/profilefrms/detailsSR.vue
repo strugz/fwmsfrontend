@@ -16,7 +16,10 @@
                 <v-spacer></v-spacer>
                 <timer-sr v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'"></timer-sr>
                 <image-report
-                  v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG'"></image-report>
+                  v-if="
+                    CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG'
+                  "
+                ></image-report>
                 <v-dialog>
                   <template v-slot:activator="{ on }">
                     <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on" @click="loadCurSrDetails">
@@ -36,8 +39,14 @@
               <v-expansion-panel-content lazy>
                 <template v-slot:header>
                   <v-container pa-1>
-                    <v-layout class="caption font-weight-regular text-uppercase" align-center justify-start row
-                      fill-height wrap>
+                    <v-layout
+                      class="caption font-weight-regular text-uppercase"
+                      align-center
+                      justify-start
+                      row
+                      fill-height
+                      wrap
+                    >
                       <v-flex xs12>
                         <v-layout align-start row fill-height wrap>
                           <v-flex>
@@ -48,16 +57,22 @@
                           <v-flex>
                             <template v-if="CurSRDetails.header">
                               <v-flex v-if="CurThreadDetails.TRDSEC != 'InHouse'">
-                                <app-label header="Service Time:"
-                                  :detail="getRelativeTime(CurSRDetails.footer.srfDateTimeIn)"></app-label>
+                                <app-label
+                                  header="Service Time:"
+                                  :detail="getRelativeTime(CurSRDetails.footer.srfDateTimeIn)"
+                                ></app-label>
                               </v-flex>
                             </template>
                           </v-flex>
                           <v-flex v-if="CurSRDetails.workWith.length > 0">
-                            <app-label header="workWith" :detail="CurSRDetails.workWith[0].userInitials !== '1'
-                              ? concatinate(CurSRDetails.workWith, 'userInitials')
-                              : ''
-                              "></app-label>
+                            <app-label
+                              header="workWith"
+                              :detail="
+                                CurSRDetails.workWith[0].userInitials !== '1'
+                                  ? concatinate(CurSRDetails.workWith, 'userInitials')
+                                  : ''
+                              "
+                            ></app-label>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -67,8 +82,10 @@
                             <app-label header="Instrument Model:" :detail="CurThreadDetails.TRDMDE"></app-label>
                           </v-flex>
                           <v-flex xs6>
-                            <app-label header="Service Type:"
-                              :detail="concatinate(CurSRDetails.serviceTypes, 'srTypeDescription')"></app-label>
+                            <app-label
+                              header="Service Type:"
+                              :detail="concatinate(CurSRDetails.serviceTypes, 'srTypeDescription')"
+                            ></app-label>
                           </v-flex>
                           <v-flex></v-flex>
                         </v-layout>
@@ -77,8 +94,14 @@
                   </v-container>
                 </template>
                 <v-container grid-list-lg>
-                  <v-layout class="caption font-weight-regular text-uppercase" align-center justify-start row
-                    fill-height wrap>
+                  <v-layout
+                    class="caption font-weight-regular text-uppercase"
+                    align-center
+                    justify-start
+                    row
+                    fill-height
+                    wrap
+                  >
                     <v-flex xs12 pt-0>
                       <v-layout align-start justify-start row fill-height wrap>
                         <v-flex xs12>
@@ -165,8 +188,11 @@
                       </v-card>
                     </v-flex>
                     <v-flex xs12>
-                      <app-label style="white-space: pre-line" header="Significant Remarks:"
-                        :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"></app-label>
+                      <app-label
+                        style="white-space: pre-line"
+                        header="Significant Remarks:"
+                        :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"
+                      ></app-label>
                     </v-flex>
                     <v-flex xs12>
                       <span class="font-weight-bold black--text text-xs-left pa-0">
@@ -184,16 +210,22 @@
                       </span>
                       <v-layout wrap>
                         <v-flex>
-                          <app-label header="Laboratory Representative"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"></app-label>
+                          <app-label
+                            header="Laboratory Representative"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"
+                          ></app-label>
                         </v-flex>
                         <v-flex>
-                          <app-label header="Date Time In"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeIn : ''"></app-label>
+                          <app-label
+                            header="Date Time In"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeIn : ''"
+                          ></app-label>
                         </v-flex>
                         <v-flex>
-                          <app-label header="Date Time Out"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeOut : ''"></app-label>
+                          <app-label
+                            header="Date Time Out"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeOut : ''"
+                          ></app-label>
                         </v-flex>
                       </v-layout>
                     </v-flex>
@@ -203,7 +235,7 @@
                       </v-flex>
                       <v-card width="300" class="ml-2">
                         <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
-                        </v-card>
+                      </v-card>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -217,15 +249,15 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
-import moment from "moment";
-import AppLabel from "@/components/appLabel";
-import ComFooter from "@/components/comFooter";
-import ComCard from "@/components/comCard";
-import timerSr from "@/components/timerSR";
-import serviceReport from "../SRFormView";
-import imageReport from "../SRImageViewer.vue";
-import reportViewer from "@/reports/engineer/field/fieldReports.vue";
+import { mapActions, mapState, mapMutations } from 'vuex'
+import moment from 'moment'
+import AppLabel from '@/components/appLabel'
+import ComFooter from '@/components/comFooter'
+import ComCard from '@/components/comCard'
+import timerSr from '@/components/timerSR'
+import serviceReport from '../SRFormView'
+import imageReport from '../SRImageViewer.vue'
+import reportViewer from '@/reports/engineer/field/fieldReports.vue'
 
 export default {
   components: {
@@ -235,7 +267,7 @@ export default {
     timerSr,
     serviceReport,
     imageReport,
-    reportViewer
+    reportViewer,
   },
   data() {
     return {
@@ -243,125 +275,109 @@ export default {
       render: false,
       detail: {},
       dialog: false,
-    };
+    }
   },
   computed: {
-    ...mapState([
-      "CurSRDetails",
-      "CurThreadDetails",
-      "CurUserDetails",
-      "CurClientDetails",
-      "SRTimerDialog"
-    ]),
+    ...mapState(['CurSRDetails', 'CurThreadDetails', 'CurUserDetails', 'CurClientDetails', 'SRTimerDialog']),
     trd_comments() {
-      let cmnt = this.CurThreadDetails.TRDCMM;
-      console.log(this.CurThreadDetails);
+      let cmnt = this.CurThreadDetails.TRDCMM
+      console.log(this.CurThreadDetails)
       if (cmnt !== undefined) {
-        return cmnt;
+        return cmnt
       } else {
-        return cmnt;
+        return cmnt
       }
     },
     ownTRD() {
-      return (
-        this.CurUserDetails.USRDTL.USRDCI == this.CurThreadDetails.TRDMUI.CNTMID
-      );
+      return this.CurUserDetails.USRDTL.USRDCI == this.CurThreadDetails.TRDMUI.CNTMID
     },
   },
   watch: {
     SRTimerDialog: function() {
       if (this.SRTimerDialog == false) {
-        location.reload();
+        location.reload()
       }
-    }
+    },
   },
   mounted() {
     this.$nextTick(() => {
       setTimeout(() => {
-        this.spnr = false;
-      }, 200);
-    });
+        this.spnr = false
+      }, 200)
+    })
     this.getThreadDetailsById(this.$route.params.TRDMTI).then(
-      (res) => {
+      res => {
         this.getSRDetailsById(res.TRDMTT).then(() => {
-          this.render = true;
-          console.log(this.render);
-        });
+          this.render = true
+          console.log(this.render)
+        })
         if (this.CurClientDetails.ACCMID !== this.CurThreadDetails.TRDMAC) {
           this.getAcc(res.TRDMAC).then(
-            (acc) => {
-              this.upClient(acc.data);
+            acc => {
+              this.upClient(acc.data)
             },
-            (error) => {
-              console.error(error);
+            error => {
+              console.error(error)
             }
-          );
+          )
         }
       },
-      (error) => {
-        console.error(error);
+      error => {
+        console.error(error)
       }
-    );
+    )
   },
   methods: {
-    ...mapActions([
-      "getSRDetailsById",
-      "getThreadDetailsById",
-      "getAcc",
-      "updateThreadByID", "getCNTMSTUserID"
-    ]),
-    ...mapMutations(["upClient", "upTrdDetails"]),
+    ...mapActions(['getSRDetailsById', 'getThreadDetailsById', 'getAcc', 'updateThreadByID', 'getCNTMSTUserID']),
+    ...mapMutations(['upClient', 'upTrdDetails']),
     loadCurSrDetails() {
       this.getSRDetailsById(this.CurThreadDetails.TRDMTT)
         .then(res => {
-          console.log(res);
+          console.log(res)
         })
         .catch(err => {
-          alert(err);
-        });
+          alert(err)
+        })
     },
     concatinate(data, key) {
-      var tmp = "";
-      data.forEach((elm) => {
-        tmp += ` / ${elm[key]}`;
-      });
-      return tmp.slice(3, tmp.length);
+      var tmp = ''
+      data.forEach(elm => {
+        tmp += ` / ${elm[key]}`
+      })
+      return tmp.slice(3, tmp.length)
     },
     openDialogStatus() {
-      this.dialog = true;
+      this.dialog = true
     },
     changeStatus() {
       const data = {
         id: this.CurThreadDetails.TRDMTI,
         val: { TRDMST: !this.CurThreadDetails.TRDMST },
-      };
+      }
 
       this.updateThreadByID(data).then(
         () => {
-          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST;
-          this.dialog = false;
+          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST
+          this.dialog = false
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
+      )
     },
     getRelativeTime(date) {
-      let time = moment().from(date, true);
-      if (time.endsWith("days")) {
-        return moment(date).format("MMMM Do YYYY, hh:mm a");
+      let time = moment().from(date, true)
+      if (time.endsWith('days')) {
+        return moment(date).format('MMMM Do YYYY, hh:mm a')
       } else {
-        return moment(date).format("MMMM Do YYYY, hh:mm a");
+        return moment(date).format('MMMM Do YYYY, hh:mm a')
       }
     },
     comFromUser(i) {
-      return (
-        this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID ==
-        this.CurUserDetails.CNTMST.CNTMID
-      );
+      return this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID == this.CurUserDetails.CNTMST.CNTMID
     },
   },
-};
+}
 </script>
 
 <style>

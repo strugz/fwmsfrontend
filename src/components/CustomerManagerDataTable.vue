@@ -1,15 +1,7 @@
 <template>
   <v-container fluid>
-    <v-layout
-      align-start
-      justify-center
-      row
-      wrap
-    >
-      <v-flex
-        xs12
-        class="mt-4"
-      >
+    <v-layout align-start justify-center row wrap>
+      <v-flex xs12 class="mt-4">
         <v-data-table
           v-show="DataTableItems != null"
           v-model="CustSelected"
@@ -31,7 +23,7 @@
   </v-container>
 </template>
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -39,27 +31,27 @@ export default {
       CustSelected: [],
       DataTableHeaders: [],
       DataTableItems: [],
-    };
+    }
   },
   watch: {
     CurCSTMSTList() {
-      this.DataTableItems = this.CurCSTMSTList;
-    }
-  },
-  created() {
-    this.getAllCSTMST();
-  },
-  computed: {
-    ...mapState(["CurCSTMSTTableHeaders", "CurCSTMSTList"]),
-  },
-  methods: {
-    ...mapActions(["getCSTMSTAllAcc"]),
-    ...mapMutations(["upCSTMSTList"]),
-    getAllCSTMST() {
-      this.getCSTMSTAllAcc().then((res) => {
-        this.upCSTMSTList(res.data);
-      });
+      this.DataTableItems = this.CurCSTMSTList
     },
   },
-};
+  created() {
+    this.getAllCSTMST()
+  },
+  computed: {
+    ...mapState(['CurCSTMSTTableHeaders', 'CurCSTMSTList']),
+  },
+  methods: {
+    ...mapActions(['getCSTMSTAllAcc']),
+    ...mapMutations(['upCSTMSTList']),
+    getAllCSTMST() {
+      this.getCSTMSTAllAcc().then(res => {
+        this.upCSTMSTList(res.data)
+      })
+    },
+  },
+}
 </script>

@@ -2,11 +2,9 @@
   <v-content app>
     <v-toolbar flat prominent color="grey lighten-4" app dense :extension-height="32">
       <v-flex xs1 class="hidden-xs-only">
-
         <v-toolbar-title style="cursor: pointer" @click="backToHomePage">
           <span class="hidden-sm-and-down">Thread</span>
         </v-toolbar-title>
-
       </v-flex>
       <v-flex xs11 md6 sm6 class="mb-3 mt-3">
         <client-search></client-search>
@@ -47,7 +45,13 @@
             <customer-manager></customer-manager>
           </v-list-tile>
           <v-list-tile
-            v-if="CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' || CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' || CurUserDetails.CNTMST.CNTSEC.includes('PS') || CurUserDetails.CNTMST.CNTSEC.includes('IMS')">
+            v-if="
+              CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' ||
+                CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' ||
+                CurUserDetails.CNTMST.CNTSEC.includes('PS') ||
+                CurUserDetails.CNTMST.CNTSEC.includes('IMS')
+            "
+          >
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">

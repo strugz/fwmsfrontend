@@ -24,33 +24,33 @@
   </v-layout>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
-    };
+    }
   },
   watch: {
     dialog: function() {
       if (this.dialog == false) {
-        this.clientClick(this.CurClientDetails.ACCMID);
+        this.clientClick(this.CurClientDetails.ACCMID)
       }
     },
   },
   methods: {
     clientClick(id) {
-      console.log(id);
-      this.$router.push({ path: `/customer/${id}` });
+      console.log(id)
+      this.$router.push({ path: `/customer/${id}` })
     },
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails"]),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails']),
     srFormURL() {
       return `https://sr.mdmpi.com.ph/#/ttp/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
-      ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`;
+      ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`
     },
   },
-};
+}
 </script>

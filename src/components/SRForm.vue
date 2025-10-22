@@ -16,76 +16,72 @@
           </v-btn>
         </v-toolbar>
         <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
-          <iframe allow="geolocation https://sr.mdmpi.com.ph" v-if="dialog" :src="srFormURL"></iframe>
+          <iframe allow="geolocation http://localhost:8081" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
   </v-layout>
 </template>
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
-    };
+    }
   },
   watch: {
     dialog: function() {
       if (this.dialog == false) {
-
-        this.clientClick(this.CurClientDetails.ACCMID);
+        this.clientClick(this.CurClientDetails.ACCMID)
       }
     },
   },
   methods: {
-    ...mapActions(["getAcc", "getThreadByAccountId"]),
-    ...mapMutations([
-      "upClient",
-      "upCurThreads",
-      "upCurClientMID",
-      "upCurThreads",
-      "upTotalPages",
-    ]),
+    ...mapActions(['getAcc', 'getThreadByAccountId']),
+    ...mapMutations(['upClient', 'upCurThreads', 'upCurClientMID', 'upCurThreads', 'upTotalPages']),
     clientClick(id) {
       this.getAcc(id).then(
-        (res) => {
-          this.upClient(res.data);
+        res => {
+          this.upClient(res.data)
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.$router.push({ path: `/customer/${id}` });
-      location.reload();
+      )
+      this.$router.push({ path: `/customer/${id}` })
+      location.reload()
     },
     threadReload() {
-      this.upCurThreads([]);
-      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : "";
+      this.upCurThreads([])
+      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
       this.getThreadByAccountId({
         cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
         accID: accID,
         pageNumber: this.PageNumber,
       }).then(
-        (res) => {
-          this.upCurClientMID(this.$route.params.ACCMID);
-          this.upCurThreads(res.data.data.threads);
-          this.upTotalPages({ totPages: res.data.totalPages });
+        res => {
+          this.upCurClientMID(this.$route.params.ACCMID)
+          this.upCurThreads(res.data.data.threads)
+          this.upTotalPages({ totPages: res.data.totalPages })
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.dialog = false;
+      )
+      this.dialog = false
     },
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "PageNumber"]),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'PageNumber']),
     srFormURL() {
-      return `https://sr.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
+      return `https://crm.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${
+        this.CurUserDetails.CNTMST.CNTMID
+      }`
+      // return `https://sr.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
     },
   },
-};
+}
 </script>
 
 <style>

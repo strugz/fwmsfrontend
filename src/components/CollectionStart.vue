@@ -19,13 +19,25 @@
         </v-toolbar>
         <v-card-title>
           <v-flex xs12>
-            <v-combobox class="myButton mt-5" v-model="itemPOV" :items="CollectorPOVList" item-value="PVID"
-              item-text="PVDescription" label="Purpose of Visit" multiple outlined dense auto-select-first></v-combobox>
+            <v-combobox
+              class="myButton mt-5"
+              v-model="itemPOV"
+              :items="CollectorPOVList"
+              item-value="PVID"
+              item-text="PVDescription"
+              label="Purpose of Visit"
+              multiple
+              outlined
+              dense
+              auto-select-first
+            ></v-combobox>
           </v-flex>
           <v-flex xs12 class="myButton">
-            <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"><i>
+            <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"
+              ><i>
                 <h5>Verify your location.</h5>
-              </i></a>
+              </i></a
+            >
           </v-flex>
           <v-flex xs12>
             <v-btn @click="LocationValidation" class="myButton" color="primary">Start</v-btn>
@@ -36,131 +48,130 @@
   </v-layout>
 </template>
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
       itemPOV: [],
       itemPOVTemp: [],
-      lat: "",
-      long: "",
-    };
+      lat: '',
+      long: '',
+    }
   },
   created() {
-    this.GetCollectorsPOV();
-    this.GetMyCoordinates();
+    this.GetCollectorsPOV()
+    this.GetMyCoordinates()
   },
   watch: {},
   computed: {
-    ...mapState(["CurUserDetails", "CurClientDetails", "CollectorPOVList"])
+    ...mapState(['CurUserDetails', 'CurClientDetails', 'CollectorPOVList']),
   },
   methods: {
-    ...mapActions(["InsertStartCollection", "getPOV"]),
-    ...mapMutations(["upCollectorPOVList"]),
+    ...mapActions(['InsertStartCollection', 'getPOV']),
+    ...mapMutations(['upCollectorPOVList']),
     GetMyCoordinates() {
-      this.lat = "";
-      this.long = "";
+      this.lat = ''
+      this.long = ''
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.lat = position.coords.latitude;
-          this.long = position.coords.longitude;
+        position => {
+          this.lat = position.coords.latitude
+          this.long = position.coords.longitude
         },
-        (error) => {
-          alert(error.message);
+        error => {
+          alert(error.message)
         }
-      );
-      console.log(this.lat + " " + this.long);
+      )
+      console.log(this.lat + ' ' + this.long)
     },
     LocationValidation() {
-      let val = "1";
-      if (this.lat == "") {
-        val = "0";
-        alert("Location is Not Detected!");
+      let val = '1'
+      if (this.lat == '') {
+        val = '0'
+        alert('Location is Not Detected!')
       }
       if (this.itemPOV.length == 0) {
-        val = "0";
-        alert("Purpose of Visit is Empty!")
+        val = '0'
+        alert('Purpose of Visit is Empty!')
       }
-      if (val == "1") {
-        this.StartCollection();
+      if (val == '1') {
+        this.StartCollection()
       }
     },
     StartCollection() {
       let Collection = JSON.stringify({
         userID: this.CurUserDetails.CNTMST.CNTMID,
         CustomerID: this.CurClientDetails.ACCMID,
-        SRFormType: "COLLECT",
+        SRFormType: 'COLLECT',
         pov: this.itemPOV,
-        TRDLOC: this.lat + " " + this.long
-      });
-      this.InsertStartCollection({ data: Collection }).then(res => {
-        if (res.status == 201) {
-          this.Sample();
-        } else if (res.status == 200) {
-          if (res.data.message == "PENDING") {
-            alert("Another Activity is still Pending!");
-          }
-        }
+        TRDLOC: this.lat + ' ' + this.long,
       })
-        .catch((error) => {
-          alert(error);
-        });
+      this.InsertStartCollection({ data: Collection })
+        .then(res => {
+          if (res.status == 201) {
+            this.Sample()
+          } else if (res.status == 200) {
+            if (res.data.message == 'PENDING') {
+              alert('Another Activity is still Pending!')
+            }
+          }
+        })
+        .catch(error => {
+          alert(error)
+        })
     },
     GetCollectorsPOV() {
-      this.getPOV(this.CurUserDetails.CNTMST.CNTDPT).then(
-        res => {
-          res.data.forEach(x => {
-            this.itemPOVTemp.push({
-              PVID: Number(x.drpiid),
-              PVDescription: x.drpval,
-              PVRemarks: "",
-            });
-          });
-          this.upCollectorPOVList(this.itemPOVTemp);
-        }
-      )
+      this.getPOV(this.CurUserDetails.CNTMST.CNTDPT).then(res => {
+        res.data.forEach(x => {
+          this.itemPOVTemp.push({
+            PVID: Number(x.drpiid),
+            PVDescription: x.drpval,
+            PVRemarks: '',
+          })
+        })
+        this.upCollectorPOVList(this.itemPOVTemp)
+      })
     },
     Sample() {
-      let POV = "";
+      let POV = ''
       this.itemPOV.forEach(x => {
-        POV = POV == "" ? x.PVDescription : POV + " and " + x.PVDescription;
-      });
+        POV = POV == '' ? x.PVDescription : POV + ' and ' + x.PVDescription
+      })
       let dataTwo = JSON.stringify({
         RECEIVER: this.CurUserDetails.CNTMST.CNTTGP,
         SENDER: this.CurUserDetails.CNTMST.CNTMNN,
-        MESSAGE: "Visiting " + this.CurClientDetails.ACCMNM + " to do " + POV,
-      });
+        MESSAGE: 'Visiting ' + this.CurClientDetails.ACCMNM + ' to do ' + POV,
+      })
       const OpheadersTwo = {
-        method: "POST",
+        method: 'POST',
         data: dataTwo,
         headers: {
-          "content-type": "application/json",
-          accept: "*/*",
-          "accept-Encoding": "gzip, deflate, br",
-          connection: "keep-alive",
-          "sec-fetch-mode": "no-cors",
+          'content-type': 'application/json',
+          accept: '*/*',
+          'accept-Encoding': 'gzip, deflate, br',
+          connection: 'keep-alive',
+          'sec-fetch-mode': 'no-cors',
         },
-        url: "https://mdmpi.com.ph/lasius/api_sendsms",
-      };
-      axios(OpheadersTwo).then((res) => {
+        url: 'https://mdmpi.com.ph/lasius/api_sendsms',
+      }
+      axios(OpheadersTwo).then(res => {
         if (res.status == 200) {
-          this.dialog = false;
+          this.dialog = false
 
           setTimeout(() => {
-            location.reload();
-          }, 1000);
+            location.reload()
+          }, 1000)
         }
-      });
+      })
     },
   },
   props: {
     type: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-};
+}
 </script>
 <style>
 .myButton {

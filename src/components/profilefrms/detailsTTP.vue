@@ -28,8 +28,10 @@
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Service Type:"
-                    :detail="concatinate(CurSRDetails.serviceTypes, 'srTypeDescription')"></app-label>
+                  <app-label
+                    header="Service Type:"
+                    :detail="concatinate(CurSRDetails.serviceTypes, 'srTypeDescription')"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
@@ -49,14 +51,19 @@
               </template>
               <template>
                 <v-flex>
-                  <app-label style="white-space: pre-line" header="Significant Remarks:"
-                    :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"></app-label>
+                  <app-label
+                    style="white-space: pre-line"
+                    header="Significant Remarks:"
+                    :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Laboratory Representative"
-                    :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"></app-label>
+                  <app-label
+                    header="Laboratory Representative"
+                    :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"
+                  ></app-label>
                 </v-flex>
               </template>
             </v-card-text>

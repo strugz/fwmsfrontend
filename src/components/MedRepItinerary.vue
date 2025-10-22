@@ -24,59 +24,53 @@
   </v-layout>
 </template>
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
-    };
+    }
   },
   watch: {
     dialog: function() {
       if (this.dialog == false) {
-        this.clientClick(this.CurClientDetails.ACCMID);
+        this.clientClick(this.CurClientDetails.ACCMID)
       }
     },
   },
   methods: {
-    ...mapActions(["getThreadByAccountId"]),
-    ...mapMutations(["upCurThreads", "upCurClientMID", "upTotalPages"]),
+    ...mapActions(['getThreadByAccountId']),
+    ...mapMutations(['upCurThreads', 'upCurClientMID', 'upTotalPages']),
     clientClick(id) {
-      this.$router.push({ path: `/customer/${id}` });
+      this.$router.push({ path: `/customer/${id}` })
     },
     threadReload() {
-      this.upCurThreads([]);
-      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : "";
+      this.upCurThreads([])
+      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
       this.getThreadByAccountId({
         cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
         accID: accID,
         pageNumber: this.PageNumber,
       }).then(
-        (res) => {
-          this.upCurClientMID(this.$route.params.ACCMID);
-          this.upCurThreads(res.data.data.threads);
-          this.upTotalPages({ totPages: res.data.totalPages });
+        res => {
+          this.upCurClientMID(this.$route.params.ACCMID)
+          this.upCurThreads(res.data.data.threads)
+          this.upTotalPages({ totPages: res.data.totalPages })
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.dialog = false;
+      )
+      this.dialog = false
     },
   },
   computed: {
-    ...mapState([
-      "CurClientDetails",
-      "CurUserDetails",
-      "CurThreadDetails",
-      "PageNumber",
-    ]),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'PageNumber']),
     srFormURL() {
       return `https://sr.mdmpi.com.ph/#/mrrvisit/${this.CurUserDetails.CNTMST.CNTMID}/
-        ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`;
+        ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`
     },
   },
-};
+}
 </script>
-<style>
-</style>
+<style></style>

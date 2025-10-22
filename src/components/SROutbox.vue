@@ -17,7 +17,6 @@
       </div>
     </v-card>
   </v-container>
-  
 </template>
 
 <script>
@@ -26,16 +25,16 @@ export default {
   props: {
     iframeUrl: {
       type: String,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      default: 'Service Report Outbox'
-    }
+      default: 'Service Report Outbox',
+    },
   },
   computed: {},
-  methods: {}
-};
+  methods: {},
+}
 </script>
 
 <style scoped>

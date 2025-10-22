@@ -22,56 +22,52 @@
   </v-layout>
 </template>
 <script>
-import { mapState, mapActions, mapMutations } from "vuex";
+import { mapState, mapActions, mapMutations } from 'vuex'
 export default {
   data() {
-    return {
-    };
+    return {}
   },
   methods: {
-    ...mapActions(["getAcc", "getThreadByAccountId"]),
-    ...mapMutations([
-      "upClient",
-      "upCurThreads",
-      "upCurClientMID",
-      "upTotalPages",
-      "upSRTimerDialog"
-    ]),
+    ...mapActions(['getAcc', 'getThreadByAccountId']),
+    ...mapMutations(['upClient', 'upCurThreads', 'upCurClientMID', 'upTotalPages', 'upSRTimerDialog']),
     threadReload() {
-      this.upCurThreads([]);
-      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : "";
+      this.upCurThreads([])
+      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
       this.getThreadByAccountId({
         cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
         accID: accID,
         pageNumber: this.PageNumber,
       }).then(
-        (res) => {
-          this.upCurClientMID(this.$route.params.ACCMID);
-          this.upCurThreads(res.data.data.threads);
-          this.upTotalPages({ totPages: res.data.totalPages });
+        res => {
+          this.upCurClientMID(this.$route.params.ACCMID)
+          this.upCurThreads(res.data.data.threads)
+          this.upTotalPages({ totPages: res.data.totalPages })
         },
-        (error) => {
-          console.error(error);
+        error => {
+          console.error(error)
         }
-      );
-      this.upSRTimerDialog(!this.SRTimerDialog);
+      )
+      this.upSRTimerDialog(!this.SRTimerDialog)
     },
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails", "SRTimerDialog"]),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'SRTimerDialog']),
     srFormURL() {
-      if (this.CurThreadDetails.TRDMTY == "Service Report") {
-        return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
+      if (this.CurThreadDetails.TRDMTY == 'Service Report') {
+        return `https://crm.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
-      ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
+      ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
+        //         return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
+        // ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
+        // ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
       } else {
         return `https://sr.mdmpi.com.ph/#/psstartedservice/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
-      ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
+      ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
       }
     },
   },
-};
+}
 </script>
 
 <style></style>

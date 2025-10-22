@@ -15,9 +15,11 @@
             <v-toolbar-title>Travel</v-toolbar-title>
           </v-toolbar>
           <v-card-actions class="justify-center">
-            <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"><i>
+            <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"
+              ><i>
                 <h5>Verify your location.</h5>
-              </i></a>
+              </i></a
+            >
           </v-card-actions>
           <v-card-actions class="justify-center">
             <v-btn color="primary" class="text-center" @click="startTravel">Start Travel</v-btn>
@@ -28,74 +30,74 @@
   </v-layout>
 </template>
 <script>
-import moment from "moment";
-import { mapActions, mapState } from "vuex";
+import moment from 'moment'
+import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
-      datetime: moment(new Date()).format("YYYY-MM-DD"),
-      lat: "",
-      long: "",
-    };
+      datetime: moment(new Date()).format('YYYY-MM-DD'),
+      lat: '',
+      long: '',
+    }
   },
   mounted() {
-    this.GetMyCoordinates();
+    this.GetMyCoordinates()
   },
   computed: {
-    ...mapState(["CurUserDetails"]),
+    ...mapState(['CurUserDetails']),
   },
   methods: {
-    ...mapActions(["getTRLMSTOnGoing", "InsertTRLMST"]),
+    ...mapActions(['getTRLMSTOnGoing', 'InsertTRLMST']),
     startTravel() {
       let dataTemp = JSON.stringify({
-        TRLCDT: moment(new Date()).format("YYYY-MM-DD"),
+        TRLCDT: moment(new Date()).format('YYYY-MM-DD'),
         TRLCNT: this.CurUserDetails.CNTMST.CNTMID,
-        TRLSTS: "1",
-      });
+        TRLSTS: '1',
+      })
       this.getTRLMSTOnGoing({ data: dataTemp })
-        .then((res) => {
+        .then(res => {
           if (res.status == 204) {
             let tempData = JSON.stringify({
-              TRLLOC: this.lat + " " + this.long,
+              TRLLOC: this.lat + ' ' + this.long,
               TRLCNT: this.CurUserDetails.CNTMST.CNTMID,
-            });
+            })
             this.InsertTRLMST({ data: tempData })
-              .then((res) => {
+              .then(res => {
                 if (res.status == 200) {
-                  this.dialog = false;
+                  this.dialog = false
                 }
               })
-              .error((error) => {
-                alert(error);
-              });
+              .error(error => {
+                alert(error)
+              })
           } else if (res.status == 200) {
-            alert("Already Started the Travel.");
+            alert('Already Started the Travel.')
           }
         })
-        .error((error) => {
-          alert(error);
-        });
+        .error(error => {
+          alert(error)
+        })
     },
     GetMyCoordinates() {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.lat = position.coords.latitude;
-          this.long = position.coords.longitude;
+        position => {
+          this.lat = position.coords.latitude
+          this.long = position.coords.longitude
         },
-        (error) => {
-          alert(error.message);
+        error => {
+          alert(error.message)
         }
-      );
+      )
     },
   },
   props: {
     type: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-};
+}
 </script>
 <style scoped>
 .align-center {

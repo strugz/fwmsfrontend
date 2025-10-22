@@ -1,40 +1,20 @@
 <template>
   <v-layout>
-    <v-dialog
-      class="dialog"
-      v-model="dialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
+    <v-dialog class="dialog" v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
         <span v-on="on">Customer</span>
       </template>
       <v-card>
-        <v-toolbar
-          color="primary"
-          dense
-          dark
-          fixed
-        >
+        <v-toolbar color="primary" dense dark fixed>
           <v-toolbar-title>Customer Director</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn
-            icon
-            @click="dialog = !dialog"
-          >
+          <v-btn icon @click="dialog = !dialog">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-container fluid>
-          <v-layout
-            row
-            wrap
-          >
-            <v-flex
-              xs12
-              class="mt-4"
-            >
+          <v-layout row wrap>
+            <v-flex xs12 class="mt-4">
               <manager-dialog></manager-dialog>
               <manager-table></manager-table>
             </v-flex>
@@ -45,8 +25,8 @@
   </v-layout>
 </template>
 <script>
-import ManagerDialog from "../components/CustomerManagerDialog";
-import ManagerTable from "../components/CustomerManagerDataTable.vue";
+import ManagerDialog from '../components/CustomerManagerDialog'
+import ManagerTable from '../components/CustomerManagerDataTable.vue'
 export default {
   components: {
     ManagerDialog,
@@ -58,9 +38,9 @@ export default {
       CustSelected: [],
       DataTableHeaders: [],
       DataTableItems: [],
-    };
+    }
   },
-};
+}
 </script>
 <style>
 .hoverClick:hover {

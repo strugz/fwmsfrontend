@@ -1,46 +1,21 @@
 <template>
   <v-layout>
-    <v-dialog
-      v-model="dialog"
-      width="550"
-      hide-overlay
-      persistent
-    >
+    <v-dialog v-model="dialog" width="550" hide-overlay persistent>
       <template v-slot:activator="{ on }">
-        <v-btn
-          v-on="on"
-          class="primary mt-3"
-        >Add User</v-btn>
+        <v-btn v-on="on" class="primary mt-3">Add User</v-btn>
       </template>
 
       <v-card ref="form">
-        <v-toolbar
-          color="primary"
-          dense
-          dark
-        >
+        <v-toolbar color="primary" dense dark>
           <v-toolbar-title>Add New</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn
-            icon
-            @click="dialog = !dialog"
-          >
+          <v-btn icon @click="dialog = !dialog">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
         <v-container fluid>
-          <v-layout
-            align-start
-            justify-left
-            row
-            wrap
-          >
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+          <v-layout align-start justify-left row wrap>
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="USRMUI"
                 v-model="USRMUI"
@@ -50,12 +25,7 @@
                 required
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="USRMPW"
                 type="password"
@@ -65,12 +35,7 @@
                 placeholder="Password"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl5
-              md5
-              class="pr-1"
-            >
+            <v-flex xs12 xl5 md5 class="pr-1">
               <v-text-field
                 ref="CNTMLN"
                 v-model="CNTMLN"
@@ -79,12 +44,7 @@
                 placeholder="Lastname"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl5
-              md5
-              class="pr-1"
-            >
+            <v-flex xs12 xl5 md5 class="pr-1">
               <v-text-field
                 ref="CNTMFN"
                 v-model="CNTMFN"
@@ -93,12 +53,7 @@
                 placeholder="Firstname"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl2
-              md2
-              class="pr-1"
-            >
+            <v-flex xs12 xl2 md2 class="pr-1">
               <v-text-field
                 ref="CNTMMN"
                 v-model="CNTMMN"
@@ -107,12 +62,7 @@
                 placeholder="M.I."
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="CNTMNN"
                 v-model="CNTMNN"
@@ -121,12 +71,7 @@
                 placeholder="Initial"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-combobox
                 ref="CNTDPT"
                 v-model="CNTDPT"
@@ -136,12 +81,7 @@
                 placeholder="Department"
               ></v-combobox>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-combobox
                 ref="CNTMSX"
                 v-model="CNTMSX"
@@ -151,12 +91,7 @@
                 placeholder="Gender"
               ></v-combobox>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="CNTMBD"
                 v-model="CNTMBD"
@@ -165,12 +100,7 @@
                 placeholder="BirthDate"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="CNTARE"
                 v-model="CNTARE"
@@ -179,12 +109,7 @@
                 placeholder="AREA"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="CNTRTH"
                 v-model="CNTRTH"
@@ -193,12 +118,7 @@
                 placeholder="Rights"
               ></v-text-field>
             </v-flex>
-            <v-flex
-              xs12
-              xl6
-              md6
-              class="pr-1"
-            >
+            <v-flex xs12 xl6 md6 class="pr-1">
               <v-text-field
                 ref="CNTEPS"
                 v-model="CNTEPS"
@@ -208,46 +128,33 @@
               ></v-text-field>
             </v-flex>
           </v-layout>
-
         </v-container>
         <v-card-actions>
           <v-btn flat>Cancel</v-btn>
           <v-spacer></v-spacer>
           <v-slide-x-reverse-transition>
-            <v-tooltip
-              v-if="formHasErrors"
-              left
-            >
+            <v-tooltip v-if="formHasErrors" left>
               <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  class="my-0"
-                  @click="resetForm"
-                  v-on="on"
-                >
+                <v-btn icon class="my-0" @click="resetForm" v-on="on">
                   <v-icon>refresh</v-icon>
                 </v-btn>
               </template>
               <span>Refresh form</span>
             </v-tooltip>
           </v-slide-x-reverse-transition>
-          <v-btn
-            class="primary"
-            flat
-            @click="submit"
-          >Save</v-btn>
+          <v-btn class="primary" flat @click="submit">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
   </v-layout>
 </template>
-  <script>
-import { mapActions, mapState } from "vuex";
+<script>
+import { mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
       dialog: false,
-      errorMessages: "",
+      errorMessages: '',
       CNTMLN: null,
       CNTMMN: null,
       CNTMFN: null,
@@ -263,12 +170,12 @@ export default {
       CNTEPS: null,
       USRMUI: null,
       USRMPW: null,
-      GENDER: ["MALE", "FEMALE"],
+      GENDER: ['MALE', 'FEMALE'],
       formHasErrors: false,
-    };
+    }
   },
   computed: {
-    ...mapState(["CurDPTItems"]),
+    ...mapState(['CurDPTItems']),
     form() {
       return {
         USRMUI: this.USRMUI,
@@ -280,17 +187,17 @@ export default {
         CNTDPT: this.CNTDPT,
         CNTMSX: this.CNTMSX,
         CNTEPS: this.CNTEPS,
-      };
+      }
     },
   },
   mounted() {},
   watch: {
     USRMUI() {
-      this.errorMessages = "";
+      this.errorMessages = ''
     },
   },
   methods: {
-    ...mapActions(["insertCNTMST", "getAllCNTMST"]),
+    ...mapActions(['insertCNTMST', 'getAllCNTMST']),
     saveCNTMST() {
       let data = JSON.stringify({
         CNTMLN: this.CNTMLN,
@@ -298,48 +205,47 @@ export default {
         CNTMFN: this.CNTMFN,
         CNTMNN: this.CNTMNN,
         CNTDPT: this.CNTDPT,
-        CNTMCN: this.CNTMFN + " " + this.CNTMMN + " " + this.CNTMLN,
+        CNTMCN: this.CNTMFN + ' ' + this.CNTMMN + ' ' + this.CNTMLN,
         CNTMSX: this.CNTMSX,
-        CNTMPF: "",
-        CNTMSF: "",
+        CNTMPF: '',
+        CNTMSF: '',
         CNTMBD: this.CNTMBD,
         CNTEPS: this.CNTEPS,
         USRMUI: this.USRMUI,
         USRMPW: this.USRMPW,
-      });
-      console.log(data);
-      this.insertCNTMST({ data: data });
-      this.getCNTMST();
+      })
+      console.log(data)
+      this.insertCNTMST({ data: data })
+      this.getCNTMST()
     },
     getCNTMST() {
-      this.getAllCNTMST().then((res) => {
-        this.upCNTMSTList(res.data);
-      });
+      this.getAllCNTMST().then(res => {
+        this.upCNTMSTList(res.data)
+      })
     },
     resetForm() {
-      this.errorMessages = [];
-      this.formHasErrors = false;
+      this.errorMessages = []
+      this.formHasErrors = false
 
-      Object.keys(this.form).forEach((f) => {
-        this.$refs[f].reset();
-      });
+      Object.keys(this.form).forEach(f => {
+        this.$refs[f].reset()
+      })
     },
     submit() {
-      this.formHasErrors = false;
+      this.formHasErrors = false
 
-      Object.keys(this.form).forEach((f) => {
-        if (!this.form[f]) this.formHasErrors = true;
+      Object.keys(this.form).forEach(f => {
+        if (!this.form[f]) this.formHasErrors = true
 
-        this.$refs[f].validate(true);
-      });
-      this.saveCNTMST();
+        this.$refs[f].validate(true)
+      })
+      this.saveCNTMST()
     },
   },
-};
+}
 </script>
-  <style>
+<style>
 .btn {
   width: 100%;
 }
 </style>
-  

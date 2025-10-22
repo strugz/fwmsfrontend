@@ -26,14 +26,30 @@
                 <v-menu :key="event.itimid" v-model="event.open" :close-on-content-click="false" full-width offset-x>
                   <template v-slot:activator="{ on }">
                     <div
-                      :class="event.trdsts == 'START' ? 'my-event' : event.trdsts == 'WORK COMPLETE' ? 'my-event1' : event.trdsts == 'LEAVE' ? 'my-event1' : 'my-event2'"
-                      v-if="!event.time" v-ripple v-on="on">
+                      :class="
+                        event.trdsts == 'START'
+                          ? 'my-event'
+                          : event.trdsts == 'WORK COMPLETE'
+                          ? 'my-event1'
+                          : event.trdsts == 'LEAVE'
+                          ? 'my-event1'
+                          : 'my-event2'
+                      "
+                      v-if="!event.time"
+                      v-ripple
+                      v-on="on"
+                    >
                       <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
                       <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
                     </div>
                   </template>
-                  <v-card v-show="event.trdsts != 'LEAVE'" color="grey lighten-4" min-width="250px" max-width="350px"
-                    flat>
+                  <v-card
+                    v-show="event.trdsts != 'LEAVE'"
+                    color="grey lighten-4"
+                    min-width="250px"
+                    max-width="350px"
+                    flat
+                  >
                     <v-toolbar color="primary" dark>
                       <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                       <v-spacer></v-spacer>
@@ -51,11 +67,12 @@
                           {{ ' ' + event.itiobj }}
                         </p>
                       </v-flex>
-                      <v-btn v-show="event.itists == '1'" :disabled="enableStart" color="primary">Not Yet Visited</v-btn>
+                      <v-btn v-show="event.itists == '1'" :disabled="enableStart" color="primary"
+                        >Not Yet Visited</v-btn
+                      >
                       <v-btn color="primary" v-show="event.itists != '1'">Visited</v-btn>
                     </v-card-title>
-                    <v-card-actions>
-                    </v-card-actions>
+                    <v-card-actions> </v-card-actions>
                   </v-card>
                 </v-menu>
               </template>
@@ -64,13 +81,12 @@
         </v-sheet>
       </div>
     </v-flex>
-
   </v-layout>
 </template>
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
-import moment from "moment";
-import ItineraryDialog from "../components/MRItineraryDialog.vue";
+import { mapActions, mapState, mapMutations } from 'vuex'
+import moment from 'moment'
+import ItineraryDialog from '../components/MRItineraryDialog.vue'
 export default {
   components: {
     ItineraryDialog,
@@ -78,93 +94,91 @@ export default {
   data: () => ({
     menuOpenCLose: false,
     menu: false,
-    today: moment(new Date()).format("YYYY-MM-DD"),
+    today: moment(new Date()).format('YYYY-MM-DD'),
     // myDate: moment(new Date()).format("MMMM YYYY"),
-    lat: "",
-    long: "",
+    lat: '',
+    long: '',
     dialog: false,
     enableStart: false,
   }),
   computed: {
-    ...mapState(["CurITIMSTList", "CurUserDetails", "CurClientDetails"]),
+    ...mapState(['CurITIMSTList', 'CurUserDetails', 'CurClientDetails']),
     eventsMap() {
-      const map = {};
-      this.CurITIMSTList.forEach((e) =>
-        (map[e.date] = map[e.date] || []).push(e)
-      );
-      return map;
+      const map = {}
+      this.CurITIMSTList.forEach(e => (map[e.date] = map[e.date] || []).push(e))
+      return map
     },
     myDate() {
-      return moment(this.today).format("MMMM YYYY");
+      return moment(this.today).format('MMMM YYYY')
     },
   },
   mounted() {
-    this.dataReload();
-    this.GetMyCoordinates();
-    console.log(moment(this.today).format("MMMM YYYY"));
+    this.dataReload()
+    this.GetMyCoordinates()
+    console.log(moment(this.today).format('MMMM YYYY'))
   },
   methods: {
-    ...mapActions(["getITIMSTPerCNT", "getTRDMST", "getITIMSTTRDValidation"]),
-    ...mapMutations(["upCurITIMSTList"]),
+    ...mapActions(['getITIMSTPerCNT', 'getTRDMST', 'getITIMSTTRDValidation']),
+    ...mapMutations(['upCurITIMSTList']),
     open(event) {
-      alert(event.title);
+      alert(event.title)
     },
     printDiv(divName) {
-      var printContents = document.getElementById(divName).innerHTML;
-      var originalContents = document.body.innerHTML;
+      var printContents = document.getElementById(divName).innerHTML
+      var originalContents = document.body.innerHTML
 
-      document.body.innerHTML = printContents;
+      document.body.innerHTML = printContents
 
-      window.print();
-      document.body.innerHTML = originalContents;
-      location.reload();
+      window.print()
+      document.body.innerHTML = originalContents
+      location.reload()
     },
     dataReload() {
-      this.getITIMSTPerCNT(this.$route.params.CNTMID).then((res) => {
-        this.upCurITIMSTList(res);
-      });
+      this.getITIMSTPerCNT(this.$route.params.CNTMID).then(res => {
+        this.upCurITIMSTList(res)
+      })
     },
     GetMyCoordinates() {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.lat = position.coords.latitude;
-          this.long = position.coords.longitude;
-          console.log(this.lat, this.long);
+        position => {
+          this.lat = position.coords.latitude
+          this.long = position.coords.longitude
+          console.log(this.lat, this.long)
         },
-        (error) => {
-          alert(error.message);
+        error => {
+          alert(error.message)
         }
-      );
+      )
     },
     goToCustomer(item) {
-      this.$router.push({ path: `/customer/${item}` });
+      this.$router.push({ path: `/customer/${item}` })
     },
     StartItineraryValidation(item) {
-      if (this.lat == "") {
-        alert("Location is Required!");
-        this.enableStart = false;
+      if (this.lat == '') {
+        alert('Location is Required!')
+        this.enableStart = false
       } else {
-        let confirmAction = confirm("Start visit?");
+        let confirmAction = confirm('Start visit?')
         if (confirmAction) {
           let myValidation = JSON.stringify({
             itimid: item.itimid,
-          });
+          })
           this.getITIMSTTRDValidation({ data: myValidation })
-            .then((res) => {
+            .then(res => {
               if (res.data == 0) {
-                this.enableStart = true;
-                this.StartTTPItinerary(item);
+                this.enableStart = true
+                this.StartTTPItinerary(item)
               } else {
-                alert("Your itinerary is already started.");
+                alert('Your itinerary is already started.')
               }
             })
-            .catch((error) => {
-              console.log(error);
-              this.enableStart = false;
-            });
+            .catch(error => {
+              console.log(error)
+              this.enableStart = false
+            })
         } else {
-          alert("Action cancelled");
-          this.enableStart = false;
+          alert('Action cancelled')
+          this.enableStart = false
         }
       }
     },
@@ -173,90 +187,88 @@ export default {
         UserID: this.CurUserDetails.USRDTL.USRDCI,
         customerRepID: item.cstmid,
         CustomerID: item.accmid,
-        SRFormType: "Visit",
-      });
+        SRFormType: 'Visit',
+      })
       const Opheaders = {
-        method: "POST",
+        method: 'POST',
         data: data,
         headers: {
-          "content-type": "application/json",
+          'content-type': 'application/json',
         },
-        url: "https://sr.mdmpi.com.ph/sr/MedRepItineraryReport/beginmedrepvisit",
-      };
+        url: 'https://sr.mdmpi.com.ph/sr/MedRepItineraryReport/beginmedrepvisit',
+      }
 
       axios(Opheaders)
-        .then((res) => {
+        .then(res => {
           if (res.status == 201) {
-            const iData = res.data;
-            this.StartItinerary(iData.srid, item);
-            this.enableStart = false;
+            const iData = res.data
+            this.StartItinerary(iData.srid, item)
+            this.enableStart = false
           }
         })
-        .catch((error) => {
-          alert(error);
-          this.enableStart = false;
-        });
+        .catch(error => {
+          alert(error)
+          this.enableStart = false
+        })
     },
     StartItinerary(srid, item) {
-      this.GetMyCoordinates();
+      this.GetMyCoordinates()
 
       let data = JSON.stringify({
-        TRDADT: moment(new Date(), "ddd MMM DD YYYY kk:mm:SS").format(
-          "YYYY/MM/DD HH:mm"
-        ),
-        TRDCNT: "0",
+        TRDADT: moment(new Date(), 'ddd MMM DD YYYY kk:mm:SS').format('YYYY/MM/DD HH:mm'),
+        TRDCNT: '0',
         TRDMAC: item.accmid,
-        TRDMCL: "N/A",
+        TRDMCL: 'N/A',
         TRDMDE: item.cstmid,
-        TRDMMC: "",
-        TRDMST: "true",
+        TRDMMC: '',
+        TRDMST: 'true',
         TRDMTT: srid,
-        TRDMTY: "MedRep Visit",
+        TRDMTY: 'MedRep Visit',
         TRDMUI: this.CurUserDetails.USRDTL.USRDCI,
-        TRDSEC: "Itinerary",
-        TRDSTS: "START",
-        TRDCRN: "",
-        TRDLOC: this.lat + " " + this.long,
+        TRDSEC: 'Itinerary',
+        TRDSTS: 'START',
+        TRDCRN: '',
+        TRDLOC: this.lat + ' ' + this.long,
         TRDITI: item.itimid,
-      });
+      })
       setTimeout(function() {
-        console.log(data);
-      }, 1000);
+        console.log(data)
+      }, 1000)
 
-      this.getTRDMST({ data: data }).then((res) => {
-        this.dataReload();
-        this.Sample(res.data, item);
-      });
+      this.getTRDMST({ data: data }).then(res => {
+        this.dataReload()
+        this.Sample(res.data, item)
+      })
     },
 
     Sample(data, item) {
-      console.log(data);
+      console.log(data)
       let dataTwo = JSON.stringify({
         RECEIVER: this.CurUserDetails.CNTMST.CNTTGP,
         SENDER: this.CurUserDetails.CNTMST.CNTMNN,
-        MESSAGE: "Visited " + item.customer + " at " + item.client,
-      });
-      console.log(dataTwo, "sample");
+        MESSAGE: 'Visited ' + item.customer + ' at ' + item.client,
+      })
+      console.log(dataTwo, 'sample')
       const OpheadersTwo = {
-        method: "POST",
+        method: 'POST',
         data: dataTwo,
         headers: {
-          "content-type": "application/json",
-          accept: "*/*",
-          "accept-Encoding": "gzip, deflate, br",
-          connection: "keep-alive",
-          "sec-fetch-mode": "no-cors",
+          'content-type': 'application/json',
+          accept: '*/*',
+          'accept-Encoding': 'gzip, deflate, br',
+          connection: 'keep-alive',
+          'sec-fetch-mode': 'no-cors',
         },
-        url: "https://mdmpi.com.ph/lasius/api_sendsms",
-      };
-      axios(OpheadersTwo).then((res) => {
+        url: 'https://mdmpi.com.ph/lasius/api_sendsms',
+      }
+      axios(OpheadersTwo).then(res => {
         if (res.status == 200) {
-          this.dialog = false;
+          this.dialog = false
         }
-      });
+      })
     },
   },
-};
+}
 </script>
 <style scoped>
 .my-event {
@@ -316,4 +328,3 @@ export default {
   }
 }
 </style>
-  

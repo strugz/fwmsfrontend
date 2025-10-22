@@ -30,36 +30,54 @@
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Bank:"
-                    :detail="collectorDetails.bank == '' ? '' : collectorDetails.bank"></app-label>
+                  <app-label
+                    header="Bank:"
+                    :detail="collectorDetails.bank == '' ? '' : collectorDetails.bank"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Check No:" :detail="collectorDetails.checkno == '' ? '' : collectorDetails.checkno"></app-label>
+                  <app-label
+                    header="Check No:"
+                    :detail="collectorDetails.checkno == '' ? '' : collectorDetails.checkno"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Check Date:" :detail="collectorDetails.checkdate.substring(0, 10) == '' ? '' : collectorDetails.checkdate.substring(0, 10)"></app-label>
+                  <app-label
+                    header="Check Date:"
+                    :detail="
+                      collectorDetails.checkdate.substring(0, 10) == ''
+                        ? ''
+                        : collectorDetails.checkdate.substring(0, 10)
+                    "
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Amount Collected:"
-                    :detail="collectorDetails.amountcollected == '' ? '' : collectorDetails.amountcollected"></app-label>
+                  <app-label
+                    header="Amount Collected:"
+                    :detail="collectorDetails.amountcollected == '' ? '' : collectorDetails.amountcollected"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Sales Invoice Reference for Payment:"
-                    :detail="collectorDetails.salesinvoicereference == '' ? '' : collectorDetails.salesinvoicereference"></app-label>
+                  <app-label
+                    header="Sales Invoice Reference for Payment:"
+                    :detail="collectorDetails.salesinvoicereference == '' ? '' : collectorDetails.salesinvoicereference"
+                  ></app-label>
                 </v-flex>
               </template>
               <template>
                 <v-flex>
-                  <app-label header="Summary of Visit:"
-                    :detail="CurSRDetails.remarks == null ? '' : CurSRDetails.remarks.srRemarks"></app-label>
+                  <app-label
+                    header="Summary of Visit:"
+                    :detail="CurSRDetails.remarks == null ? '' : CurSRDetails.remarks.srRemarks"
+                  ></app-label>
                 </v-flex>
               </template>
             </v-card-text>

@@ -22,6 +22,7 @@ import servicecalendarviewer from './components/ServiceCalendarViewer.vue'
 import pscalendarviewer from './components/PSCalendarViewer.vue'
 import p404 from './views/404.vue'
 import SROutbox from '@/components/SROutbox.vue'
+import FieldReportIframe from '@/components/FieldReportIframe.vue'
 
 import Cookies from 'js-cookie'
 import jwt from 'jsonwebtoken'
@@ -79,10 +80,33 @@ export default new Router({
           path: 'sroutbox',
           component: SROutbox,
           props: route => ({
-            iframeUrl: route.query.url || 'http://localhost:8081/#/outbox',
+            iframeUrl: route.query.url || 'https://crm.mdmpi.com.ph/#/outbox',
             // iframeUrl: route.query.url || 'https://sr.mdmpi.com.ph/#/outbox',
-            title: route.query.title || 'Service Report Outbox'
-          })
+            title: route.query.title || 'Service Report Outbox',
+          }),
+        },
+        {
+          name: 'fieldreport',
+          path: 'fieldreport/:ClientID/:SRID',
+          component: FieldReportIframe,
+          props: route => {
+            // allow explicit url override via query
+            if (route.query.url) {
+              return {
+                iframeUrl: route.query.url,
+                title: route.query.title || 'Field Report',
+              }
+            }
+
+            const SRID = route.params.SRID
+            const ClientID = route.params.ClientID
+            // const iframeUrl = `http://localhost:8081/#/field-report/${ClientID}/${SRID}`
+            const iframeUrl = `https://crm.mdmpi.com.ph/#/field-report/${ClientID}/${SRID}`
+            return {
+              iframeUrl,
+              title: route.query.title || 'Field Report',
+            }
+          },
         },
         {
           name: 'customer',
@@ -105,9 +129,9 @@ export default new Router({
           component: detailsTTP,
         },
         {
-          name: "clt",
+          name: 'clt',
           path: 'clt/:TRDMTI',
-          component: detailsCollection
+          component: detailsCollection,
         },
         {
           name: 'itinerary',
@@ -122,32 +146,32 @@ export default new Router({
         {
           name: 'mritinerary',
           path: '/mritinerary/:CNTMID',
-          component: mritinerary
+          component: mritinerary,
         },
         {
           name: 'itineraryviewer',
           path: '/itineraryviewer/:CNTMID',
-          component: itineraryViewer
+          component: itineraryViewer,
         },
         {
           name: 'servicecalendar',
           path: '/servicecalendar/:CNTMID',
-          component: servicecalendar
+          component: servicecalendar,
         },
         {
           name: 'itineraryviewer',
           path: '/itineraryviewer',
-          component: itineraryheadviewer
+          component: itineraryheadviewer,
         },
         {
           name: 'servicecalendarviewer',
           path: '/servicecalendarviewer',
-          component: servicecalendarviewer
+          component: servicecalendarviewer,
         },
         {
           name: 'pscalendarviewer',
           path: '/pscalendarviewer',
-          component: pscalendarviewer
+          component: pscalendarviewer,
         },
       ],
     },

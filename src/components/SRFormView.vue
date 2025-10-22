@@ -1,4 +1,3 @@
-
 <template>
   <v-layout mt-0 row justify-end>
     <v-dialog v-model="pdfDialog" persistent>
@@ -26,10 +25,14 @@
         <v-card-text class="pa-0">
           <v-container fluid class="pa-1">
             <v-layout row wrap align-center>
-
               <v-flex xs12 sm6 md3>
-                <v-text-field v-model="EmailReceiver" label="Email Address" ref="email" :rules="[rules.email]"
-                  placeholder="Customer Email"></v-text-field>
+                <v-text-field
+                  v-model="EmailReceiver"
+                  label="Email Address"
+                  ref="email"
+                  :rules="[rules.email]"
+                  placeholder="Customer Email"
+                ></v-text-field>
               </v-flex>
               <v-flex xs12 md1 xl1 class="pa-0 ma-0">
                 <v-btn class="btn primary" @click="Emailvalidation" :disabled="sendBTNDisbled">Send to Email</v-btn>

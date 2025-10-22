@@ -1,23 +1,18 @@
 <template>
   <v-breadcrumbs>
-    <v-breadcrumbs-item :to="home">{{ 'Home' }}</v-breadcrumbs-item>
+    <v-breadcrumbs-item :to="home">Home</v-breadcrumbs-item>
 
-    <v-breadcrumbs-item
-      v-if="client.hasOwnProperty('href')"
-      :to="client.href"
-    >
-      <h5>
-        {{ client.text }}
-      </h5>
+    <v-breadcrumbs-item v-if="client && client.href" :to="client.href">
+      <h5>{{ client.text }}</h5>
     </v-breadcrumbs-item>
 
     <v-breadcrumbs-item
-      v-if="thread.hasOwnProperty('href')"
+      v-if="thread"
       :to="thread.href"
-      :disabled="true"
-    >{{
-      thread.text 
-    }}</v-breadcrumbs-item>
+      :disabled="!thread.href || $route.name === 'thread' || $route.name === 'sr'"
+    >
+      {{ thread.text }}
+    </v-breadcrumbs-item>
 
     <template v-slot:divider>
       <v-icon color="teal darken-2">chevron_right</v-icon>
@@ -26,85 +21,107 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import { mapState, mapMutations } from 'vuex'
 
 export default {
   data() {
     return {
       BreadCrumbItems: [
         {
-          text: "Home",
-          href: "/",
+          text: 'Home',
+          href: '/',
         },
       ],
-      homeValidation: "",
-    };
+      homeValidation: '',
+    }
   },
   created() {},
   computed: {
-    ...mapState(["CurClientDetails", "CurThreadDetails", "CurUserDetails"]),
+    ...mapState(['CurClientDetails', 'CurThreadDetails', 'CurUserDetails']),
     client() {
-      if (this.CurClientDetails.hasOwnProperty("ACCMNM")) {
+      if (this.CurClientDetails && this.CurClientDetails.ACCMID) {
+        // Prefer ACCMNM for display name, fall back to ACCMSC if available
+        const name = this.CurClientDetails.ACCMNM || this.CurClientDetails.ACCMSC || 'Client'
         return {
-          text: `${this.CurClientDetails.ACCMSC}`,
+          text: `${name}`,
           href: `/customer/${this.CurClientDetails.ACCMID}`,
-        };
-      } else return "";
+        }
+      }
+      return null
     },
     thread() {
-      if (this.CurThreadDetails.hasOwnProperty("TRDMTT")) {
+      // If thread details available in store, use them
+      if (this.CurThreadDetails && this.CurThreadDetails.TRDMTI) {
+        const prefix = this.CurThreadDetails.TRDMTY === 'Service Report' ? 'SR: #' : ''
+        const routeName = this.CurThreadDetails.TRDMTY === 'Service Report' ? 'sr' : 'thread'
         return {
-          text: `${
-            this.CurThreadDetails.TRDMTY == "Service Report" ? "SR: #" : ""
-          }${this.CurThreadDetails.TRDMTT}`,
-          href: `/${
-            this.CurThreadDetails.TRDMTY == "Service Report" ? "sr" : "thread"
-          }/${this.CurClientDetails.ACCMID}`,
-        };
-      } else return "";
+          text: `${prefix}${this.CurThreadDetails.TRDMTT}`,
+          href: `/${routeName}/${this.CurThreadDetails.TRDMTI}`,
+        }
+      }
+
+      // Fallback: when navigating to fieldreport route we may only have SRID in route params
+      const srid = this.$route && (this.$route.params.SRID || this.$route.params.TRDMTI)
+      if (srid) {
+        // If the route is specifically fieldreport, show 'SR: #<SRID>' text without href
+        if (this.$route && this.$route.name === 'fieldreport') {
+          return {
+            text: `SR: #${srid}`,
+            href: null,
+          }
+        }
+        // For other routes, build a default link
+        return {
+          text: `SR: #${srid}`,
+          href: `/sr/${srid}`,
+        }
+      }
+
+      return null
     },
     home() {
-      if (
-        this.CurUserDetails.CNTMST.CNTSEC == "TSR/ENGINEER" &&
-        this.CurUserDetails.CNTMST.CNTSEC == "TSR/PS"
-      ) {
-        return "/mritinerary/" + this.CurUserDetails.USRDTL.USRDCI;
-      } else {
-        return "/recentvisit/" + this.CurUserDetails.USRDTL.USRDCI;
+      // Guard for missing CurUserDetails
+      if (!this.CurUserDetails || !this.CurUserDetails.USRDTL) return '/'
+
+      const role = this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTSEC
+      // if user has either role, go to mritinerary, otherwise recentvisit
+      if (role === 'TSR/ENGINEER' || role === 'TSR/PS') {
+        return '/mritinerary/' + this.CurUserDetails.USRDTL.USRDCI
       }
+      return '/recentvisit/' + this.CurUserDetails.USRDTL.USRDCI
     },
   },
   methods: {
-    ...mapMutations(["upClient", "upTrdDetails"]),
+    ...mapMutations(['upClient', 'upTrdDetails']),
   },
   watch: {
     client(val) {
-      if (val !== "") {
-        this.BreadCrumbItems[1] = val;
+      if (val !== '') {
+        this.BreadCrumbItems[1] = val
       }
     },
     thread(val) {
-      if (val !== "") {
-        this.BreadCrumbItems[2] = val;
+      if (val !== '') {
+        this.BreadCrumbItems[2] = val
       }
     },
     $route(to) {
-      if (to.path == "/recentvisit/" + this.CurUserDetails.USRDTL.USRDCI) {
-        this.upClient({});
-        this.upTrdDetails([]);
+      if (to.path == '/recentvisit/' + this.CurUserDetails.USRDTL.USRDCI) {
+        this.upClient({})
+        this.upTrdDetails([])
         this.BreadCrumbItems = [
           {
-            text: "Home",
+            text: 'Home',
             disabled: false,
-            href: "/",
+            href: '/',
           },
-        ];
-      } else if (to.name == "customer") {
-        this.upTrdDetails([]);
+        ]
+      } else if (to.name == 'customer') {
+        this.upTrdDetails([])
       }
     },
   },
-};
+}
 </script>
 
 <style></style>
