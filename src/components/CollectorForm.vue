@@ -17,7 +17,7 @@
           </v-btn>
         </v-toolbar>
         <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
-          <iframe allow="camera;geolocation https://sr.mdmpi.com.ph" v-if="dialog" :src="srFormURL"></iframe>
+          <iframe allow="camera; geolocation" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>

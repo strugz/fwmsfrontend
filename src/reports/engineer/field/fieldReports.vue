@@ -17,7 +17,7 @@
           label="Recipient Emails"
           placeholder="Add email and press Enter"
           :rules="[emailListRule]"
-          hide-details="auto"
+          :hide-details="true"
           style="width: 100%;"
         ></v-combobox>
       </div>
@@ -53,8 +53,8 @@
             <div>{{ sentenceCase(CurThreadDetails.TRDMUI.CNTMCN) }}</div>
             <h3 class="headline mb-0">Instrument</h3>
             <div>{{ sentenceCase(CurSRDetails.header.instrumentModelID) }}</div>
-            <div>Arrival: {{ CurSRDetails.meterReading.arrival }}</div>
-            <div>Departure: {{ CurSRDetails.meterReading.departure }}</div>
+            <div>Arrival: {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.arrival : '' }}</div>
+            <div>Departure: {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.departure : '' }}</div>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -77,11 +77,11 @@
       <v-layout row wrap class="section">
         <v-flex xs6>
           <h3 class="headline mb-0">Service Type</h3>
-          <div>{{ sentenceCase(CurSRDetails.serviceTypes[0].srTypeDescription) }}</div>
+          <div>{{ sentenceCase((CurSRDetails.serviceTypes && CurSRDetails.serviceTypes[0] && CurSRDetails.serviceTypes[0].srTypeDescription) || '') }}</div>
         </v-flex>
         <v-flex xs6>
           <h3 class="headline mb-0">Purpose of Visit</h3>
-          <div v-for="pv in CurSRDetails.purposeOfVisits" :key="pv.pvid">
+          <div v-for="pv in (CurSRDetails.purposeOfVisits || [])" :key="pv.pvid">
             <v-card-text>
               {{ sentenceCase(pv.pvDescription) }} <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
             </v-card-text>
@@ -100,7 +100,7 @@
             <v-flex xs8>
               <ul class="actions-list">
                 <li
-                  v-for="(action, i) in CurSRDetails.actionTakens.filter(a => a.atDescription !== 'TESTED PARTS')"
+                  v-for="(action, i) in (CurSRDetails.actionTakens || []).filter(a => a.atDescription !== 'TESTED PARTS')"
                   :key="'action-' + i"
                 >
                   <!-- Show description -->
@@ -156,7 +156,7 @@
 
         <v-data-table
           :headers="partsHeaders"
-          :items="CurSRDetails.partsUsed"
+          :items="CurSRDetails.partsUsed || []"
           hide-actions
           class="parts-table"
           disable-sort
@@ -181,24 +181,24 @@
       <v-layout row wrap class="section footer-section">
         <v-flex xs6>
           <div class="signature-block">
-            <v-img :src="CurSRDetails.footerSignature.srFooterAcceptance" class="signature-img" />
+            <v-img :src="(CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance) || ''" class="signature-img" />
             <div class="signature-name">
-              {{ sentenceCase(CurSRDetails.footer.customerUserID) }}
+              {{ sentenceCase((CurSRDetails.footer && CurSRDetails.footer.customerUserID) || '') }}
             </div>
           </div>
-          <div class="signature-meta">{{ CurSRDetails.footer.srfDateTimeIn }}</div>
-          <div class="signature-meta">{{ CurSRDetails.footer.srfDateTimeOut }}</div>
+          <div class="signature-meta">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeIn) || '' }}</div>
+          <div class="signature-meta">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeOut) || '' }}</div>
         </v-flex>
       </v-layout>
 
       <div class="bottom-divider"></div>
 
-      <div class="sr-footer">Result: {{ sentenceCase(CurSRDetails.results[0].srResultDescription) }}</div>
+  <div class="sr-footer">Result: {{ sentenceCase((CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || '') }}</div>
 
       <div class="sr-footer">
         SR No.
         <span style="color: red;">
-          {{ CurSRDetails.header.srid }}
+          {{ (CurSRDetails.header && CurSRDetails.header.srid) || '' }}
         </span>
       </div>
     </div>

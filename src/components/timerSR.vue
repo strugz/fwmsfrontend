@@ -15,7 +15,7 @@
           </v-btn>
         </v-toolbar>
         <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
-          <iframe allow="geolocation https://sr.mdmpi.com.ph; camera" v-if="SRTimerDialog" :src="srFormURL"></iframe>
+          <iframe allow="geolocation; camera" v-if="SRTimerDialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
@@ -28,36 +28,32 @@ export default {
     return {}
   },
   methods: {
-    ...mapActions(['getAcc', 'getThreadByAccountId']),
+    ...mapActions(['getAcc', 'getThreadByAccountId', 'getThreadDetailsById']),
     ...mapMutations(['upClient', 'upCurThreads', 'upCurClientMID', 'upTotalPages', 'upSRTimerDialog']),
     threadReload() {
       this.upCurThreads([])
-      const accID = this.$route.params.ACCMID ? this.$route.params.ACCMID : ''
-      this.getThreadByAccountId({
-        cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
-        accID: accID,
-        pageNumber: this.PageNumber,
-      }).then(
+      this.getThreadDetailsById(this.$route.params.TRDMTI).then(
         res => {
-          this.upCurClientMID(this.$route.params.ACCMID)
-          this.upCurThreads(res.data.data.threads)
-          this.upTotalPages({ totPages: res.data.totalPages })
+          this.upCurClientMID(this.CurClientDetails.ACCMID)
+          if (res.TRDMTY == 'Service Report' && res.TRDSTS == 'WORK COMPLETE') {
+            this.$router.push({ name: 'fieldreport', params: { ClientID: res.TRDMAC, SRID: res.TRDMTT } })
+          }
         },
         error => {
           console.error(error)
         }
       )
-      this.upSRTimerDialog(!this.SRTimerDialog)
+      this.upSRTimerDialog(!this.SRTimerDialog);
     },
   },
   computed: {
-    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'SRTimerDialog']),
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'SRTimerDialog', 'PageNumber']),
     srFormURL() {
       if (this.CurThreadDetails.TRDMTY == 'Service Report') {
-        return `https://crm.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
-      ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
-      ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
-        //         return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
+        return `http://localhost:8081/#/startedservice/${this.CurClientDetails.ACCMID}/
+        ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
+        ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
+        // return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
         // ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         // ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
       } else {

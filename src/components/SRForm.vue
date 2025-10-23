@@ -16,7 +16,7 @@
           </v-btn>
         </v-toolbar>
         <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
-          <iframe allow="geolocation http://localhost:8081" v-if="dialog" :src="srFormURL"></iframe>
+          <iframe allow="geolocation" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
     </v-dialog>
@@ -75,10 +75,9 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'PageNumber']),
     srFormURL() {
-      return `https://crm.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${
-        this.CurUserDetails.CNTMST.CNTMID
-      }`
-      // return `https://sr.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
+      return `http://localhost:8081/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
+      // return `https://sr.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
+  }`
     },
   },
 }
