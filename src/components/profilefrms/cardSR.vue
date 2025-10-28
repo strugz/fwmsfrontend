@@ -172,7 +172,7 @@ export default {
       } else if (this.data.TRDSEC == 'COLLECT') {
         this.$router.push({ name: 'clt', params: { TRDMTI: srid } })
       } else {
-        if (this.data.TRDMTY == 'Service Report' && this.data.TRDSTS == 'WORK COMPLETE') {
+        if (this.data.TRDMTY == 'Service Report' && this.data.TRDSTS == 'WORK COMPLETE' && this.data.TRDSEC != 'InHouse') {
           this.$router.push({ name: 'fieldreport', params: { ClientID: this.data.TRDMAC, SRID: this.data.TRDMTT } })
         } else {
           this.$router.push({ name: 'sr', params: { TRDMTI: srid } })

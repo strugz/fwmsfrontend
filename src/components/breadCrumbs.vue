@@ -39,14 +39,45 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurThreadDetails', 'CurUserDetails']),
     client() {
+      // 1) Prefer Vuex CurClientDetails when available
       if (this.CurClientDetails && this.CurClientDetails.ACCMID) {
-        // Prefer ACCMNM for display name, fall back to ACCMSC if available
-        const name = this.CurClientDetails.ACCMNM || this.CurClientDetails.ACCMSC || 'Client'
+        const name = this.CurClientDetails.ACCMSC || this.CurClientDetails.ACCMNM || 'Client'
         return {
           text: `${name}`,
           href: `/customer/${this.CurClientDetails.ACCMID}`,
         }
       }
+
+      // 2) Fallback: try to restore from sessionStorage (persisted by the store mutation)
+      try {
+        const raw = sessionStorage.getItem('CurClientDetails')
+        if (raw) {
+          const saved = JSON.parse(raw)
+          if (saved && (saved.ACCMSC || saved.ACCMNM)) {
+            const name = saved.ACCMSC || saved.ACCMNM || 'Client'
+            const id = saved.ACCMID || this.$route.params.ClientID || this.$route.params.ACCMID
+            return {
+              text: `${name}`,
+              href: id ? `/customer/${id}` : null,
+            }
+          }
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+
+      // 3) Fallback: try to use route params directly (some routes use ClientID, others ACCMID)
+      const routeName = this.$route && this.$route.params
+      const routeId = routeName && (routeName.ClientID || routeName.ACCMID)
+      if (routeId) {
+        // We don't have the text (ACCMSC) in params typically; try to use a param called ClientName if present
+        const clientName = this.$route.params.ClientName || this.$route.query.clientName || null
+        return {
+          text: clientName || `Client #${routeId}`,
+          href: `/customer/${routeId}`,
+        }
+      }
+
       return null
     },
     thread() {
@@ -56,7 +87,7 @@ export default {
         const routeName = this.CurThreadDetails.TRDMTY === 'Service Report' ? 'sr' : 'thread'
         return {
           text: `${prefix}${this.CurThreadDetails.TRDMTT}`,
-          href: `/${routeName}/${this.CurThreadDetails.TRDMTI}`,
+          href: null,
         }
       }
 
@@ -73,7 +104,7 @@ export default {
         // For other routes, build a default link
         return {
           text: `SR: #${srid}`,
-          href: `/sr/${srid}`,
+          href: null,
         }
       }
 

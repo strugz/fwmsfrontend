@@ -62,15 +62,6 @@
                           </v-flex>
                         </v-layout>
                       </v-flex>
-                      <v-flex xs12>
-                        <v-layout align-start row fill-height wrap>
-                          <v-flex>
-                            <template v-if="CurThreadDetails.TRDMUI">
-                              <app-label header="Instrument Model" :detail="CurThreadDetails.TRDMDE"></app-label>
-                            </template>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
                       <v-flex xs12 pb-0 v-if="CurSRDetails.meterReading">
                         <v-layout align-center justify-start row fill-height wrap>
                           <v-flex xs6>
@@ -89,9 +80,9 @@
                 <v-container grid-list-lg>
                   <v-layout class="caption font-weight-regular text-uppercase" align-center justify-start row
                     fill-height wrap>
-                    <v-flex xs12 pt-0>
+                    <v-flex xs12 pt-0  v-if="CurSRDetails.purposeOfVisits.length != 0">
                       <v-layout align-start justify-start row fill-height wrap>
-                        <v-flex xs12>
+                        <v-flex xs12> 
                           <span class="font-weight-bold black--text text-xs-left pa-0">
                             Purpose of Visit
                           </span>
@@ -113,7 +104,7 @@
                         </v-flex>
                       </v-layout>
                     </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.actionTakens == null">
+                    <v-flex xs12 v-if="CurSRDetails.actionTakens">
                       <v-layout align-start justify-start row fill-height wrap>
                         <v-flex xs12>
                           <span class="font-weight-bold black--text text-xs-left pa-0">
@@ -136,7 +127,7 @@
                         </v-flex>
                       </v-layout>
                     </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.partsUsed == null">
+                    <v-flex xs12 v-if="CurSRDetails.partsUsed.length != 0">
                       <v-layout align-start justify-start row fill-height wrap>
                         <v-flex xs12>
                           <span class="font-weight-bold black--text text-xs-left pa-0">
@@ -167,11 +158,11 @@
                         </v-flex>
                       </v-layout>
                     </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.remarks == ''">
+                    <v-flex xs12 v-if="CurSRDetails.remarks">
                       <app-label style="white-space: pre-line" header="Significant Remarks:"
                         :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"></app-label>
                     </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.charges == null">
+                    <v-flex xs12 v-if="CurSRDetails.charges.length != 0">
                       <span class="font-weight-bold black--text text-xs-left pa-0">
                         Charges
                       </span>

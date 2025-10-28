@@ -81,6 +81,7 @@ export default new Router({
           component: SROutbox,
           props: route => ({
             iframeUrl: route.query.url || 'http://localhost:8081/#/outbox',
+            // iframeUrl: route.query.url || 'https://sr.mdmpi.com.ph/#/outbox',
             title: route.query.title || 'Service Report Outbox',
           }),
         },
