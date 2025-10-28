@@ -75,8 +75,8 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'PageNumber']),
     srFormURL() {
-      return `http://localhost:8081/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
-      // return `https://sr.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
+      // return `http://localhost:8081/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
+      return `https://crm.mdmpi.com.ph/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
   }`
     },
   },
