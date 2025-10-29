@@ -65,6 +65,20 @@ export default {
     if (storedTextSearch) {
       this.upTextFilter({ textSearch: localStorage.getItem('searchText') })
     }
+    // Try to restore last page for this account from sessionStorage so full page refresh
+    // doesn't reset pagination to 1. Key is namespaced by account id when available.
+    try {
+      const accKey = this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
+      const storedPage = sessionStorage.getItem(`threads_page_${accKey}`)
+      if (storedPage) {
+        this.pageNumber = Number(storedPage)
+      } else if (this.PageNumber && Number(this.PageNumber) > 1) {
+        // fallback to Vuex stored page if available
+        this.pageNumber = Number(this.PageNumber)
+      }
+    } catch (e) {
+      // ignore session storage errors
+    }
     if (this.CurClientMID != this.CurClientDetails.ACCMID) {
       this.LoadClientTransaction()
     } else {
@@ -73,10 +87,35 @@ export default {
   },
   watch: {
     pageNumber() {
+      // persist the page number for this account so a full page refresh keeps it
+      try {
+        const accKey = this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
+        sessionStorage.setItem(`threads_page_${accKey}`, String(this.pageNumber))
+      } catch (e) {
+        // ignore session storage errors
+      }
+
+      // always update Vuex with current page number
+      this.upPageNumber({ pageNumber: this.pageNumber })
+
       if (this.TextFilter == '') {
         this.LoadClientTransaction()
       } else {
-        this.upPageNumber({ pageNumber: this.pageNumber })
+        // when text filter is active we call filtered API elsewhere; keep behaviour
+        this.getThreadByAccountId({
+          cntdpt: this.CurUserDetails.CNTMST.CNTDPT,
+          accID: this.$route.params.ACCMID ? this.$route.params.ACCMID : '',
+          pageNumber: this.pageNumber,
+        }).then(
+          res => {
+            this.upCurClientMID(this.$route.params.ACCMID)
+            this.upCurThreads(res.data.data.threads)
+            this.upTotalPages({ totPages: res.data.totalPages })
+          },
+          error => {
+            console.error(error)
+          }
+        )
       }
     },
     TotalPages() {
