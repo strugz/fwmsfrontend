@@ -44,14 +44,12 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
             <customer-manager></customer-manager>
           </v-list-tile>
-          <v-list-tile
-            v-if="
-              CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' ||
-                CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' ||
-                CurUserDetails.CNTMST.CNTSEC.includes('PS') ||
-                CurUserDetails.CNTMST.CNTSEC.includes('IMS')
-            "
-          >
+          <v-list-tile v-if="
+            CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' ||
+            CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' ||
+            CurUserDetails.CNTMST.CNTSEC.includes('PS') ||
+            CurUserDetails.CNTMST.CNTSEC.includes('IMS')
+          ">
             <span @click="goTo">Service Calendar</span>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
@@ -64,6 +62,9 @@
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'AHBU'">
+            <span @click="goToViewer">Itinerary Viewer</span>
+          </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'POCT'">
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">

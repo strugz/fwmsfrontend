@@ -203,6 +203,8 @@ export default {
       this.departmentList.push({ DPTNME: 'AHBU' })
     } else if (this.CurUserDetails.CNTMST.CNTDPT == 'TSRVISMIN') {
       this.departmentList.push({ DPTNME: 'TSRVISMIN' })
+    } else if (this.CurUserDetails.CNTMST.CNTDPT == 'POCT') {
+      this.departmentList.push({ DPTNME: 'POCT' })
     } else {
       if (this.CurUserDetails.CNTMST.CNTMNN == 'JSP') {
         this.departmentList.push({ DPTNME: 'TSRLUZON' })

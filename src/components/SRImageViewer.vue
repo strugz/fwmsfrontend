@@ -2,7 +2,7 @@
   <v-dialog v-model="imgDialog" max-width="500">
     <template v-slot:activator="{ on }">
       <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on">
-        <v-icon>image</v-icon>
+        <v-icon @click="LoadImageLink">image</v-icon>
       </v-btn>
     </template>
     <v-card max-width="500">
@@ -24,8 +24,14 @@
   </v-dialog>
 </template>
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
+  props: {
+    CurThread: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       imgDialog: false,
@@ -35,16 +41,13 @@ export default {
       image: null,
     }
   },
-  computed: {
-    ...mapState(['CurThreadDetails']),
-  },
   created() {
-    this.LoadImageLink()
+    console.log(this.CurThread, 'CurThreadDetails in SRImageViewer.vue')
   },
   methods: {
     ...mapActions(['getImageLink']),
     LoadImageLink() {
-      this.getImageLink(this.CurThreadDetails.TRDMTT).then(res => {
+      this.getImageLink(this.CurThread.TRDMTT).then(res => {
         this.imgLink = res.data
       })
     },

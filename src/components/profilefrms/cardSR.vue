@@ -6,44 +6,20 @@
           <span class="indigo darken-1 pa-1 caption white--text mr-1">{{ data.TRDSEC }}</span>
           <span class="red darken-1 pa-1 caption white--text">{{ data.TRDMTY }}</span>
           <span class="hoverClick"> SR: #{{ data.TRDMTT }} </span>
-          <v-chip
-            v-if="data.TRDSTS == 'START'"
-            label
-            color="green darken-1"
-            text-color="white"
-            small
-            class="absolute top right"
-          >
+          <v-chip v-if="data.TRDSTS == 'START'" label color="green darken-1" text-color="white" small
+            class="absolute top right">
             <v-icon size="15" class="pr-2">cached</v-icon> Ongoing
           </v-chip>
-          <v-chip
-            v-if="data.TRDSTS == 'STOP'"
-            label
-            color="red darken-1"
-            text-color="white"
-            small
-            class="absolute top right"
-          >
+          <v-chip v-if="data.TRDSTS == 'STOP'" label color="red darken-1" text-color="white" small
+            class="absolute top right">
             <v-icon size="15" class="pr-2">pause_circle_filled</v-icon> Onhold
           </v-chip>
-          <v-chip
-            v-if="data.TRDSTS == 'DONE'"
-            label
-            color="warning"
-            text-color="white"
-            small
-            class="absolute top right"
-          >
+          <v-chip v-if="data.TRDSTS == 'DONE'" label color="warning" text-color="white" small
+            class="absolute top right">
             <v-icon size="15" class="pr-2">info</v-icon> Finalizing
           </v-chip>
-          <v-chip
-            v-if="data.TRDSTS == 'WORK COMPLETE'"
-            label
-            color="indigo darken-1"
-            text-color="white"
-            small
-            class="absolute top right"
-          >
+          <v-chip v-if="data.TRDSTS == 'WORK COMPLETE'" label color="indigo darken-1" text-color="white" small
+            class="absolute top right">
             <v-icon size="15" class="pr-2">done_all</v-icon> Work Complete
           </v-chip>
         </v-flex>
@@ -81,6 +57,9 @@
       <v-flex style="white-space: pre-line;" v-show="data.TRDSEC == 'TTP'">
         <span class="font-weight-medium">Concern:</span> {{ '\r\n' }} {{ data.TRDCRN }}
       </v-flex>
+      <v-flex v-if="data.TRDSEC == 'InHouse' && data.TRDMTY == 'PA Service Report'">
+        <span class="font-weight-medium">Concern:</span> {{ '\r\n' }} {{ data.TRD }}
+      </v-flex>
       <v-flex v-show="ITIOBJ">
         <p>
           <span style="color:rgb(73, 73, 247);font-weight:bold">
@@ -95,6 +74,9 @@
           {{ ' ' + ITIOBJ }}
         </p>
       </v-flex>
+      <image-report v-if="
+        data.TRDSTS === 'WORK COMPLETE' && data.TRDMUI.CNTDPT.substring(0, 3) == 'TSG'
+      " :CurThread="data"></image-report>
     </v-card-text>
     <v-divider light></v-divider>
     <v-card-actions class="pa-2">
@@ -119,6 +101,7 @@
 <script>
 import moment from 'moment'
 import { mapActions } from 'vuex'
+import imageReport from '../SRImageViewer.vue'
 export default {
   data() {
     return {
@@ -127,8 +110,11 @@ export default {
       POVDetails: '',
     }
   },
+  components: {
+        imageReport,
+  },
   created() {
-    this.getMMRCust(this.data.TRDMDE)
+    this.getMMRCust(this.data.TRDMDE);
   },
   methods: {
     ...mapActions(['getCSTMSTPerCust', 'getITIMST']),
