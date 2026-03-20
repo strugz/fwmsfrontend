@@ -37,8 +37,8 @@
     "vue-cli-plugin-axios": "~0.0.4",
     "vue-cli-plugin-vuesax": "~1.0.0",
     "vue-cli-plugin-vuetify": "~2.0.5",
-    "vue-loader": "^15.9.8",
+    "vue-loader": "^15.7.0",
     "vue-template-compiler": "~2.6.10",
-    "vuetify-loader": "~1.0.5"
+    "vuetify-loader": "^1.2.2"
   }
 }
