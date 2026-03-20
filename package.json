@@ -23,14 +23,13 @@
     "vuesax": "~4.0.1-alpha.25",
     "vuetify": "~1.5.18",
     "vuex": "~3.0.1",
-    "webpack": "^5.88.2",
+    
     "xlsx": "^0.17.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "~5.10.1",
-    "@vue/cli-plugin-babel": "^5.0.8",
-    
-    "@vue/cli-service": "^5.0.8",
+    "@vue/cli-plugin-babel": "^4.5.15",
+    "@vue/cli-service": "^4.5.15",
     "axios": "^1.5.0",
     
     "stylus": "~0.54.5",
@@ -38,7 +37,7 @@
     "vue-cli-plugin-axios": "~0.0.4",
     "vue-cli-plugin-vuesax": "~1.0.0",
     "vue-cli-plugin-vuetify": "~2.0.5",
-    "vue-loader": "^17.2.2",
+    "vue-loader": "^15.9.8",
     "vue-template-compiler": "~2.6.10",
     "vuetify-loader": "~1.0.5"
   }
