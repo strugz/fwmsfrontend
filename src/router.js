@@ -29,7 +29,7 @@ import jwt from 'jsonwebtoken'
 
 Vue.use(Router)
 
-const SR_BASE = process.env.VUE_APP_SR_URL || process.env.VUE_APP_srAPIURL
+const SR_BASE = process.env.VUE_APP_SR_URL
 
 const ifNotAuthenticated = (to, from, next) => {
   jwt.verify(Cookies.get('token'), process.env.VUE_APP_PRIVATE_KEY, (err, decoded) => {

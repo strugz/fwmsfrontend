@@ -47,7 +47,7 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails']),
     srFormURL() {
-      const base = process.env.VUE_APP_SR_URL || process.env.VUE_APP_srAPIURL
+      const base = process.env.VUE_APP_SR_URL
       return `${base}/#/ttp/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
       ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`

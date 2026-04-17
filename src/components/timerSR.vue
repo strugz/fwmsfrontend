@@ -61,7 +61,7 @@ export default {
         ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
       } else {
-        return `${base}/#/psstartedservice/${this.CurClientDetails.ACCMID}/
+        return `${process.env.VUE_APP_SR_URL_2}psstartedservice/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
       ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
       }
