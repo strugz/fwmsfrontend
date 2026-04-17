@@ -78,7 +78,8 @@ export default {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'PageNumber']),
     srFormURL() {
       // return `http://localhost:8081/#/psstartservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`;
-      return `https://sr.mdmpi.com.ph/#/psstartservice/${this.CurClientDetails.ACCMID}/${
+      const base = process.env.VUE_APP_SR_URL_2
+      return `${base}/#/psstartservice/${this.CurClientDetails.ACCMID}/${
         this.CurClientDetails.ACCMNM
       }/${this.CurUserDetails.CNTMST.CNTMID}`
     },

@@ -50,14 +50,18 @@ export default {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'SRTimerDialog', 'PageNumber']),
     srFormURL() {
       if (this.CurThreadDetails.TRDMTY == 'Service Report') {
+
         // return `http://localhost:8081/#/startedservice/${this.CurClientDetails.ACCMID}/
         // ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         // ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
-        return `https://sr.mdmpi.com.ph/#/startedservice/${this.CurClientDetails.ACCMID}/
+
+        const base = process.env.VUE_APP_SR_URL
+
+        return `${base}/#/startedservice/${this.CurClientDetails.ACCMID}/
         ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
       } else {
-        return `https://sr.mdmpi.com.ph/#/psstartedservice/${this.CurClientDetails.ACCMID}/
+        return `${base}/#/psstartedservice/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
       ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
       }

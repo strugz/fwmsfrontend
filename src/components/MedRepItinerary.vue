@@ -67,7 +67,8 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'PageNumber']),
     srFormURL() {
-      return `https://sr.mdmpi.com.ph/#/mrrvisit/${this.CurUserDetails.CNTMST.CNTMID}/
+      const base = process.env.VUE_APP_SR_URL_2
+      return `${base}/#/mrrvisit/${this.CurUserDetails.CNTMST.CNTMID}/
         ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`
     },
   },

@@ -47,7 +47,8 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails']),
     srFormURL() {
-      return `https://sr.mdmpi.com.ph/#/ttp/${this.CurClientDetails.ACCMID}/
+      const base = process.env.VUE_APP_SR_URL || process.env.VUE_APP_srAPIURL
+      return `${base}/#/ttp/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
       ${this.CurThreadDetails.TRDMTI}/${this.CurThreadDetails.TRDMTT}`
     },

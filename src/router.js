@@ -29,6 +29,8 @@ import jwt from 'jsonwebtoken'
 
 Vue.use(Router)
 
+const SR_BASE = process.env.VUE_APP_SR_URL || process.env.VUE_APP_srAPIURL
+
 const ifNotAuthenticated = (to, from, next) => {
   jwt.verify(Cookies.get('token'), process.env.VUE_APP_PRIVATE_KEY, (err, decoded) => {
     if (decoded) {
@@ -81,7 +83,7 @@ export default new Router({
           component: SROutbox,
           props: route => ({
             // iframeUrl: route.query.url || 'http://localhost:8081/#/outbox',
-            iframeUrl: route.query.url || 'https://sr.mdmpi.com.ph/#/outbox',
+            iframeUrl: route.query.url || `${SR_BASE}/#/outbox`,
             title: route.query.title || 'Service Report Outbox',
           }),
         },
@@ -101,7 +103,7 @@ export default new Router({
             const SRID = route.params.SRID
             const ClientID = route.params.ClientID
             // const iframeUrl = `http://localhost:8081/#/field-report/${ClientID}/${SRID}`
-            const iframeUrl = `https://sr.mdmpi.com.ph/#/field-report/${ClientID}/${SRID}`
+            const iframeUrl = `${SR_BASE}/#/field-report/${ClientID}/${SRID}`
             return {
               iframeUrl,
               title: route.query.title || 'Field Report',

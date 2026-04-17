@@ -68,7 +68,8 @@ export default {
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurCheckInAcc']),
     srFormURL() {
-      return `https://sr.mdmpi.com.ph/#/${this.InOut}/${this.CurUserDetails.CNTMST.CNTMID}/${
+      const base = process.env.VUE_APP_SR_URL_2
+      return `${base}${this.InOut}/${this.CurUserDetails.CNTMST.CNTMID}/${
         this.InOut == 'checkin' ? this.CurClientDetails.ACCMID : this.CurCheckInAcc.customerID.ACCMID
       }`
     },
