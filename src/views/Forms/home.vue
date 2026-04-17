@@ -67,6 +67,9 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'POCT'">
             <span @click="goToViewer">Itinerary Viewer</span>
           </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'POCT'">
+            <span @click="goToPSCalendarViewer">PS Viewer</span>
+          </v-list-tile>
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">
             <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
           </v-list-tile>

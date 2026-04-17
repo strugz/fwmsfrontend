@@ -11,24 +11,12 @@
         </span>
         <v-layout row wrap>
           <v-flex sm4 md4 lg6 xs12>
-            <v-combobox
-              outline
-              v-model="selectedItemDepartment"
-              :items="departmentList"
-              item-text="DPTNME"
-              item-value="DPTNME"
-              label="Select Department"
-            ></v-combobox>
+            <v-combobox outline v-model="selectedItemDepartment" :items="departmentList" item-text="DPTNME"
+              item-value="DPTNME" label="Select Department"></v-combobox>
           </v-flex>
           <v-flex sm4 md4 lg6 xs12>
-            <v-combobox
-              outline
-              v-model="selectedItemUser"
-              :items="userList"
-              item-text="CNTMNN"
-              item-value="CNTMID"
-              label="Select User"
-            ></v-combobox>
+            <v-combobox outline v-model="selectedItemUser" :items="userList" item-text="CNTMNN" item-value="CNTMID"
+              label="Select User"></v-combobox>
           </v-flex>
         </v-layout>
         <v-layout row wrap>
@@ -80,14 +68,8 @@
                         {{ event.client }}
                       </div>
                     </div>
-                    <div
-                      v-show="event.trdsts != '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                      v-on="on"
-                      v-for="(text, index) in event.trdmde.split('|')"
-                      :key="index"
-                    >
+                    <div v-show="event.trdsts != '' && event.trdsts != 'LEAVE'" class="my-event2 mb-1" v-ripple
+                      v-on="on" v-for="(text, index) in event.trdmde.split('|')" :key="index">
                       <div v-show="event.trdmde != '' && event.trdsts != 'SCHEDULED'">
                         {{ text }}
                       </div>
@@ -96,11 +78,8 @@
                         {{ event.itiobj + ' - ' }} {{ event.itiins }}
                       </div>
                     </div>
-                    <div
-                      v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                    >
+                    <div v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
+                      class="my-event2 mb-1" v-ripple>
                       {{ event.trdmde }}
                     </div>
                     <div v-show="event.trdsts == 'LEAVE'" class="my-event4" v-ripple v-on="on">
@@ -108,13 +87,8 @@
                     </div>
                   </template>
                   <v-layout wrap row>
-                    <v-card
-                      v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      flat
-                    >
+                    <v-card v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'" color="grey lighten-4"
+                      min-width="250px" max-width="350px" flat>
                       <v-toolbar color="primary" dark>
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
@@ -178,10 +152,17 @@ export default {
     },
   },
   mounted() {
+
     if (this.CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON') {
       this.departmentList.push({ DPTNME: 'PASLUZON' }, { DPTNME: 'PASVISMIN' })
-    } else {
+    }
+
+    if (this.CurUserDetails.CNTMST.CNTDPT == 'IMG') {
       this.departmentList.push({ DPTNME: 'IMG' })
+    }
+
+    if (this.CurUserDetails.CNTMST.CNTDPT == 'POCT') {
+      this.departmentList.push({ DPTNME: 'POCT' })
     }
 
     if (localStorage.mydata != undefined) {
