@@ -1,239 +1,182 @@
 <template>
-  <v-container grid-list-md pa-2>
-    <v-layout v-if="render == true" align-start justify-center row wrap>
-      <v-flex md8 xs12>
-        <v-layout wrap column>
-          <v-flex>
-            <v-card>
-              <v-toolbar text dense light color="white">
-                <template class="caption">
-                  <span class="indigo darken-1 pa-1 caption white--text mr-1">
-                    {{ CurThreadDetails.TRDSEC }}
-                  </span>
-                  <span class="red darken-1 pa-1 caption white--text">Service Report</span>
-                  <span class="ml-1 font-weight-medium">SR: #{{ CurThreadDetails.TRDMTT }} </span>
-                </template>
-                <v-spacer></v-spacer>
-                <timer-sr v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'"></timer-sr>
-                <image-report
-                  v-if="
-                    CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG'
-                  "
-                ></image-report>
-                <v-dialog>
-                  <template v-slot:activator="{ on }">
-                    <v-btn small text icon color="indigo" class="ma-0" dark v-on="on" @click="loadCurSrDetails">
-                      <v-icon>print</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-card>
-                    <report-viewer></report-viewer>
-                  </v-card>
-                </v-dialog>
-                <service-report v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE'"></service-report>
-              </v-toolbar>
-            </v-card>
-          </v-flex>
-          <v-flex>
-            <v-expansion-panel expand>
-              <v-expansion-panel-content lazy>
-                <template v-slot:header>
-                  <v-container pa-1>
-                    <v-layout
-                      class="caption font-weight-regular text-uppercase"
-                      align-center
-                      justify-start
-                      row
-                      fill-height
-                      wrap
-                    >
-                      <v-flex xs12>
-                        <v-layout align-start row fill-height wrap>
-                          <v-flex>
-                            <template v-if="CurThreadDetails.TRDMUI">
-                              <app-label header="Posted by:" :detail="CurThreadDetails.TRDMUI.CNTMCN"></app-label>
-                            </template>
-                          </v-flex>
-                          <v-flex>
-                            <template v-if="CurSRDetails.header">
-                              <v-flex v-if="CurThreadDetails.TRDSEC != 'InHouse'">
-                                <app-label
-                                  header="Service Time:"
-                                  :detail="getRelativeTime(CurSRDetails.header.dateTimeCreated)"
-                                ></app-label>
-                              </v-flex>
-                            </template>
-                          </v-flex>
-                          <v-flex v-if="CurSRDetails.workWith && CurSRDetails.workWith.length > 0">
-                            <app-label
-                              header="workWith"
-                              :detail="
-                                CurSRDetails.workWith[0].userInitials !== '1'
-                                  ? concatinate(CurSRDetails.workWith, 'userInitials')
-                                  : ''
-                              "
-                            ></app-label>
-                          </v-flex>
-                        </v-layout>
-                      </v-flex>
-                      <v-flex xs12 pb-0 v-if="CurSRDetails.meterReading">
-                        <v-layout align-center justify-start row fill-height wrap>
-                          <v-flex xs6>
-                            <app-label header="Instrument Model:" :detail="CurThreadDetails.TRDMDE"></app-label>
-                          </v-flex>
-                          <v-flex xs6>
-                            <app-label
-                              header="Service Type:"
-                              :detail="concatinate(CurSRDetails.serviceTypes || [], 'srTypeDescription')"
-                            ></app-label>
-                          </v-flex>
-                          <v-flex></v-flex>
-                        </v-layout>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
-                </template>
-                <v-container grid-list-lg>
-                  <v-layout
-                    class="caption font-weight-regular text-uppercase"
-                    align-center
-                    justify-start
-                    row
-                    fill-height
-                    wrap
-                  >
-                    <v-flex xs12 pt-0 v-if="CurSRDetails.purposeOfVisits.length != 0">
-                      <v-layout align-start justify-start row fill-height wrap>
-                        <v-flex xs12>
-                          <span class="font-weight-bold black--text text-left pa-0"> Purpose of Visit </span>
-                          <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Remarks</v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                          <v-layout wrap pl-3 pt-0 v-for="(itm, key) in CurSRDetails.purposeOfVisits || []" :key="key">
-                            <v-flex xs6 py-1>
-                              {{ itm.pvDescription }}
-                            </v-flex>
-                            <v-flex xs6 py-1>
-                              {{ itm.pvRemarks }}
-                            </v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.actionTakens">
-                      <v-layout align-start justify-start row fill-height wrap>
-                        <v-flex xs12>
-                          <span class="font-weight-bold black--text text-left pa-0"> Action Taken </span>
-                          <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Remarks</v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.actionTakens || []" :key="key">
-                            <v-flex xs6 py-1>
-                              {{ itm.atDescription }}
-                            </v-flex>
-                            <v-flex xs6 py-1>
-                              {{ itm.atRemarks }}
-                            </v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.partsUsed.length != 0">
-                      <v-layout align-start justify-start row fill-height wrap>
-                        <v-flex xs12>
-                          <span class="font-weight-bold black--text text-left pa-0"> Parts Used </span>
-                          <v-layout wrap pt-0>
-                            <v-flex py-1 class="font-weight-medium black--text text-left">Quantity</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-left">Part Number</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-left">Description</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-left">Serial Number</v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.partsUsed || []" :key="key">
-                            <v-flex py-1>
-                              {{ itm.puqty }}
-                            </v-flex>
-                            <v-flex py-1>
-                              {{ itm.puPartNo }}
-                            </v-flex>
-                            <v-flex py-1>
-                              {{ itm.puDescription }}
-                            </v-flex>
-                            <v-flex py-1>
-                              {{ itm.puSerialNo }}
-                            </v-flex>
-                          </v-layout>
-                          <v-divider></v-divider>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.remarks">
-                      <app-label
-                        style="white-space: pre-line"
-                        header="Significant Remarks:"
-                        :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"
-                      ></app-label>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.charges.length != 0">
-                      <span class="font-weight-bold black--text text-left pa-0"> Charges </span>
-                      <v-layout wrap>
-                        <v-flex v-for="(chrg, key) in CurSRDetails.charges || []" :key="key">
-                          <app-label :header="chrg.srChargesDescription" :detail="chrg.srChargesRemarks"></app-label>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.footer">
-                      <span class="font-weight-bold black--text text-left pa-0"> Customer Acceptance: </span>
-                      <v-layout wrap>
-                        <v-flex>
-                          <app-label
-                            header="Laboratory Representative"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"
-                          ></app-label>
-                        </v-flex>
-                        <v-flex>
-                          <app-label
-                            header="Date Time In"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeIn : ''"
-                          ></app-label>
-                        </v-flex>
-                        <v-flex>
-                          <app-label
-                            header="Date Time Out"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeOut : ''"
-                          ></app-label>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex xs12 v-if="CurSRDetails.footerSignature">
-                      <v-flex x12 style="font-size: 0.85em" class="pb-0 pl-0"> Acceptance Signature </v-flex>
-                      <v-card width="300" class="ml-2">
-                        <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
-                      </v-card>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+  <v-container fluid class="sr-detail-page">
+    <div class="sr-detail-shell">
+      <v-card v-if="spnr" class="sr-state-card" elevation="0">
+        <v-progress-circular indeterminate color="teal darken-2"></v-progress-circular>
+        <div class="sr-state-card__title">Loading service report...</div>
+      </v-card>
+
+      <v-card v-else-if="loadError || !hasRequiredDetails" class="sr-state-card" elevation="0">
+        <v-icon size="44" color="blue-grey lighten-1">assignment_late</v-icon>
+        <div class="sr-state-card__title">Service report details unavailable</div>
+        <div class="sr-state-card__text">Refresh the page or open this report again from the customer thread.</div>
+      </v-card>
+
+      <template v-else>
+        <v-card class="sr-detail-header" elevation="0">
+          <div class="sr-detail-header__main">
+            <div class="sr-detail-badges">
+              <span class="sr-detail-badge sr-detail-badge--field">{{ CurThreadDetails.TRDSEC }}</span>
+              <span class="sr-detail-badge sr-detail-badge--report">Service Report</span>
+            </div>
+            <h1>SR: #{{ CurThreadDetails.TRDMTT }}</h1>
+            <p>{{ clientName }}</p>
+          </div>
+
+          <div class="sr-detail-actions">
+            <div v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'" class="sr-detail-action">
+              <timer-sr></timer-sr>
+            </div>
+
+            <div v-if="canViewImages" class="sr-detail-action">
+              <image-report :CurThread="CurThreadDetails"></image-report>
+            </div>
+
+            <div v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE'" class="sr-detail-action">
+              <service-report></service-report>
+            </div>
+
+            <v-dialog v-else max-width="1100">
+              <template v-slot:activator="{ on }">
+                <v-btn small depressed color="teal darken-2" dark v-on="on" @click="loadCurSrDetails">
+                  <v-icon left size="18">print</v-icon>
+                  Report
+                </v-btn>
+              </template>
+              <v-card class="sr-detail-report-dialog">
+                <report-viewer></report-viewer>
+              </v-card>
+            </v-dialog>
+          </div>
+        </v-card>
+
+        <v-card class="sr-detail-summary" elevation="0">
+          <div v-if="postedBy" class="sr-detail-summary__item">
+            <span>Posted by</span>
+            <strong>{{ postedBy }}</strong>
+          </div>
+          <div v-if="serviceTime" class="sr-detail-summary__item">
+            <span>Service time</span>
+            <strong>{{ serviceTime }}</strong>
+          </div>
+          <div v-if="workWith" class="sr-detail-summary__item">
+            <span>Work with</span>
+            <strong>{{ workWith }}</strong>
+          </div>
+          <div v-if="instrumentModel" class="sr-detail-summary__item">
+            <span>Instrument model</span>
+            <strong>{{ instrumentModel }}</strong>
+          </div>
+          <div v-if="serviceType" class="sr-detail-summary__item">
+            <span>Service type</span>
+            <strong>{{ serviceType }}</strong>
+          </div>
+        </v-card>
+
+        <div class="sr-detail-grid">
+          <v-card v-if="hasItems(CurSRDetails.purposeOfVisits)" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Purpose of Visit</div>
+            <div class="sr-detail-table sr-detail-table--two">
+              <div class="sr-detail-table__head">
+                <span>Description</span>
+                <span>Remarks</span>
+              </div>
+              <div v-for="(itm, key) in CurSRDetails.purposeOfVisits" :key="key" class="sr-detail-table__row">
+                <span>{{ itm.pvDescription || '-' }}</span>
+                <span>{{ itm.pvRemarks || '-' }}</span>
+              </div>
+            </div>
+          </v-card>
+
+          <v-card v-if="hasItems(CurSRDetails.actionTakens)" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Action Taken</div>
+            <div class="sr-detail-table sr-detail-table--two">
+              <div class="sr-detail-table__head">
+                <span>Description</span>
+                <span>Remarks</span>
+              </div>
+              <div v-for="(itm, key) in CurSRDetails.actionTakens" :key="key" class="sr-detail-table__row">
+                <span>{{ itm.atDescription || '-' }}</span>
+                <span>{{ itm.atRemarks || '-' }}</span>
+              </div>
+            </div>
+          </v-card>
+
+          <v-card v-if="hasItems(CurSRDetails.partsUsed)" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Parts Used</div>
+            <div class="sr-detail-table sr-detail-table--parts">
+              <div class="sr-detail-table__head">
+                <span>Quantity</span>
+                <span>Part number</span>
+                <span>Description</span>
+                <span>Serial number</span>
+              </div>
+              <div v-for="(itm, key) in CurSRDetails.partsUsed" :key="key" class="sr-detail-table__row">
+                <span>{{ itm.puqty || '-' }}</span>
+                <span>{{ itm.puPartNo || '-' }}</span>
+                <span>{{ itm.puDescription || '-' }}</span>
+                <span>{{ itm.puSerialNo || '-' }}</span>
+              </div>
+            </div>
+          </v-card>
+
+          <v-card v-if="remarks" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Remarks</div>
+            <p class="sr-detail-section__body">{{ remarks }}</p>
+          </v-card>
+
+          <v-card v-if="hasItems(CurSRDetails.charges)" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Charges</div>
+            <div class="sr-detail-pills">
+              <div v-for="(chrg, key) in CurSRDetails.charges" :key="key" class="sr-detail-pill">
+                <span>{{ chrg.srChargesDescription || 'Charge' }}</span>
+                <strong>{{ chrg.srChargesRemarks || '-' }}</strong>
+              </div>
+            </div>
+          </v-card>
+
+          <v-card v-if="CurSRDetails.footer" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Customer Acceptance</div>
+            <div class="sr-detail-summary sr-detail-summary--nested">
+              <div class="sr-detail-summary__item">
+                <span>Laboratory representative</span>
+                <strong>{{ CurSRDetails.footer.customerUserID || '-' }}</strong>
+              </div>
+              <div class="sr-detail-summary__item">
+                <span>Date time in</span>
+                <strong>{{ CurSRDetails.footer.srfDateTimeIn || '-' }}</strong>
+              </div>
+              <div class="sr-detail-summary__item">
+                <span>Date time out</span>
+                <strong>{{ CurSRDetails.footer.srfDateTimeOut || '-' }}</strong>
+              </div>
+            </div>
+          </v-card>
+
+          <v-card v-if="CurSRDetails.footerSignature" class="sr-detail-section" elevation="0">
+            <div class="sr-detail-section__title">Acceptance Signature</div>
+            <v-img
+              class="sr-detail-signature"
+              contain
+              max-height="180"
+              max-width="360"
+              :src="CurSRDetails.footerSignature.srFooterAcceptance"
+            ></v-img>
+          </v-card>
+
+          <v-card v-if="!hasVisibleSections" class="sr-state-card sr-state-card--inline" elevation="0">
+            <v-icon size="40" color="blue-grey lighten-1">assignment</v-icon>
+            <div class="sr-state-card__title">No service report sections to show</div>
+          </v-card>
+        </div>
+      </template>
+    </div>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import moment from 'moment'
-import AppLabel from '@/components/appLabel'
-import ComFooter from '@/components/comFooter'
-import ComCard from '@/components/comCard'
 import timerSr from '@/components/timerSR'
 import serviceReport from '../SRFormView'
 import imageReport from '../SRImageViewer.vue'
@@ -241,9 +184,6 @@ import reportViewer from '@/reports/engineer/field/fieldReports.vue'
 
 export default {
   components: {
-    AppLabel,
-    ComFooter,
-    ComCard,
     timerSr,
     serviceReport,
     imageReport,
@@ -253,20 +193,39 @@ export default {
     return {
       spnr: true,
       render: false,
-      detail: {},
-      dialog: false,
+      loadError: false,
     }
   },
   computed: {
-    ...mapState(['CurSRDetails', 'CurThreadDetails', 'CurUserDetails', 'CurClientDetails', 'SRTimerDialog']),
-    trd_comments() {
-      let cmnt = this.CurThreadDetails.TRDCMM
-      console.log(this.CurThreadDetails)
-      if (cmnt !== undefined) {
-        return cmnt
-      } else {
-        return cmnt
-      }
+    ...mapState(['CurSRDetails', 'CurThreadDetails', 'CurUserDetails', 'CurClientDetails']),
+    hasRequiredDetails() {
+      return this.render && this.CurThreadDetails && this.CurThreadDetails.TRDMTT
+    },
+    clientName() {
+      return this.CurClientDetails.ACCMNM || this.CurClientDetails.ACCMSC || 'Service report details'
+    },
+    postedBy() {
+      return this.CurThreadDetails.TRDMUI ? this.CurThreadDetails.TRDMUI.CNTMCN : ''
+    },
+    serviceTime() {
+      if (!this.CurSRDetails.header || this.CurThreadDetails.TRDSEC === 'InHouse') return ''
+      return this.getRelativeTime(this.CurSRDetails.header.dateTimeCreated)
+    },
+    workWith() {
+      if (!this.hasItems(this.CurSRDetails.workWith)) return ''
+      if (this.CurSRDetails.workWith[0].userInitials === '1') return ''
+      return this.concatinate(this.CurSRDetails.workWith, 'userInitials')
+    },
+    instrumentModel() {
+      return (
+        this.CurThreadDetails.TRDMDE || (this.CurSRDetails.header && this.CurSRDetails.header.instrumentModelID) || ''
+      )
+    },
+    serviceType() {
+      return this.concatinate(this.CurSRDetails.serviceTypes || [], 'srTypeDescription')
+    },
+    remarks() {
+      return this.CurSRDetails.remarks ? this.CurSRDetails.remarks.srRemarks : ''
     },
     ownTRD() {
       try {
@@ -281,53 +240,62 @@ export default {
         return false
       }
     },
+    canViewImages() {
+      const department = this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTDPT
+      return (
+        this.CurThreadDetails.TRDSTS === 'WORK COMPLETE' &&
+        typeof department === 'string' &&
+        department.substring(0, 3) === 'TSG'
+      )
+    },
+    hasVisibleSections() {
+      return (
+        this.hasItems(this.CurSRDetails.purposeOfVisits) ||
+        this.hasItems(this.CurSRDetails.actionTakens) ||
+        this.hasItems(this.CurSRDetails.partsUsed) ||
+        this.hasItems(this.CurSRDetails.charges) ||
+        Boolean(this.remarks) ||
+        Boolean(this.CurSRDetails.footer) ||
+        Boolean(this.CurSRDetails.footerSignature)
+      )
+    },
   },
-  watch: {
-    // SRTimerDialog: function() {
-    //   if (this.SRTimerDialog == false) {
-    //     location.reload()
-    //   }
-    // },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      setTimeout(() => {
-        this.spnr = false
-      }, 200)
-    })
-    this.getThreadDetailsById(this.$route.params.TRDMTI).then(
-      res => {
-        this.getSRDetailsById(res.TRDMTT).then(() => {
-          this.render = true
-          console.log(this.render)
-        })
-        if (this.CurClientDetails.ACCMID !== this.CurThreadDetails.TRDMAC) {
-          this.getAcc(res.TRDMAC).then(
-            acc => {
-              this.upClient(acc.data)
-            },
-            error => {
-              console.error(error)
-            }
-          )
-        }
-      },
-      error => {
-        console.error(error)
-      }
-    )
+  async mounted() {
+    await this.loadDetails()
   },
   methods: {
-    ...mapActions(['getSRDetailsById', 'getThreadDetailsById', 'getAcc', 'updateThreadByID', 'getCNTMSTUserID']),
-    ...mapMutations(['upClient', 'upTrdDetails']),
+    ...mapActions(['getSRDetailsById', 'getThreadDetailsById', 'getAcc']),
+    ...mapMutations(['upClient']),
+    async loadDetails() {
+      this.spnr = true
+      this.render = false
+      this.loadError = false
+
+      try {
+        const thread = await this.getThreadDetailsById(this.$route.params.TRDMTI)
+        if (!thread || !thread.TRDMTT) {
+          throw new Error('Thread details did not include a service report id.')
+        }
+
+        await this.getSRDetailsById(thread.TRDMTT)
+
+        if (this.CurClientDetails.ACCMID !== thread.TRDMAC) {
+          const acc = await this.getAcc(thread.TRDMAC)
+          this.upClient(acc.data)
+        }
+
+        this.render = true
+      } catch (error) {
+        this.loadError = true
+        console.error(error)
+      } finally {
+        this.spnr = false
+      }
+    },
     loadCurSrDetails() {
-      this.getSRDetailsById(this.CurThreadDetails.TRDMTT)
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          alert(err)
-        })
+      return this.getSRDetailsById(this.CurThreadDetails.TRDMTT).catch(err => {
+        console.error(err)
+      })
     },
     concatinate(data, key) {
       if (!Array.isArray(data) || data.length === 0) return ''
@@ -340,43 +308,307 @@ export default {
         return ''
       }
     },
-    openDialogStatus() {
-      this.dialog = true
-    },
-    changeStatus() {
-      const data = {
-        id: this.CurThreadDetails.TRDMTI,
-        val: { TRDMST: !this.CurThreadDetails.TRDMST },
-      }
-
-      this.updateThreadByID(data).then(
-        () => {
-          this.CurThreadDetails.TRDMST = !this.CurThreadDetails.TRDMST
-          this.dialog = false
-        },
-        error => {
-          console.error(error)
-        }
-      )
+    hasItems(data) {
+      return Array.isArray(data) && data.length > 0
     },
     getRelativeTime(date) {
       if (!date) return ''
       try {
-        let time = moment().from(date, true)
         return moment(date).format('MMMM Do YYYY, hh:mm a')
       } catch (e) {
         return ''
       }
     },
-    comFromUser(i) {
-      return this.CurThreadDetails.TRDCMM[i].TRDCUI.CNTMID == this.CurUserDetails.CNTMST.CNTMID
-    },
   },
 }
 </script>
 
-<style>
-html {
-  overflow-y: auto;
+<style scoped>
+.sr-detail-page {
+  min-height: calc(100vh - 92px);
+  padding: 28px 16px 40px;
+}
+
+.sr-detail-shell {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.sr-detail-header,
+.sr-detail-summary,
+.sr-detail-section,
+.sr-state-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+}
+
+.sr-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 24px;
+}
+
+.sr-detail-header__main {
+  min-width: 0;
+}
+
+.sr-detail-header h1 {
+  margin: 8px 0 4px;
+  color: #102a43;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.sr-detail-header p {
+  margin: 0;
+  color: #62748a;
+  font-size: 14px;
+}
+
+.sr-detail-badges,
+.sr-detail-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sr-detail-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.sr-detail-badge--field {
+  background: #3949ab;
+}
+
+.sr-detail-badge--report {
+  background: #e53935;
+}
+
+.sr-detail-actions {
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.sr-detail-action {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.sr-detail-actions .layout {
+  display: inline-flex !important;
+  width: auto !important;
+  flex: 0 0 auto !important;
+}
+
+.sr-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+  padding: 18px 20px;
+}
+
+.sr-detail-summary--nested {
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.sr-detail-summary__item span {
+  display: block;
+  margin-bottom: 4px;
+  color: #7b8794;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sr-detail-summary__item strong {
+  display: block;
+  color: #243b53;
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sr-detail-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.sr-detail-section {
+  padding: 18px 20px;
+}
+
+.sr-detail-section__title {
+  margin-bottom: 14px;
+  color: #102a43;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sr-detail-section__body {
+  margin: 0;
+  color: #334e68;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.sr-detail-table {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+}
+
+.sr-detail-table__head,
+.sr-detail-table__row {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+  padding: 12px 14px;
+}
+
+.sr-detail-table--two .sr-detail-table__head,
+.sr-detail-table--two .sr-detail-table__row {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.sr-detail-table--parts .sr-detail-table__head,
+.sr-detail-table--parts .sr-detail-table__row {
+  grid-template-columns: 100px minmax(120px, 0.8fr) minmax(180px, 1.2fr) minmax(120px, 0.8fr);
+}
+
+.sr-detail-table__head {
+  background: #f7f9fb;
+  color: #52606d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sr-detail-table__row {
+  color: #334e68;
+  font-size: 14px;
+  border-top: 1px solid #e4e7eb;
+}
+
+.sr-detail-table__row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sr-detail-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.sr-detail-pill {
+  padding: 12px 14px;
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.sr-detail-pill span {
+  display: block;
+  margin-bottom: 4px;
+  color: #7b8794;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sr-detail-pill strong {
+  color: #243b53;
+  font-size: 14px;
+}
+
+.sr-detail-signature {
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.sr-state-card {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px;
+  text-align: center;
+}
+
+.sr-state-card--inline {
+  min-height: 180px;
+}
+
+.sr-state-card__title {
+  color: #243b53;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.sr-state-card__text {
+  max-width: 420px;
+  color: #62748a;
+  font-size: 14px;
+}
+
+.sr-detail-report-dialog {
+  min-height: 80vh;
+}
+
+@media (max-width: 760px) {
+  .sr-detail-page {
+    padding: 16px 10px 28px;
+  }
+
+  .sr-detail-header {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .sr-detail-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .sr-detail-table--two .sr-detail-table__head,
+  .sr-detail-table--two .sr-detail-table__row,
+  .sr-detail-table--parts .sr-detail-table__head,
+  .sr-detail-table--parts .sr-detail-table__row {
+    grid-template-columns: 1fr;
+  }
+
+  .sr-detail-table__head {
+    display: none;
+  }
 }
 </style>
