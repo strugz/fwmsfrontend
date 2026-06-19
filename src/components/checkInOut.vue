@@ -1,26 +1,42 @@
 <template>
-  <v-layout mt-0 row justify-center>
+  <div class="checkin-launcher">
     <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
-          <v-icon color="white lighten-1">timer_off</v-icon>
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" class="checkin-launcher__icon" v-on="on">
+          <v-icon color="white">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small rounded dark color="teal" v-on="on"> Check in / out </v-btn>
+        <v-btn v-else small rounded dark color="teal" class="checkin-launcher__button" v-on="on">
+          {{ actionLabel }}
+        </v-btn>
       </template>
-      <v-card class="hide-overflow" style="position: relative">
-        <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
-          <v-toolbar-title>Service Report Check-In</v-toolbar-title>
+      <v-card class="checkin-dialog">
+        <v-toolbar color="teal darken-2" dark flat height="64" class="checkin-dialog__toolbar">
+          <div class="checkin-dialog__title">
+            <span>{{ dialogTitle }}</span>
+            <small>{{ activeClientName }}</small>
+          </div>
           <v-spacer></v-spacer>
-          <v-btn icon @click="dialog = !dialog">
+          <v-btn icon @click="dialog = false">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px">
-          <iframe v-if="dialog" :src="srFormURL"></iframe>
+
+        <div class="checkin-dialog__body">
+          <div v-if="iframeLoading" class="checkin-dialog__loading">
+            <v-progress-circular indeterminate color="teal darken-2"></v-progress-circular>
+            <span>Loading {{ actionLabel.toLowerCase() }} page...</span>
+          </div>
+          <iframe
+            v-if="dialog"
+            class="checkin-dialog__frame"
+            allow="geolocation; camera"
+            :src="srFormURL"
+            @load="iframeLoading = false"
+          ></iframe>
         </div>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </div>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
@@ -29,6 +45,7 @@ export default {
     return {
       dialog: false,
       InOut: '',
+      iframeLoading: false,
     }
   },
   methods: {
@@ -55,7 +72,9 @@ export default {
       this.checkCurInAcc()
     },
     dialog(val) {
-      if (val == false) {
+      if (val) {
+        this.iframeLoading = true
+      } else {
         this.getCurCheckInAcc(this.CurUserDetails.CNTMST.CNTMID)
       }
     },
@@ -65,6 +84,18 @@ export default {
   },
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurCheckInAcc']),
+    actionLabel() {
+      return this.InOut == 'checkout' ? 'Check out' : 'Check in'
+    },
+    dialogTitle() {
+      return this.InOut == 'checkout' ? 'Service Report Check-Out' : 'Service Report Check-In'
+    },
+    activeClientName() {
+      if (this.InOut == 'checkout' && this.CurCheckInAcc.customerID) {
+        return this.CurCheckInAcc.customerID.ACCMSC || this.CurCheckInAcc.customerID.ACCMNM || ''
+      }
+      return this.CurClientDetails.ACCMSC || this.CurClientDetails.ACCMNM || ''
+    },
     srFormURL() {
       const base = process.env.VUE_APP_SR_URL_2
       return `${base}${this.InOut}/${this.CurUserDetails.CNTMST.CNTMID}/${
@@ -74,12 +105,81 @@ export default {
   },
 }
 </script>
-<style>
-iframe {
-  border: none;
+<style scoped>
+.checkin-launcher,
+.checkin-launcher__button {
+  width: 100%;
+}
+
+.checkin-launcher__button {
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.checkin-launcher__icon {
+  width: auto;
+}
+
+.checkin-dialog {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f7fafc;
+}
+
+.checkin-dialog__toolbar {
+  flex: 0 0 auto;
+}
+
+.checkin-dialog__title {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.checkin-dialog__title span {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.checkin-dialog__title small {
+  max-width: 70vw;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checkin-dialog__body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  background: #fff;
+}
+
+.checkin-dialog__frame {
   position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+  border: 0;
+}
+
+.checkin-dialog__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #52606d;
+  font-size: 14px;
+  background: #f7fafc;
 }
 </style>

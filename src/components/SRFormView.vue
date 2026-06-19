@@ -1,63 +1,93 @@
 <template>
-  <v-layout mt-0 row justify-end>
-    <v-dialog v-model="pdfDialog" persistent>
+  <div class="report-preview-launcher">
+    <v-dialog v-model="pdfDialog" fullscreen hide-overlay persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
         <v-btn small text icon color="indigo" class="ma-0" dark v-on="on" @click="PrintPreview">
           <v-icon>print</v-icon>
         </v-btn>
       </template>
-      <v-card>
-        <v-card-title primary-title class="primary lighten-2">
-          Print Preview
+
+      <v-card class="report-preview">
+        <v-toolbar color="teal darken-2" dark flat height="64" class="report-preview__toolbar">
+          <div class="report-preview__title">
+            <span>Print Preview</span>
+            <small>{{ CurThreadDetails.TRDMTT || 'Service report' }}</small>
+          </div>
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn small text icon color="indigo" class="mr-2" dark v-on="on" @click="LoadPdf">
-                <v-icon large>file_download</v-icon>
+              <v-btn icon color="white" v-on="on" :disabled="loading" @click="LoadPdf">
+                <v-icon>file_download</v-icon>
               </v-btn>
             </template>
             <span>Download SR</span>
           </v-tooltip>
-          <v-btn small text icon color="indigo" class="ma-0" dark @click="close">
+          <v-btn icon color="white" @click="close">
             <v-icon>close</v-icon>
           </v-btn>
-        </v-card-title>
-        <v-card-text class="pa-0">
-          <v-container fluid class="pa-1">
-            <v-layout row wrap align-center>
-              <v-flex xs12 sm6 md3>
-                <v-text-field
-                  v-model="EmailReceiver"
-                  label="Email Address"
-                  ref="email"
-                  :rules="[rules.email]"
-                  placeholder="Customer Email"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 md1 xl1 class="pa-0 ma-0">
-                <v-btn class="btn primary" @click="Emailvalidation" :disabled="sendBTNDisbled">Send to Email</v-btn>
-              </v-flex>
-              <v-flex xs12>
-                <span v-show="sendBTNDisbled">Sending please wait...</span>
-                <v-progress-circular v-show="sendBTNDisbled" indeterminate color="primary"></v-progress-circular>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card-text>
-        <div v-show="loading">
-          <span>Loading...</span>
-          <v-progress-linear :indeterminate="true"></v-progress-linear>
+        </v-toolbar>
+
+        <div class="report-preview__content">
+          <aside class="report-preview__panel">
+            <div class="report-preview__panel-title">Send Copy</div>
+            <div class="report-preview__panel-text">Email this report directly to the customer or download a PDF.</div>
+
+            <v-text-field
+              ref="email"
+              v-model="EmailReceiver"
+              class="report-preview__field"
+              :rules="[rules.email]"
+              label="Email address"
+              placeholder="customer@email.com"
+              outlined
+              dense
+              hide-details="auto"
+            ></v-text-field>
+
+            <v-btn
+              block
+              depressed
+              color="teal darken-2"
+              dark
+              :loading="sendBTNDisbled"
+              :disabled="sendBTNDisbled"
+              @click="Emailvalidation"
+            >
+              Send to Email
+            </v-btn>
+
+            <v-btn block text color="teal darken-2" class="mt-2" :disabled="loading" @click="LoadPdf">
+              <v-icon left size="18">file_download</v-icon>
+              Download PDF
+            </v-btn>
+          </aside>
+
+          <main class="report-preview__viewer">
+            <div v-if="loading" class="report-preview__state">
+              <v-progress-circular indeterminate color="teal darken-2"></v-progress-circular>
+              <span>Preparing report preview...</span>
+            </div>
+
+            <div v-else-if="!pdfsrc" class="report-preview__state">
+              <v-icon size="44" color="blue-grey lighten-1">picture_as_pdf</v-icon>
+              <span>No preview loaded yet</span>
+            </div>
+
+            <div v-else class="report-preview__document">
+              <pdf :src="pdfsrc"></pdf>
+            </div>
+          </main>
         </div>
-        <pdf :src="pdfsrc"></pdf>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </div>
 </template>
+
 <script>
-/* eslint-disable */
-import pdf from "vue-pdf";
-import { mapState } from "vuex";
-import axios from "axios";
+import pdf from 'vue-pdf'
+import { mapState } from 'vuex'
+import axios from 'axios'
+
 export default {
   components: {
     pdf,
@@ -69,209 +99,228 @@ export default {
       dialog: false,
       pdfsrc: null,
       pdfDialog: false,
-      EmailReceiver: "",
+      EmailReceiver: '',
       rules: {
-        email: (value) => {
+        email: value => {
           const pattern =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-          return pattern.test(value) || "Invalid e-mail.";
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return pattern.test(value) || 'Invalid e-mail.'
         },
       },
-    };
+    }
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails", "CurThreadDetails"]),
-    srFormURL() {
-      const base = process.env.VUE_APP_SR_URL
-      return `${base}/#/srview/${this.CurThreadDetails.TRDMTT}`;
+    ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails']),
+    reportMachineCode() {
+      return (this.CurThreadDetails.TRDMMC || '').replace(':', '').replace('/', ' ').replace('/', ' ').trim()
+    },
+    reportRequest() {
+      const reportId = this.CurThreadDetails.TRDMTT || ''
+      const isTtp = reportId.substring(0, 3) == 'TTP'
+      const url = isTtp
+        ? `https://crm.mdmpi.com.ph/rpt/rgenerator/report/${reportId}`
+        : `https://crm.mdmpi.com.ph/rpt/rgenerator/report/${reportId}/${this.reportMachineCode}`
+
+      return {
+        method: isTtp ? 'POST' : 'GET',
+        headers: {
+          'content-type': 'application/pdf, */*',
+          accept: 'application/pdf, */*',
+        },
+        responseType: 'blob',
+        url,
+      }
+    },
+    emailRequestUrl() {
+      const clientName = encodeURI((this.CurClientDetails.ACCMNM || '').replace('.', '').replace('&', 'and').trim())
+      return `https://crm.mdmpi.com.ph/rpt/rgenerator/report/${clientName}/${this.reportMachineCode}/${this.EmailReceiver}/${this.CurThreadDetails.TRDMTT}`
     },
   },
   methods: {
     close() {
-      this.EmailReceiver = "";
-      this.resetForm();
-      this.pdfDialog = false;
+      this.EmailReceiver = ''
+      this.sendBTNDisbled = false
+      this.resetForm()
+      this.pdfDialog = false
     },
     resetForm() {
-      this.$refs.email.reset();
+      if (this.$refs.email) {
+        this.$refs.email.reset()
+      }
     },
     LoadPdf() {
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        ":",
-        ""
-      );
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        "/",
-        " "
-      );
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        "/",
-        " "
-      );
-      let OpHeaders = "";
-      // let data = JSON.stringify({ SRID: this.CurThreadDetails.TRDMTT });
-      if (this.CurThreadDetails.TRDMTT.substring(0, 3) == "TTP") {
-        OpHeaders = {
-          method: "POST",
-          headers: {
-            "content-type": "application/pdf, */*",
-            accept: "application/pdf, */*",
-          },
-          responseType: "blob",
-          url:
-            "https://crm.mdmpi.com.ph/rpt/rgenerator/report/" +
-            this.CurThreadDetails.TRDMTT,
-        };
-      } else {
-        OpHeaders = {
-          method: "GET",
-          headers: {
-            "content-type": "application/pdf, */*",
-            accept: "application/pdf, */*",
-          },
-          responseType: "blob",
-          url:
-            "https://crm.mdmpi.com.ph/rpt/rgenerator/report/" +
-            this.CurThreadDetails.TRDMTT +
-            "/" +
-            this.CurThreadDetails.TRDMMC,
-        };
-      }
-      axios(OpHeaders)
-        .then((res) => {
-          var fileURL = window.URL.createObjectURL(new Blob([res.data]));
-          var fileLink = document.createElement("a");
-          fileLink.href = fileURL;
-          fileLink.setAttribute(
-            "download",
-            this.CurThreadDetails.TRDMTT + ".pdf"
-          );
-          document.body.appendChild(fileLink);
-          fileLink.click();
+      axios(this.reportRequest)
+        .then(res => {
+          const fileURL = window.URL.createObjectURL(new Blob([res.data]))
+          const fileLink = document.createElement('a')
+          fileLink.href = fileURL
+          fileLink.setAttribute('download', `${this.CurThreadDetails.TRDMTT}.pdf`)
+          document.body.appendChild(fileLink)
+          fileLink.click()
+          document.body.removeChild(fileLink)
+          window.URL.revokeObjectURL(fileURL)
         })
-        .catch((error) => {
-          alert(error);
-        });
+        .catch(error => {
+          alert(error)
+        })
     },
     Emailvalidation() {
-      this.sendBTNDisbled = true;
-      if (this.EmailReceiver != "") {
-        this.InsertEmail();
+      if (this.EmailReceiver != '') {
+        this.sendBTNDisbled = true
+        this.InsertEmail()
       } else {
-        alert("No Email Inputted!");
+        alert('No Email Inputted!')
       }
     },
     InsertEmail() {
-      let email = "";
-      if (this.EmailReceiver == "") {
-        email = srvid + "/" + this.CurThreadDetails.TRDMMC;
-      } else {
-        email =
-          encodeURI(
-            this.CurClientDetails.ACCMNM.replace(".", "").replace("&", "and").trim()
-          ) +
-          "/" +
-          this.CurThreadDetails.TRDMMC.replace(":", "")
-            .replace("/", " ")
-            .replace("/", " ").trim() +
-          "/" +
-          this.EmailReceiver +
-          "/" +
-          this.CurThreadDetails.TRDMTT;
-      }
       const OpHeaders = {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "content-type": "application/json",
+          'content-type': 'application/json',
         },
-        url: "https://crm.mdmpi.com.ph/rpt/rgenerator/report/" + email,
-      };
-      console.log(OpHeaders);
+        url: this.emailRequestUrl,
+      }
+
       axios(OpHeaders)
-        .then((res) => {
+        .then(res => {
           if (res.status == 200) {
-            this.sendBTNDisbled = false;
-            alert("Email Sent!");
+            this.sendBTNDisbled = false
+            alert('Email Sent!')
           }
         })
-        .catch((error) => {
-          alert(error);
-        });
+        .catch(error => {
+          this.sendBTNDisbled = false
+          alert(error)
+        })
     },
     PrintPreview() {
-      this.loading = true;
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        ":",
-        ""
-      );
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        "/",
-        " "
-      );
-      this.CurThreadDetails.TRDMMC = this.CurThreadDetails.TRDMMC.replace(
-        "/",
-        " "
-      );
-      let OpHeaders = "";
-      // let data = JSON.stringify({ SRID: this.CurThreadDetails.TRDMTT });
-      if (this.CurThreadDetails.TRDMTT.substring(0, 3) == "TTP") {
-        OpHeaders = {
-          method: "POST",
-          headers: {
-            "content-type": "application/pdf, */*",
-            accept: "application/pdf, */*",
-          },
-          responseType: "blob",
-          url:
-            "https://crm.mdmpi.com.ph/rpt/rgenerator/report/" +
-            this.CurThreadDetails.TRDMTT,
-        };
-      } else {
-        OpHeaders = {
-          method: "GET",
-          headers: {
-            "content-type": "application/pdf, */*",
-            accept: "application/pdf, */*",
-          },
-          responseType: "blob",
-          url:
-            "https://crm.mdmpi.com.ph/rpt/rgenerator/report/" +
-            this.CurThreadDetails.TRDMTT +
-            "/" +
-            this.CurThreadDetails.TRDMMC,
-        };
-      }
+      this.loading = true
 
-      axios(OpHeaders)
-        .then((res) => {
-          const blob = new Blob([res.data]);
-          const objectURL = URL.createObjectURL(blob);
-          this.pdfsrc = objectURL;
-          this.loading = false;
+      axios(this.reportRequest)
+        .then(res => {
+          if (this.pdfsrc) {
+            URL.revokeObjectURL(this.pdfsrc)
+          }
+
+          const blob = new Blob([res.data])
+          this.pdfsrc = URL.createObjectURL(blob)
+          this.loading = false
         })
-        .catch((error) => {
-          this.loading = false;
-          alert(error);
-        });
+        .catch(error => {
+          this.loading = false
+          alert(error)
+        })
     },
   },
-};
+}
 </script>
-<style>
-.aspect-ratio {
-  padding-top: 20px;
-  padding-right: 0px;
-  width: 100%;
-  aspect-ratio: inherit;
+
+<style scoped>
+.report-preview-launcher {
+  display: inline-flex;
 }
 
-.aspect-ratio iframe {
+.report-preview {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  overflow: hidden;
+  background: #eef4f7;
+}
+
+.report-preview__toolbar {
+  flex: 0 0 auto;
+}
+
+.report-preview__title {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.report-preview__title span {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.report-preview__title small {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+}
+
+.report-preview__content {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+.report-preview__panel {
+  padding: 20px;
+  border-right: 1px solid #d9e2ec;
+  background: #fff;
+}
+
+.report-preview__panel-title {
+  color: #102a43;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.report-preview__panel-text {
+  margin: 6px 0 18px;
+  color: #62748a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.report-preview__field {
+  margin-bottom: 14px;
+}
+
+.report-preview__viewer {
   position: relative;
-  height: 700px;
-  width: 850px;
+  min-width: 0;
+  overflow: auto;
+  padding: 28px;
 }
 
-.btn {
-  width: 95%;
+.report-preview__state {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #52606d;
+  font-size: 14px;
+}
+
+.report-preview__document {
+  width: min(100%, 920px);
+  min-height: calc(100vh - 120px);
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+}
+
+@media (max-width: 860px) {
+  .report-preview__content {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .report-preview__panel {
+    border-right: 0;
+    border-bottom: 1px solid #d9e2ec;
+    padding: 14px;
+  }
+
+  .report-preview__viewer {
+    padding: 14px;
+  }
 }
 </style>

@@ -16,25 +16,22 @@
         <card-sr v-else :data="thread"></card-sr>
       </div>
     </div>
-    <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top" class="mb-5 mr-5">
-      <template v-slot:activator>
-        <v-btn color="blue darken-2" dark fab>
-          <v-icon>add</v-icon>
-          <v-icon>close</v-icon>
-        </v-btn>
-      </template>
-      <my-TTP v-show="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"></my-TTP>
-      <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSG'"></new-sreport>
-      <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMS'"></new-sreport>
-      <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/ENGINEER'"></new-sreport>
-      <checkInOut
-        v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"
-      ></checkInOut>
-      <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'PS'"></ps-form>
-      <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMG'"></ps-form>
-      <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'"></ps-form>
-      <collection-visit class="mb-2" v-if="CurUserDetails.CNTMST.CNTSEC == 'COLLECTOR'"></collection-visit>
-    </v-speed-dial>
+    <div class="thread-actions">
+      <div class="thread-actions__label">Quick actions</div>
+      <div class="thread-actions__list">
+        <checkInOut
+          v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"
+        ></checkInOut>
+        <my-TTP v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"></my-TTP>
+        <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSG'"></new-sreport>
+        <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMS'"></new-sreport>
+        <new-sreport v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/ENGINEER'"></new-sreport>
+        <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'PS'"></ps-form>
+        <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'IMG'"></ps-form>
+        <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'"></ps-form>
+        <collection-visit v-if="CurUserDetails.CNTMST.CNTSEC == 'COLLECTOR'"></collection-visit>
+      </div>
+    </div>
     <div class="text-center">
       <v-pagination v-model="pageNumber" :length="TotalPages" circle></v-pagination>
     </div>
@@ -186,6 +183,7 @@ export default {
 .thread-workspace {
   max-width: 1280px;
   padding-top: 20px;
+  padding-bottom: 96px;
 }
 
 .thread-list {
@@ -202,5 +200,63 @@ export default {
   text-decoration: underline;
   color: steelblue;
   cursor: pointer;
+}
+
+.thread-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 8;
+  width: 180px;
+  padding: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+}
+
+.thread-actions__label {
+  margin-bottom: 8px;
+  color: #52606d;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.thread-actions__list {
+  display: grid;
+  gap: 8px;
+}
+
+.thread-actions .layout {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.thread-actions .v-btn {
+  width: 100%;
+  min-width: 0 !important;
+  margin: 0 !important;
+  justify-content: center;
+}
+
+@media (max-width: 760px) {
+  .thread-workspace {
+    padding-bottom: 132px;
+  }
+
+  .thread-actions {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    padding: 10px;
+  }
+
+  .thread-actions__list {
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
 }
 </style>

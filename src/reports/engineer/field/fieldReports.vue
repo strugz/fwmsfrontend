@@ -24,202 +24,179 @@
     </div>
 
     <div id="printSection" class="report-container">
-      <v-layout row wrap>
-        <!-- Offices & contact -->
-        <v-layout row wrap>
-          <v-flex xs12>
-            <img :src="require('@/assets/logoMDMPI.png')" style="width: 450px; height: 70px" />
-            <div>
-              <h3 class="headline mb-0">Main Office:</h3>
+      <div class="report-sheet">
+        <div class="report-top">
+          <section class="report-company">
+            <img :src="require('@/assets/logoMDMPI.png')" class="report-logo" />
+
+            <div class="office-block">
+              <div class="office-title">Main Office:</div>
+              <div>G/F Molave Bldg., 2231 Chino Roces Ave., Makati City, Phils 1233</div>
+              <div>Tel. No. +63.2.751.9999; Directline +63.2.813.8617</div>
+              <div>Fax +63.2.817.8405; e-mail: service@marsmandrysdale.com</div>
             </div>
-            <div>G/F Molave Bldg., 2231 Chino Roces Ave., Makati City, Phils 1233</div>
-            <div>Tel. No. +63.2.7751.9999</div>
-            <div>e-mail: service@marsmandrysdale.com</div>
-            <h3 class="headline mb-0">Davao Office:</h3>
-            <div>G/F Door #4 MK Central Bldg., JP Laurel Ave., Bajada, Davao City</div>
-            <div>Tel No. +63.2.7751.9999 local 4075</div>
-            <div>Hotline No. +63.908.888.0000</div>
-          </v-flex>
-        </v-layout>
-        <div class="vertical-divider"></div>
-        <!-- Service details -->
-        <v-layout row wrap>
-          <v-flex xs12>
-            <template v-if="isValidDate(CurSRDetails.header.callDateTime)">
-              <h3 class="headline mb-0">CALL DATE & TIME</h3>
-              <div>{{ CurSRDetails.header.callDateTime }}</div>
-            </template>
-            <h3 class="headline mb-0">SERVICE BY</h3>
-            <div>{{ sentenceCase(CurThreadDetails.TRDMUI.CNTMCN) }}</div>
-            <h3 class="headline mb-0">Instrument</h3>
-            <div>{{ sentenceCase(CurSRDetails.header.instrumentModelID) }}</div>
-            <div>Arrival: {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.arrival : '' }}</div>
-            <div>Departure: {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.departure : '' }}</div>
-          </v-flex>
-        </v-layout>
-      </v-layout>
 
-      <!-- top divider -->
-      <div class="header-divider"></div>
-
-      <!-- Customer -->
-      <v-layout row wrap class="section">
-        <v-flex xs6>
-          <h3 class="headline mb-0">Customer Name</h3>
-          <div>{{ sentenceCase(CurClientDetails.ACCMNM) }}</div>
-        </v-flex>
-        <v-flex xs6>
-          <h3 class="headline mb-0">Address</h3>
-          <div>{{ sentenceCase(CurClientDetails.ACCMAD) }}</div>
-        </v-flex>
-      </v-layout>
-
-      <v-layout row wrap class="section">
-        <v-flex xs6>
-          <h3 class="headline mb-0">Service Type</h3>
-          <div>
-            {{
-              sentenceCase(
-                (CurSRDetails.serviceTypes &&
-                  CurSRDetails.serviceTypes[0] &&
-                  CurSRDetails.serviceTypes[0].srTypeDescription) ||
-                  ''
-              )
-            }}
-          </div>
-        </v-flex>
-        <v-flex xs6>
-          <h3 class="headline mb-0">Purpose of Visit</h3>
-          <div v-for="pv in CurSRDetails.purposeOfVisits || []" :key="pv.pvid">
-            <v-card-text>
-              {{ sentenceCase(pv.pvDescription) }} <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
-            </v-card-text>
-          </div>
-        </v-flex>
-      </v-layout>
-
-      <!-- Action Taken -->
-      <v-card text class="section card-no-elevation compact-actions">
-        <v-card-title primary-title>
-          <h3 class="headline mb-0">Action Taken</h3>
-        </v-card-title>
-        <v-card-text>
-          <v-layout row wrap>
-            <!-- Left: Normal actions -->
-            <v-flex xs8>
-              <ul class="actions-list">
-                <li
-                  v-for="(action, i) in (CurSRDetails.actionTakens || []).filter(
-                    a => a.atDescription !== 'TESTED PARTS'
-                  )"
-                  :key="'action-' + i"
-                >
-                  <!-- Show description -->
-                  <span class="desc-col wrap-text">
-                    {{ sentenceCase(action.atDescription) }}
-                  </span>
-                  <!-- If it's OTHERS and has remarks, append them -->
-                  <span v-if="action.atDescription === 'OTHERS' && action.atRemarks">
-                    - {{ sentenceCase(action.atRemarks) }}
-                  </span>
-                </li>
-              </ul>
-            </v-flex>
-
-            <!-- Vertical divider -->
-            <div class="vertical-divider"></div>
-
-            <!-- Right: Tested Parts plain layout -->
-            <v-flex xs4>
-              <div v-if="testedPartsList.length">
-                <h3 class="headline mb-0">TESTED PARTS</h3>
-
-                <div class="tested-parts-header mt-2">
-                  <span class="part-col">PART NUMBER</span>
-                  <span class="desc-col">DESCRIPTION</span>
-                </div>
-
-                <div v-for="(tp, idx) in testedPartsList" :key="'tp-' + idx" class="tested-parts-row">
-                  <span class="part-col">{{ formatTestedParts(tp).partNumber }}</span>
-                  <span class="desc-col">{{ sentenceCase(formatTestedParts(tp).description) }}</span>
-                </div>
+            <div class="office-block office-block--davao">
+              <div class="office-title">Davao Office:</div>
+              <div>G/F Door #4 MK Central Bldg., JP Laurel Ave., Bajada, Davao City</div>
+              <div class="office-line">
+                <span>Tel No. +63.2.751.9999 local 4075</span>
+                <span>Hotline No. +63.908.888.0000</span>
               </div>
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
+            </div>
+          </section>
 
-      <!-- Remarks -->
-      <v-card text class="section card-no-elevation">
-        <v-card-title primary-title>
-          <h3 class="headline mb-0">Significant Remarks</h3>
-        </v-card-title>
-        <v-card-text>
-          <div v-if="CurSRDetails.remarks != null">{{ sentenceCase(CurSRDetails.remarks.srRemarks) }}</div>
-        </v-card-text>
-      </v-card>
+          <section class="report-service">
+            <div class="service-row">
+              <span>CALL DATE &amp; TIME</span>
+              <b>:</b>
+              <strong>{{ isValidDate(reportHeader.callDateTime) ? reportHeader.callDateTime : '' }}</strong>
+            </div>
+            <div class="service-row">
+              <span>SERVICE BY</span>
+              <b>:</b>
+              <strong>{{ serviceByName }}</strong>
+            </div>
+            <div class="service-row">
+              <span>WORK WITH</span>
+              <b>:</b>
+              <strong>{{ workWithText }}</strong>
+            </div>
+            <div class="service-row">
+              <span>INSTRUMENT</span>
+              <b>:</b>
+              <strong>{{ sentenceCase(reportHeader.instrumentModelID) }}</strong>
+            </div>
+            <div class="meter-row">
+              <span>METER READING</span>
+              <b>:</b>
+            </div>
+            <div class="meter-values">
+              <span>Arrival : {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.arrival : '' }}</span>
+              <span>Departure : {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.departure : '' }}</span>
+            </div>
+            <div class="meter-box"></div>
+          </section>
+        </div>
 
-      <!-- Parts used - table with borders -->
-      <v-card text class="section card-no-elevation compact-box">
-        <v-card-title primary-title>
-          <h3 class="headline mb-0">Parts Used</h3>
-        </v-card-title>
+        <div class="customer-grid">
+          <div class="customer-left">
+            <div class="field-row">
+              <span>CUSTOMER NAME</span>
+              <b>:</b>
+              <strong>{{ sentenceCase(CurClientDetails.ACCMNM) }}</strong>
+            </div>
+            <div class="field-row">
+              <span>ADDRESS</span>
+              <b>:</b>
+              <strong>{{ sentenceCase(CurClientDetails.ACCMAD) }}</strong>
+            </div>
+          </div>
+          <div class="service-type-box">
+            <div class="section-label">SERVICE TYPE</div>
+            <div class="service-type-value">
+              {{
+                sentenceCase(
+                  (CurSRDetails.serviceTypes &&
+                    CurSRDetails.serviceTypes[0] &&
+                    CurSRDetails.serviceTypes[0].srTypeDescription) ||
+                    ''
+                )
+              }}
+            </div>
+          </div>
+        </div>
 
-        <v-data-table
-          :headers="partsHeaders"
-          :items="CurSRDetails.partsUsed || []"
-          hide-actions
-          class="parts-table"
-          disable-sort
-        >
-          <template v-slot:item="props">
-            <tr>
-              <td>{{ sentenceCase(props.item.puDescription) }}</td>
-              <td>{{ props.item.puPartNo }}</td>
-              <td class="text-right">{{ props.item.puqty }}</td>
-            </tr>
-          </template>
+        <section class="purpose-box">
+          <div class="section-label">PURPOSE OF VISIT</div>
+          <div class="purpose-list">
+            <div v-for="pv in CurSRDetails.purposeOfVisits || []" :key="pv.pvid">
+              {{ sentenceCase(pv.pvDescription) }}
+              <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
+            </div>
+          </div>
+        </section>
 
-          <template slot="no-data">
-            <tr>
-              <td colspan="3">No parts used</td>
-            </tr>
-          </template>
-        </v-data-table>
-      </v-card>
+        <section class="action-grid">
+          <div class="action-box">
+            <div class="section-label">ACTION TAKEN</div>
+            <div class="action-list">
+              <div v-for="(action, i) in normalActionList" :key="'action-' + i">
+                {{ sentenceCase(action.atDescription) }}
+                <span v-if="action.atDescription === 'OTHERS' && action.atRemarks">
+                  - {{ sentenceCase(action.atRemarks) }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="tested-box">
+            <div class="section-label">TESTED PARTS</div>
+            <div class="tested-header">
+              <span>PART NUMBER</span>
+              <span>DESCRIPTION</span>
+            </div>
+            <div v-for="(tp, idx) in testedPartsList" :key="'tp-' + idx" class="tested-row">
+              <span>{{ formatTestedParts(tp).partNumber }}</span>
+              <span>{{ sentenceCase(formatTestedParts(tp).description) }}</span>
+            </div>
+          </div>
+        </section>
 
-      <!-- Footer & signatures -->
-      <v-layout row wrap class="section footer-section">
-        <v-flex xs6>
-          <div class="signature-block">
-            <v-img
-              :src="(CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance) || ''"
-              class="signature-img"
+        <section class="remarks-box">
+          <div class="section-label">SIGNIFICANT REMARKS :</div>
+          <div class="remarks-text">
+            {{ CurSRDetails.remarks != null ? sentenceCase(CurSRDetails.remarks.srRemarks) : '' }}
+          </div>
+        </section>
+
+        <section class="parts-box">
+          <div class="section-label">PARTS USED</div>
+          <div class="parts-header">
+            <span>QTY</span>
+            <span>PART NUMBER</span>
+            <span>DESCRIPTION</span>
+          </div>
+          <div v-for="(part, idx) in CurSRDetails.partsUsed || []" :key="'part-' + idx" class="parts-row">
+            <span>{{ part.puqty }}</span>
+            <span>{{ part.puPartNo }}</span>
+            <span>{{ sentenceCase(part.puDescription) }}</span>
+          </div>
+        </section>
+
+        <section class="bottom-grid">
+          <div class="result-box">
+            <div class="section-label">RESULT</div>
+          </div>
+          <div class="result-box result-box--middle">
+            <div class="section-label">RESULT</div>
+            <div class="result-value">
+              :
+              {{
+                sentenceCase(
+                  (CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || ''
+                )
+              }}
+            </div>
+          </div>
+          <div class="acceptance-box">
+            <img
+              v-if="CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance"
+              :src="CurSRDetails.footerSignature.srFooterAcceptance"
+              class="acceptance-signature"
             />
-            <div class="signature-name">
+            <div class="acceptance-name">
               {{ sentenceCase((CurSRDetails.footer && CurSRDetails.footer.customerUserID) || '') }}
             </div>
+            <div class="acceptance-time">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeIn) || '' }}</div>
+            <div class="acceptance-time">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeOut) || '' }}</div>
           </div>
-          <div class="signature-meta">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeIn) || '' }}</div>
-          <div class="signature-meta">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeOut) || '' }}</div>
-        </v-flex>
-      </v-layout>
-
-      <div class="bottom-divider"></div>
-
-      <div class="sr-footer">
-        Result:
-        {{
-          sentenceCase(
-            (CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || ''
-          )
-        }}
+        </section>
       </div>
 
-      <div class="sr-footer">
-        SR No.
-        <span style="color: red">
-          {{ (CurSRDetails.header && CurSRDetails.header.srid) || '' }}
+      <div class="report-page-footer">
+        <span class="report-page-count">Page 1 of 1</span>
+        <span class="report-sr-number">
+          SR No.<strong>{{ reportHeader.srid || '' }}</strong>
         </span>
       </div>
     </div>
@@ -266,8 +243,26 @@ export default {
   },
   computed: {
     ...mapState(['CurThreadDetails', 'CurSRDetails', 'CurClientDetails']),
+    reportHeader() {
+      return this.CurSRDetails.header || {}
+    },
+    serviceByName() {
+      return this.CurThreadDetails.TRDMUI ? this.sentenceCase(this.CurThreadDetails.TRDMUI.CNTMCN) : ''
+    },
+    normalActionList() {
+      return (this.CurSRDetails.actionTakens || []).filter(a => a.atDescription !== 'TESTED PARTS')
+    },
     testedPartsList() {
-      return this.CurSRDetails.actionTakens.filter(a => a.atDescription === 'TESTED PARTS')
+      return (this.CurSRDetails.actionTakens || []).filter(a => a.atDescription === 'TESTED PARTS')
+    },
+    workWithText() {
+      const workWith = this.CurSRDetails.workWith || []
+      if (!Array.isArray(workWith) || workWith.length === 0) return ''
+      if (workWith[0].userInitials === '1') return ''
+      return workWith
+        .map(user => user.userInitials)
+        .filter(Boolean)
+        .join(' / ')
     },
   },
   watch: {
@@ -508,254 +503,337 @@ export default {
 .report-wrapper,
 .report-container,
 .report-container * {
-  font-family: 'Times New Roman', Times, serif !important;
+  font-family: Arial, Helvetica, sans-serif !important;
 }
 
 .report-wrapper {
   display: flex;
   justify-content: center;
-}
-
-.wrap-text {
-  flex-wrap: wrap;
-  white-space: normal;
+  background: #eef2f5;
 }
 
 .report-container {
   width: 8.5in;
-  background: white;
-  border: 1px solid #222;
-  padding: 12px;
+  min-height: 11in;
+  padding: 0.42in 0.36in 0.22in;
+  color: #111;
+  background: #fff;
+  box-sizing: border-box;
 }
 
-.header-divider {
-  height: 1px;
-  background: #000 !important;
-  margin: 8px 0;
-  border: none;
-}
-
-.section {
-  margin-bottom: 4px;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #ccc;
-}
-
-.v-card__title {
-  padding: 4px 8px !important;
-}
-
-.v-card__text {
-  padding: 4px 8px !important;
-}
-
-.actions-list {
-  margin-top: 0;
-}
-
-.card-no-elevation {
-  box-shadow: none;
-}
-
-.tested-parts-header {
-  font-weight: bold;
+.report-sheet {
   display: flex;
-  gap: 8px;
-  font-size: 13px;
+  min-height: 10.08in;
+  flex-direction: column;
+  border: 2px solid #111;
+  background: #fff;
 }
 
-.tested-parts-row {
-  display: flex;
-  gap: 8px;
-  font-size: 13px;
+.report-top {
+  display: grid;
+  min-height: 1.78in;
+  grid-template-columns: 56% 44%;
+  border-bottom: 2px solid #111;
 }
 
-.compact-actions {
-  font-size: 12px;
+.report-company {
+  padding: 14px 14px 10px;
+  border-right: 2px solid #111;
 }
 
-.compact-actions .v-card__title {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-}
-
-.compact-actions .actions-list {
-  margin: 0;
-  padding-left: 14px;
-}
-
-.compact-actions .actions-list li {
-  margin-bottom: 2px;
-  font-size: 12px;
-  line-height: 1.2;
-}
-
-.compact-actions .tested-parts-header,
-.compact-actions .tested-parts-row {
-  font-size: 12px;
-}
-
-.compact-actions strong {
-  font-size: 12px;
-}
-
-h3.headline,
-.headline.mb-0,
-.v-card .headline,
-.v-card__title .headline,
-.v-card-title .headline,
-.section strong,
-.compact-box h3.headline,
-.compact-actions h3.headline {
-  font-family: 'Times New Roman', Times, serif !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  margin: 0 0 2px 0 !important;
-  line-height: 1.2 !important;
-}
-
-.section strong {
+.report-logo {
   display: block;
+  width: 3.65in;
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 6px;
+}
+
+.office-block {
+  margin-top: 8px;
+  padding-left: 2px;
+  font-size: 10.5px;
   font-weight: 600;
+  line-height: 1.55;
+}
+
+.office-block--davao {
+  margin-top: 14px;
+}
+
+.office-title,
+.section-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.office-title {
+  text-transform: none;
+}
+
+.office-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.report-service {
+  padding: 10px 0 0;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.service-row {
+  display: grid;
+  min-height: 22px;
+  grid-template-columns: 138px 14px 1fr;
+  align-items: end;
+  padding: 0 0 0 12px;
+}
+
+.service-row strong {
+  min-height: 18px;
+  padding-left: 6px;
+  border-bottom: 2px solid #111;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.meter-row {
+  display: grid;
+  grid-template-columns: 138px 14px 1fr;
+  padding: 14px 0 0 12px;
+}
+
+.meter-values {
+  display: flex;
+  justify-content: center;
+  gap: 82px;
+  padding: 10px 12px 8px;
+  font-size: 11px;
+}
+
+.meter-box {
+  height: 47px;
+  margin: 0 3px 2px 10px;
+  border: 2px solid #111;
+}
+
+.customer-grid {
+  display: grid;
+  min-height: 0.62in;
+  grid-template-columns: 56% 44%;
+  border-bottom: 2px solid #111;
+}
+
+.customer-left {
+  border-right: 2px solid #111;
+}
+
+.field-row {
+  display: grid;
+  min-height: 31px;
+  grid-template-columns: 128px 18px 1fr;
+  align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid #777;
+}
+
+.field-row:last-child {
+  border-bottom: 0;
+}
+
+.field-row span,
+.field-row b {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.field-row strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.service-type-box {
+  padding: 9px 12px;
+}
+
+.service-type-value {
+  margin-top: 24px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.purpose-box {
+  min-height: 0.58in;
+  padding: 12px 14px;
+  border-bottom: 2px solid #111;
+}
+
+.purpose-list,
+.action-list {
+  margin-top: 14px;
+  padding-left: 16px;
   font-size: 14px;
-  margin-bottom: 2px;
+  line-height: 1.55;
 }
 
-.part-col {
-  width: 100px;
+.action-grid {
+  display: grid;
+  min-height: 1.12in;
+  grid-template-columns: 56% 44%;
+  border-bottom: 2px solid #111;
 }
 
-.desc-col {
-  flex: 1;
+.action-box {
+  padding: 8px 14px;
+  border-right: 2px solid #111;
 }
 
-.parts-table table {
-  width: 100%;
-  border-collapse: collapse;
+.tested-box {
+  padding: 8px 12px;
+}
+
+.tested-header,
+.tested-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 18px;
+}
+
+.tested-header {
+  margin-top: 16px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.tested-row {
+  margin-top: 8px;
   font-size: 12px;
 }
 
-.compact-box {
-  padding: 6px !important;
-  margin-bottom: 4px !important;
+.remarks-box {
+  min-height: 0.46in;
+  padding: 7px 14px 10px;
+  border-bottom: 2px solid #111;
 }
 
-.compact-box .v-card__title {
-  padding: 2px 6px !important;
+.remarks-text {
+  margin-top: 9px;
+  padding-left: 14px;
+  font-size: 16px;
+  line-height: 1.35;
 }
 
-.compact-box .v-card__text,
-.compact-box .v-data-table {
-  padding: 2px 6px !important;
+.parts-box {
+  flex: 1 1 auto;
+  min-height: 3.62in;
+  padding: 8px 14px;
+  border-bottom: 2px solid #111;
 }
 
-.compact-box h3.headline {
-  margin: 0;
-  font-size: 14px;
+.parts-header,
+.parts-row {
+  display: grid;
+  grid-template-columns: 100px 210px 1fr;
+  gap: 12px;
+  padding-left: 66px;
 }
 
-.compact-box .parts-table table td,
-.compact-box .parts-table table th {
-  padding: 2px 4px;
-  font-size: 11px;
-  line-height: 1.1;
+.parts-header {
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: underline;
 }
 
-.compact-box .v-card__title {
-  margin-bottom: 0;
+.parts-row {
+  margin-top: 8px;
+  font-size: 12px;
 }
 
-.compact-box .v-card__title + .v-data-table,
-.compact-box .v-card__title + .v-card__text + .v-data-table {
-  margin-top: 0;
+.bottom-grid {
+  display: grid;
+  min-height: 1.55in;
+  grid-template-columns: 31% 28% 41%;
 }
 
-.compact-box .v-data-table {
-  margin-top: 0;
+.result-box {
+  padding: 14px;
+  border-right: 2px solid #111;
 }
 
-.compact-box .v-data-table .v-data-table__wrapper {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+.result-box--middle {
+  position: relative;
 }
 
-.compact-box .v-data-table__actions {
-  margin: 0;
-  padding: 0;
-}
-
-.parts-table th,
-.parts-table td {
-  border: 1px solid #333;
-  padding: 4px 6px;
-}
-
-.parts-table thead th {
-  background: #f7f7f7;
-}
-
-.signature-name {
-  margin-top: 6px;
-  font-weight: 600;
+.result-value {
+  margin-top: 26px;
+  text-align: center;
   font-size: 13px;
 }
 
-.signature-meta {
-  font-size: 11px;
-}
-
-.bottom-divider {
-  height: 1px;
-  background: #ddd;
-  margin: 8px 0;
-}
-
-.sr-footer {
-  font-size: 11px;
-  color: #333;
-}
-
-.vertical-divider {
-  border-left: 1px solid #000;
-  height: auto;
-  margin: 0 6px;
-}
-
-.signature-block {
+.acceptance-box {
   position: relative;
-  width: 200px;
-  height: 80px;
-  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 14px 16px;
+  text-align: center;
+}
+
+.acceptance-signature {
+  position: absolute;
+  right: 16px;
+  bottom: 52px;
+  max-width: 190px;
+  max-height: 58px;
+  object-fit: contain;
+}
+
+.acceptance-name,
+.acceptance-time {
+  position: relative;
+  z-index: 1;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.acceptance-time {
+  margin-top: 4px;
+}
+
+.report-page-footer {
+  position: relative;
+  height: 22px;
   font-size: 14px;
-  color: #000;
-  line-height: 80px;
-  user-select: none;
+  line-height: 22px;
+}
+
+.report-page-count {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.report-sr-number {
+  position: absolute;
+  right: 0;
+  font-weight: 800;
+}
+
+.report-sr-number strong {
+  color: #f00;
 }
 
 .recipient-combobox .v-input__slot {
   min-height: 36px;
-}
-
-.recipient-combobox .v-combobox__selections {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-}
-
-.recipient-combobox .v-chip {
-  max-width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.recipient-combobox .v-text-field__slot input {
-  min-width: 120px;
-}
-
-.recipient-combobox .v-input__slot {
   overflow: visible;
+  position: relative !important;
 }
 
 .recipient-combobox .v-combobox__selections {
@@ -774,18 +852,10 @@ h3.headline,
   margin-bottom: 4px;
 }
 
-.recipient-combobox .v-combobox__input {
-  flex: 1 1 auto !important;
+.recipient-combobox .v-combobox__input,
+.recipient-combobox input[type='text'] {
   width: 100% !important;
   min-width: 120px !important;
-}
-
-.recipient-combobox input[type='text'] {
-  min-width: 120px !important;
-}
-
-.recipient-combobox .v-input__slot {
-  position: relative !important;
 }
 
 .recipient-combobox .v-text-field__slot {
@@ -795,31 +865,22 @@ h3.headline,
   padding-bottom: 4px;
 }
 
-.recipient-combobox .v-combobox__selection,
 .recipient-combobox .v-chip {
+  max-width: 180px;
   z-index: 1;
-}
-
-.signature-name {
-  position: relative;
-  z-index: 1;
-}
-
-.signature-img {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 120px;
-  height: auto;
-  transform: translateY(-50%);
-  transform: translateX(-10%);
-  pointer-events: none;
-  z-index: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 @media print {
   .no-print {
     display: none !important;
+  }
+
+  .report-wrapper {
+    padding: 0 !important;
+    background: #fff;
   }
 }
 </style>
