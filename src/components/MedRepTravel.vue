@@ -2,15 +2,13 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Travel
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Travel </v-btn>
       </template>
       <v-flex xs12>
-        <v-card color="grey lighten-4" min-width="350px" flat class="mt-0" justify-center>
+        <v-card color="grey lighten-4" min-width="350px" text class="mt-0" justify-center>
           <v-toolbar color="primary" dark>
             <v-toolbar-title>Travel</v-toolbar-title>
           </v-toolbar>

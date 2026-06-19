@@ -4,8 +4,8 @@
       <template v-slot:activator="{ on }">
         <span v-on="on"> User/Contact Manager </span>
       </template>
-      <v-card color="primary lighten-3" class="hide-overflow" style="position: relative;">
-        <v-toolbar color="primary" dense dark flat>
+      <v-card color="primary lighten-3" class="hide-overflow" style="position: relative">
+        <v-toolbar color="primary" dense dark text>
           <v-toolbar-title>User Account Manager</v-toolbar-title>
 
           <v-spacer></v-spacer>
@@ -16,14 +16,14 @@
         <v-card-text>
           <template>
             <div>
-              <v-toolbar flat color="white">
+              <v-toolbar text color="white">
                 <v-text-field
                   clearable
                   hide-details
                   solo
                   prepend-inner-icon="search"
                   placeholder="search"
-                  flat
+                  text
                 ></v-text-field>
                 <v-spacer></v-spacer>
                 <!-- Add Edit Dialog -->
@@ -79,8 +79,8 @@
 
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="blue darken-1" flat @click="close">Cancel</v-btn>
-                      <v-btn color="blue darken-1" flat @click="save">Save</v-btn>
+                      <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
@@ -93,12 +93,8 @@
                     <v-switch hide-details :value="true"></v-switch>
                   </td>
                   <td>
-                    <v-icon class="mr-2" @click="editItem(props.item)">
-                      edit
-                    </v-icon>
-                    <v-icon @click="deleteItem(props.item)">
-                      settings_backup_restore
-                    </v-icon>
+                    <v-icon class="mr-2" @click="editItem(props.item)"> edit </v-icon>
+                    <v-icon @click="deleteItem(props.item)"> settings_backup_restore </v-icon>
                   </td>
                 </template>
                 <!-- <template v-slot:no-data>

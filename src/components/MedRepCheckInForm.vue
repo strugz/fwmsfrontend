@@ -2,14 +2,12 @@
   <v-layout mt-0 row justify-center>
     <v-dialog width="500" v-model="dialog" hide-overlay persistent>
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Create MedRep Visit
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Create MedRep Visit </v-btn>
       </template>
-      <v-card class="hide-overflow" style="position: relative;">
+      <v-card class="hide-overflow" style="position: relative">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Start Itinerary</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -31,7 +29,7 @@
             </v-flex>
           </v-layout>
           <v-layout row justify-center>
-            <v-flex xs6 text-xs-center>
+            <v-flex xs6 text-center>
               <v-btn @click="StartTTPItinerary">Start Visit</v-btn>
             </v-flex>
           </v-layout>
@@ -135,7 +133,7 @@ export default {
         TRDCRN: '',
         TRDLOC: this.lat + ' ' + this.long,
       })
-      setTimeout(function() {
+      setTimeout(function () {
         console.log(data)
       }, 1000)
 

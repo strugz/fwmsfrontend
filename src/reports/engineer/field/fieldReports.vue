@@ -1,9 +1,9 @@
 <template>
   <v-container fluid class="report-wrapper pa-4">
-    <div class="no-print" style="text-align: right; margin-bottom: 10px;">
+    <div class="no-print" style="text-align: right; margin-bottom: 10px">
       <v-btn @click="generatePDF">📄 Download PDF</v-btn>
       <v-btn color="success" @click="emailPDF">📧 Email PDF</v-btn>
-      <div style="margin-top:8px; max-width:420px; margin-left:auto;">
+      <div style="margin-top: 8px; max-width: 420px; margin-left: auto">
         <v-combobox
           class="recipient-combobox"
           v-model="emailRecipients"
@@ -18,7 +18,7 @@
           placeholder="Add email and press Enter"
           :rules="[emailListRule]"
           :hide-details="true"
-          style="width: 100%;"
+          style="width: 100%"
         ></v-combobox>
       </div>
     </div>
@@ -28,7 +28,7 @@
         <!-- Offices & contact -->
         <v-layout row wrap>
           <v-flex xs12>
-            <img :src="require('@/assets/logoMDMPI.png')" style="width: 450px; height: 70px;" />
+            <img :src="require('@/assets/logoMDMPI.png')" style="width: 450px; height: 70px" />
             <div>
               <h3 class="headline mb-0">Main Office:</h3>
             </div>
@@ -77,11 +77,20 @@
       <v-layout row wrap class="section">
         <v-flex xs6>
           <h3 class="headline mb-0">Service Type</h3>
-          <div>{{ sentenceCase((CurSRDetails.serviceTypes && CurSRDetails.serviceTypes[0] && CurSRDetails.serviceTypes[0].srTypeDescription) || '') }}</div>
+          <div>
+            {{
+              sentenceCase(
+                (CurSRDetails.serviceTypes &&
+                  CurSRDetails.serviceTypes[0] &&
+                  CurSRDetails.serviceTypes[0].srTypeDescription) ||
+                  ''
+              )
+            }}
+          </div>
         </v-flex>
         <v-flex xs6>
           <h3 class="headline mb-0">Purpose of Visit</h3>
-          <div v-for="pv in (CurSRDetails.purposeOfVisits || [])" :key="pv.pvid">
+          <div v-for="pv in CurSRDetails.purposeOfVisits || []" :key="pv.pvid">
             <v-card-text>
               {{ sentenceCase(pv.pvDescription) }} <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
             </v-card-text>
@@ -90,7 +99,7 @@
       </v-layout>
 
       <!-- Action Taken -->
-      <v-card flat class="section card-no-elevation compact-actions">
+      <v-card text class="section card-no-elevation compact-actions">
         <v-card-title primary-title>
           <h3 class="headline mb-0">Action Taken</h3>
         </v-card-title>
@@ -100,7 +109,9 @@
             <v-flex xs8>
               <ul class="actions-list">
                 <li
-                  v-for="(action, i) in (CurSRDetails.actionTakens || []).filter(a => a.atDescription !== 'TESTED PARTS')"
+                  v-for="(action, i) in (CurSRDetails.actionTakens || []).filter(
+                    a => a.atDescription !== 'TESTED PARTS'
+                  )"
                   :key="'action-' + i"
                 >
                   <!-- Show description -->
@@ -139,7 +150,7 @@
       </v-card>
 
       <!-- Remarks -->
-      <v-card flat class="section card-no-elevation">
+      <v-card text class="section card-no-elevation">
         <v-card-title primary-title>
           <h3 class="headline mb-0">Significant Remarks</h3>
         </v-card-title>
@@ -149,7 +160,7 @@
       </v-card>
 
       <!-- Parts used - table with borders -->
-      <v-card flat class="section card-no-elevation compact-box">
+      <v-card text class="section card-no-elevation compact-box">
         <v-card-title primary-title>
           <h3 class="headline mb-0">Parts Used</h3>
         </v-card-title>
@@ -161,7 +172,7 @@
           class="parts-table"
           disable-sort
         >
-          <template slot="items" slot-scope="props">
+          <template v-slot:item="props">
             <tr>
               <td>{{ sentenceCase(props.item.puDescription) }}</td>
               <td>{{ props.item.puPartNo }}</td>
@@ -181,7 +192,10 @@
       <v-layout row wrap class="section footer-section">
         <v-flex xs6>
           <div class="signature-block">
-            <v-img :src="(CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance) || ''" class="signature-img" />
+            <v-img
+              :src="(CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance) || ''"
+              class="signature-img"
+            />
             <div class="signature-name">
               {{ sentenceCase((CurSRDetails.footer && CurSRDetails.footer.customerUserID) || '') }}
             </div>
@@ -193,11 +207,18 @@
 
       <div class="bottom-divider"></div>
 
-  <div class="sr-footer">Result: {{ sentenceCase((CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || '') }}</div>
+      <div class="sr-footer">
+        Result:
+        {{
+          sentenceCase(
+            (CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || ''
+          )
+        }}
+      </div>
 
       <div class="sr-footer">
         SR No.
-        <span style="color: red;">
+        <span style="color: red">
           {{ (CurSRDetails.header && CurSRDetails.header.srid) || '' }}
         </span>
       </div>
@@ -278,7 +299,8 @@ export default {
             .split(/[;,]+/)
             .map(s => s.trim())
             .filter(Boolean)
-      const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i
+      const re =
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i
       for (let e of emails) {
         if (!re.test(e)) return 'Invalid email: ' + e
       }

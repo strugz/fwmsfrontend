@@ -71,16 +71,16 @@
       </v-layout>
     </v-card-title>
     <v-card-text class="body-1 pt-0">
-      <v-flex style="white-space: pre-line;" v-if="data.TRDSTS == 'STOP'">
+      <v-flex style="white-space: pre-line" v-if="data.TRDSTS == 'STOP'">
         <v-chip label class="red lighten-3">
           <b>PENDING:</b>
         </v-chip>
         {{ data.TRDMDE }}
       </v-flex>
-      <v-flex style="white-space: pre-line;" v-else>
+      <v-flex style="white-space: pre-line" v-else>
         {{ data.TRDMDE }}
       </v-flex>
-      <v-flex style="white-space: pre-line;" v-show="data.TRDSTS != 'STOP'">
+      <v-flex style="white-space: pre-line" v-show="data.TRDSTS != 'STOP'">
         <span class="font-weight-medium">Purpose of Visits:</span> {{ '\r\n' }} {{ POVDetails }}
       </v-flex>
     </v-card-text>

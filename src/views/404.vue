@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <div id="notfound">
       <div class="notfound">
         <div class="notfound-404">
@@ -9,7 +9,7 @@
         <h2>we are sorry, but the page you requested was not found</h2>
       </div>
     </div>
-  </v-content>
+  </v-main>
 </template>
 
 <style>

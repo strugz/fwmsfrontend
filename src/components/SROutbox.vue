@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-card class="hide-overflow" style="position: relative;">
+    <v-card class="hide-overflow" style="position: relative">
       <v-toolbar color="primary" dense dark>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <v-spacer></v-spacer>

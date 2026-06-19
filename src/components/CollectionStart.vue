@@ -2,12 +2,10 @@
   <v-layout mt-0 row justify-center>
     <v-dialog width="500" v-model="dialog" hide-overlay persistent>
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Collection
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Collection </v-btn>
       </template>
       <v-card>
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">

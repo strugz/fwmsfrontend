@@ -2,7 +2,7 @@
   <v-layout mt-0 row justify-end>
     <v-dialog v-model="pdfDialog" persistent>
       <template v-slot:activator="{ on }">
-        <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on" @click="PrintPreview">
+        <v-btn small text icon color="indigo" class="ma-0" dark v-on="on" @click="PrintPreview">
           <v-icon>print</v-icon>
         </v-btn>
       </template>
@@ -12,13 +12,13 @@
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-btn small flat icon color="indigo" class="mr-2" dark v-on="on" @click="LoadPdf">
+              <v-btn small text icon color="indigo" class="mr-2" dark v-on="on" @click="LoadPdf">
                 <v-icon large>file_download</v-icon>
               </v-btn>
             </template>
             <span>Download SR</span>
           </v-tooltip>
-          <v-btn small flat icon color="indigo" class="ma-0" dark @click="close">
+          <v-btn small text icon color="indigo" class="ma-0" dark @click="close">
             <v-icon>close</v-icon>
           </v-btn>
         </v-card-title>

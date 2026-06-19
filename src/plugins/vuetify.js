@@ -1,15 +1,24 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import '@fortawesome/fontawesome-free/css/all.css'
-// import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/src/stylus/app.styl'
-import colors from 'vuetify/es5/util/colors'
+import 'material-icons/iconfont/material-icons.css'
+import 'vuetify/dist/vuetify.min.css'
+import colors from 'vuetify/lib/util/colors'
+import './vuetifyLegacyGrid'
 
-Vue.use(Vuetify, {
-  iconfont: ['md', 'fa'],
+Vue.use(Vuetify)
+
+export default new Vuetify({
+  icons: {
+    iconfont: 'md',
+  },
   theme: {
-    primary: colors.teal.darken3,
-    secondary: colors.red.lighten4,
-    accent: colors.indigo.lighten1,
+    themes: {
+      light: {
+        primary: colors.teal.darken3,
+        secondary: colors.red.lighten4,
+        accent: colors.indigo.lighten1,
+      },
+    },
   },
 })

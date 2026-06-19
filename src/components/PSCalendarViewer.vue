@@ -11,12 +11,24 @@
         </span>
         <v-layout row wrap>
           <v-flex sm4 md4 lg6 xs12>
-            <v-combobox outline v-model="selectedItemDepartment" :items="departmentList" item-text="DPTNME"
-              item-value="DPTNME" label="Select Department"></v-combobox>
+            <v-combobox
+              outlined
+              v-model="selectedItemDepartment"
+              :items="departmentList"
+              item-text="DPTNME"
+              item-value="DPTNME"
+              label="Select Department"
+            ></v-combobox>
           </v-flex>
           <v-flex sm4 md4 lg6 xs12>
-            <v-combobox outline v-model="selectedItemUser" :items="userList" item-text="CNTMNN" item-value="CNTMID"
-              label="Select User"></v-combobox>
+            <v-combobox
+              outlined
+              v-model="selectedItemUser"
+              :items="userList"
+              item-text="CNTMNN"
+              item-value="CNTMID"
+              label="Select User"
+            ></v-combobox>
           </v-flex>
         </v-layout>
         <v-layout row wrap>
@@ -36,18 +48,14 @@
           </v-flex>
           <v-flex sm3 md3 xs12>
             <v-btn class="no-print" @click="$refs.calendar.prev()">
-              <v-icon dark left>
-                keyboard_arrow_left
-              </v-icon>
+              <v-icon dark left> keyboard_arrow_left </v-icon>
               Prev
             </v-btn>
           </v-flex>
           <v-flex sm3 md3 xs12>
             <v-btn class="no-print" @click="$refs.calendar.next()">
               Next
-              <v-icon right dark>
-                keyboard_arrow_right
-              </v-icon>
+              <v-icon right dark> keyboard_arrow_right </v-icon>
             </v-btn>
           </v-flex>
         </v-layout>
@@ -68,8 +76,14 @@
                         {{ event.client }}
                       </div>
                     </div>
-                    <div v-show="event.trdsts != '' && event.trdsts != 'LEAVE'" class="my-event2 mb-1" v-ripple
-                      v-on="on" v-for="(text, index) in event.trdmde.split('|')" :key="index">
+                    <div
+                      v-show="event.trdsts != '' && event.trdsts != 'LEAVE'"
+                      class="my-event2 mb-1"
+                      v-ripple
+                      v-on="on"
+                      v-for="(text, index) in event.trdmde.split('|')"
+                      :key="index"
+                    >
                       <div v-show="event.trdmde != '' && event.trdsts != 'SCHEDULED'">
                         {{ text }}
                       </div>
@@ -78,8 +92,11 @@
                         {{ event.itiobj + ' - ' }} {{ event.itiins }}
                       </div>
                     </div>
-                    <div v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1" v-ripple>
+                    <div
+                      v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
+                      class="my-event2 mb-1"
+                      v-ripple
+                    >
                       {{ event.trdmde }}
                     </div>
                     <div v-show="event.trdsts == 'LEAVE'" class="my-event4" v-ripple v-on="on">
@@ -87,8 +104,13 @@
                     </div>
                   </template>
                   <v-layout wrap row>
-                    <v-card v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'" color="grey lighten-4"
-                      min-width="250px" max-width="350px" flat>
+                    <v-card
+                      v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'"
+                      color="grey lighten-4"
+                      min-width="250px"
+                      max-width="350px"
+                      text
+                    >
                       <v-toolbar color="primary" dark>
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
@@ -96,7 +118,7 @@
                       <v-card-title primary-title>
                         <v-flex xs12 v-show="event.itiobj">
                           <p>
-                            <span style="color:blue;font-weight:bold">Instrument:</span>
+                            <span style="color: blue; font-weight: bold">Instrument:</span>
                             {{ ' ' + event.itiins }}
                           </p>
                         </v-flex>
@@ -152,7 +174,6 @@ export default {
     },
   },
   mounted() {
-
     if (this.CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON') {
       this.departmentList.push({ DPTNME: 'PASLUZON' }, { DPTNME: 'PASVISMIN' })
     }

@@ -1,12 +1,15 @@
 <template>
   <v-combobox
-    class="v-combobox mt-1"
+    class="client-search"
     v-show="show"
     v-model="fieldSearch"
     :items="itemsAcct"
     item-text="ACCMNM"
     item-value="ACCMID"
     clearable
+    dense
+    flat
+    hide-details
     outlined
     @emptied="clickSearch"
     @click="clickSearch"
@@ -89,13 +92,26 @@ export default {
 }
 </script>
 <style>
-.v-combobox {
-  height: 40px;
-  border-radius: 16px;
-  background: #cfd8dc;
-  padding-top: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 0;
+.client-search.v-input {
+  border-radius: 14px;
+}
+
+.client-search .v-input__slot {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 14px !important;
+  min-height: 44px !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.client-search.v-input--is-focused .v-input__slot {
+  background: #ffffff !important;
+  border-color: #0f766e !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+.client-search .v-label,
+.client-search input::placeholder {
+  color: #64748b !important;
 }
 </style>

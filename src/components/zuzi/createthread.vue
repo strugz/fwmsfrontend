@@ -1,15 +1,13 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-dialog v-model="dialog" max-width="950" persistent>
       <template v-if="isEdit" v-slot:activator="{ on }">
-        <v-btn class="mt-5 mr-2" flat icon color="teal darken-2" small absolute top rightv-on="on">
+        <v-btn class="mt-5 mr-2" text icon color="teal darken-2" small absolute top right v-on="on">
           <v-icon>edit</v-icon>
         </v-btn>
       </template>
       <template v-else v-slot:activator="{ on }">
-        <v-btn small round dark color="teal" v-on="on">
-          Create Thread
-        </v-btn>
+        <v-btn small rounded dark color="teal" v-on="on"> Create Thread </v-btn>
       </template>
 
       <v-card>
@@ -18,7 +16,7 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-container pa-1 grid-list-md text-xs-start>
+          <v-container pa-1 grid-list-md text-start>
             <v-layout column>
               <v-flex>
                 <v-layout row wrap>
@@ -90,7 +88,7 @@
               <v-flex>
                 <v-layout row wrap>
                   <v-flex xs12 lg6>
-                    <!-- <v-text-field v-model="data.TRDMMC" label="Instrument Name" outline></v-text-field> -->
+                    <!-- <v-text-field v-model="data.TRDMMC" label="Instrument Name" outlined></v-text-field> -->
                     <v-autocomplete
                       v-model="tmp_TRDMMC"
                       :items="instruments"
@@ -104,13 +102,13 @@
                         {{ `${data.item.ITEM_CODE} - (SN: ${data.item.SERIAL_NO})` }}
                       </template>
                       <template v-slot:item="data">
-                        <v-list-tile-content class="py-1">
-                          <v-list-tile-title class="body-2" v-html="data.item.ITEM_CODE"></v-list-tile-title>
-                          <v-list-tile-sub-title
+                        <v-list-item-content class="py-1">
+                          <v-list-item-title class="body-2" v-html="data.item.ITEM_CODE"></v-list-item-title>
+                          <v-list-item-subtitle
                             class="caption font-weight-light"
                             v-html="'SN:' + data.item.SERIAL_NO"
-                          ></v-list-tile-sub-title>
-                        </v-list-tile-content>
+                          ></v-list-item-subtitle>
+                        </v-list-item-content>
                       </template>
                     </v-autocomplete>
                   </v-flex>
@@ -197,8 +195,8 @@
 
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="warning" flat @click="closeDialog()">Cancel</v-btn>
-          <v-btn color="primary" flat @click="savePost()">Post</v-btn>
+          <v-btn color="warning" text @click="closeDialog()">Cancel</v-btn>
+          <v-btn color="primary" text @click="savePost()">Post</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

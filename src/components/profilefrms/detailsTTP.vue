@@ -5,12 +5,12 @@
         <v-layout wrap column>
           <v-flex>
             <v-card>
-              <v-toolbar flat dense light color="white">
+              <v-toolbar text dense light color="white">
                 <template class="caption">
                   <span class="indigo darken-1 pa-1 caption white--text mr-1">
                     {{ CurThreadDetails.TRDSEC }}
                   </span>
-                  <span class="red darken-1 pa-1 caption white--text ">TTP</span>
+                  <span class="red darken-1 pa-1 caption white--text">TTP</span>
                   <span class="ml-1 font-weight-medium">SR: #{{ CurThreadDetails.TRDMTT }} </span>
                 </template>
                 <v-spacer></v-spacer>

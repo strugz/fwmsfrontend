@@ -2,11 +2,11 @@
   <v-layout mt-0 row justify-end>
     <v-dialog v-model="SRTimerDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn @click="upSRTimerDialog(true)" small flat icon color="indigo" class="ma-0" dark v-on="on">
+        <v-btn @click="upSRTimerDialog(true)" small text icon color="indigo" class="ma-0" dark v-on="on">
           <v-icon>timer</v-icon>
         </v-btn>
       </template>
-      <v-card class="hide-overflow" style="position: relative;">
+      <v-card class="hide-overflow" style="position: relative">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Service Report Form</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -14,7 +14,7 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
+        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px">
           <iframe allow="geolocation; camera" v-if="SRTimerDialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
@@ -43,14 +43,13 @@ export default {
           console.error(error)
         }
       )
-      this.upSRTimerDialog(!this.SRTimerDialog);
+      this.upSRTimerDialog(!this.SRTimerDialog)
     },
   },
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails', 'SRTimerDialog', 'PageNumber']),
     srFormURL() {
       if (this.CurThreadDetails.TRDMTY == 'Service Report') {
-
         // return `http://localhost:8080/#/startedservice/${this.CurClientDetails.ACCMID}/
         // ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         // ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
@@ -59,7 +58,7 @@ export default {
 
         return `${base}/#/startedservice/${this.CurClientDetails.ACCMID}/
         ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
-        ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`;
+        ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
       } else {
         return `${process.env.VUE_APP_SR_URL_2}psstartedservice/${this.CurClientDetails.ACCMID}/
       ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/

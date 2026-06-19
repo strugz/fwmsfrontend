@@ -10,12 +10,12 @@
         </v-btn>
       </template>
       <v-card>
-        <v-toolbar dense flat dark color="teal lighen-1">
+        <v-toolbar dense text dark color="teal lighen-1">
           <v-toolbar-title>Client Information</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark flat @click="closeDialog()">Cancel</v-btn>
-            <v-btn dark flat @click="sendData()">Save</v-btn>
+            <v-btn dark text @click="closeDialog()">Cancel</v-btn>
+            <v-btn dark text @click="sendData()">Save</v-btn>
           </v-toolbar-items>
         </v-toolbar>
         <v-card-text>

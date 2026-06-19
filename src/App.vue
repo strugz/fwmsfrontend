@@ -49,7 +49,8 @@ export default {
   /* background-color: rgba(112, 5, 5, 0.199); */
   background: linear-gradient(1turn, #ffffff, #ffffffe1, #ffffff);
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
+  overflow-y: auto;
   position: absolute;
 }
 </style>

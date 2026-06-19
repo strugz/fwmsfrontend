@@ -1,14 +1,12 @@
 <template>
   <v-dialog v-model="imgDialog" max-width="500">
     <template v-slot:activator="{ on }">
-      <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on">
+      <v-btn small text icon color="indigo" class="ma-0" dark v-on="on">
         <v-icon @click="LoadImageLink">image</v-icon>
       </v-btn>
     </template>
     <v-card max-width="500">
-      <v-card-title primary-title class="primary lighten-2">
-        Image Viewer
-      </v-card-title>
+      <v-card-title primary-title class="primary lighten-2"> Image Viewer </v-card-title>
       <v-card-text class="text-center">
         <v-carousel :cycle="false" @change="carouselChange">
           <v-carousel-item v-for="(item, index) in imgLink" :key="index">

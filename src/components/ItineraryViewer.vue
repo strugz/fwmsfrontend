@@ -7,16 +7,12 @@
         </span>
         <v-flex sm4 xs12>
           <v-btn @click="$refs.calendar.prev()">
-            <v-icon dark left>
-              keyboard_arrow_left
-            </v-icon>
+            <v-icon dark left> keyboard_arrow_left </v-icon>
             Prev
           </v-btn>
           <v-btn @click="$refs.calendar.next()">
             Next
-            <v-icon right dark>
-              keyboard_arrow_right
-            </v-icon>
+            <v-icon right dark> keyboard_arrow_right </v-icon>
           </v-btn>
         </v-flex>
         <v-sheet height="500">
@@ -48,7 +44,7 @@
                     color="grey lighten-4"
                     min-width="250px"
                     max-width="350px"
-                    flat
+                    text
                   >
                     <v-toolbar color="primary" dark>
                       <v-toolbar-title>{{ event.title }}</v-toolbar-title>
@@ -57,13 +53,13 @@
                     <v-card-title primary-title>
                       <v-flex xs12>
                         <p>
-                          <span style="color:blue;font-weight:bold">Customer:</span>
+                          <span style="color: blue; font-weight: bold">Customer:</span>
                           {{ ' ' + event.customer }}
                         </p>
                       </v-flex>
                       <v-flex xs12 v-show="event.itiobj">
                         <p>
-                          <span style="color:blue;font-weight:bold">Objective:</span>
+                          <span style="color: blue; font-weight: bold">Objective:</span>
                           {{ ' ' + event.itiobj }}
                         </p>
                       </v-flex>
@@ -231,7 +227,7 @@ export default {
         TRDLOC: this.lat + ' ' + this.long,
         TRDITI: item.itimid,
       })
-      setTimeout(function() {
+      setTimeout(function () {
         console.log(data)
       }, 1000)
 

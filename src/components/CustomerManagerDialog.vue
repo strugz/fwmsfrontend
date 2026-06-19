@@ -74,12 +74,10 @@
             <v-combobox v-model="CSTCLS" :items="ItemThree" label="Classification"></v-combobox>
           </v-flex>
           <v-flex xs12>
-            <v-textarea label="Customer Description" v-model="CSTREM" style="height: 50%;"></v-textarea>
+            <v-textarea label="Customer Description" v-model="CSTREM" style="height: 50%"></v-textarea>
           </v-flex>
           <v-flex xs12 md6 xl6 class="pr-1">
-            <v-btn class="btn primary" @click="dialog = !dialog">
-              Cancel
-            </v-btn>
+            <v-btn class="btn primary" @click="dialog = !dialog"> Cancel </v-btn>
           </v-flex>
           <v-flex xs12 md6 xl6 class="pr-1">
             <v-btn :disabled="saveBTNEnable" class="btn primary" @click="SaveCSTMSTValidation">Save</v-btn>
@@ -163,7 +161,8 @@ export default {
       rules: {
         required: value => !!value || 'Required.',
         email: value => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          const pattern =
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
           return pattern.test(value) || 'Invalid e-mail.'
         },
       },

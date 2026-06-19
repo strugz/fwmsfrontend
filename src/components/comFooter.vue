@@ -8,7 +8,7 @@
           dark
           row-height="15"
           auto-grow
-          outline
+          outlined
           color="white"
           solo
           label="Comment"

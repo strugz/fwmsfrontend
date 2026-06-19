@@ -15,7 +15,7 @@
                       v-if="CurThreadDetails.TRDMST == false"
                       @click="openDialogStatus()"
                       class="absolute top right ma-0"
-                      flat
+                      text
                       icon
                       color="red lighten-1"
                     >
@@ -25,7 +25,7 @@
                       v-else
                       @click="openDialogStatus()"
                       class="absolute top right ma-0"
-                      flat
+                      text
                       icon
                       color="indigo lighten-1"
                     >
@@ -85,9 +85,7 @@
             <v-layout v-if="!CurThreadDetails.TRDMST" align-center justify-center row fill-height>
               <v-flex xs12>
                 <v-divider></v-divider>
-                <v-card-text class="title font-weight-medium text-xs-center">
-                  ( Comments are disabled )
-                </v-card-text>
+                <v-card-text class="title font-weight-medium text-center"> ( Comments are disabled ) </v-card-text>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -108,8 +106,8 @@
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click="dialog = false">Cancel</v-btn>
-          <v-btn color="green darken-1" flat @click="changeStatus()">{{
+          <v-btn color="green darken-1" text @click="dialog = false">Cancel</v-btn>
+          <v-btn color="green darken-1" text @click="changeStatus()">{{
             CurThreadDetails.TRDMST == false ? 'Open' : 'Turn off'
           }}</v-btn>
         </v-card-actions>

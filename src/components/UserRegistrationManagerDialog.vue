@@ -130,7 +130,7 @@
           </v-layout>
         </v-container>
         <v-card-actions>
-          <v-btn flat>Cancel</v-btn>
+          <v-btn text>Cancel</v-btn>
           <v-spacer></v-spacer>
           <v-slide-x-reverse-transition>
             <v-tooltip v-if="formHasErrors" left>
@@ -142,7 +142,7 @@
               <span>Refresh form</span>
             </v-tooltip>
           </v-slide-x-reverse-transition>
-          <v-btn class="primary" flat @click="submit">Save</v-btn>
+          <v-btn class="primary" text @click="submit">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -1,7 +1,7 @@
 <template>
   <v-menu
     transition="slide-y-transition"
-    style="border-radius: 0 0 12px 12px;"
+    style="border-radius: 0 0 12px 12px"
     max-width="450"
     bottom
     nudge-width
@@ -14,7 +14,7 @@
         <template v-if="notif_length !== 0" v-slot:badge style="top: 1px, right: 1px">
           <span class="caption">{{ notif_length }}</span>
         </template>
-        <v-btn small flat icon color="teal lighten-5" v-on="on">
+        <v-btn small text icon color="teal lighten-5" v-on="on">
           <v-icon>notifications</v-icon>
         </v-btn>
       </v-badge>
@@ -41,68 +41,68 @@
       <v-card-text class="pa-0 menu-card">
         <v-list three-line dense class="py-0">
           <template v-for="(notif, index) in Notifications">
-            <v-list-tile
+            <v-list-item
               :class="notifIsNotSeen[index] ? 'teal lighten-5' : ''"
               :key="notif.title"
               avatar
               @click="toThread(index)"
             >
-              <v-list-tile-avatar>
+              <v-list-item-avatar>
                 <v-img
                   v-if="defaultImg(notif.NTFAID.ACCMSC)"
                   :src="require(`@/assets/${notif.NTFAID.ACCMSC}.png`)"
-                  style="border-radius: 8px;"
+                  style="border-radius: 8px"
                 ></v-img>
                 <v-icon v-else large>fa-clinic-medical</v-icon>
-              </v-list-tile-avatar>
+              </v-list-item-avatar>
 
-              <v-list-tile-content v-if="notif.NTFTYP == 'thread'">
-                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list__tile__title body-1">
+              <v-list-item-content v-if="notif.NTFTYP == 'thread'">
+                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list-item__title body-1">
                   <span class="red darken-1 pa-1 caption white--text">{{ 'SR' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
                   {{ ` - SR: #${notif.NTFTRD.TRDMTT}` }}
                 </span>
-                <span v-else class="v-list__tile__title body-1">
+                <span v-else class="v-list-item__title body-1">
                   <span class="indigo darken-1 pa-1 caption white--text">{{ 'TRD' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
                   {{ ` - ${notif.NTFTRD.TRDMTT}` }}
                 </span>
-                <span class="v-list__tile__sub-title caption">
+                <span class="v-list-item__subtitle caption">
                   <span class="text--primary">
                     {{ `(${notif.NTFFRM.CNTMNN}) ${notif.NTFFRM.CNTMCN}` }}
                   </span>
                   - {{ notif.NTFTRD.TRDMDE }}
                 </span>
-                <span class="v-list__tile__sub-title align-start caption">
+                <span class="v-list-item__subtitle align-start caption">
                   <v-icon v-if="notif.NTFTRD.TRDMTY == 'Service Report'" small>assignment</v-icon>
                   <v-icon v-else small>forum</v-icon>
                   {{ getRelativeTime(notif.created_at) }}
                 </span>
-              </v-list-tile-content>
+              </v-list-item-content>
 
-              <v-list-tile-content v-else-if="notif.NTFTYP == 'comment'">
-                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list__tile__title body-1">
+              <v-list-item-content v-else-if="notif.NTFTYP == 'comment'">
+                <span v-if="notif.NTFTRD.TRDMTY == 'Service Report'" class="v-list-item__title body-1">
                   <span class="red darken-1 pa-1 caption white--text">{{ 'SR' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
                   {{ ` - ${notif.NTFTRD.TRDMTT}` }}
                 </span>
-                <span v-else class="v-list__tile__title body-1">
+                <span v-else class="v-list-item__title body-1">
                   <span class="indigo darken-1 pa-1 caption white--text">{{ 'TRD' }}</span>
                   <span class="font-weight-medium">{{ ` ${notif.NTFAID.ACCMSC}` }}</span>
                   {{ ` - SR: #${notif.NTFTRD.TRDMTT}` }}
                 </span>
-                <span class="v-list__tile__sub-title caption">
+                <span class="v-list-item__subtitle caption">
                   <span class="text--primary">
                     {{ `(${notif.NTFFRM.CNTMNN}) ${notif.NTFFRM.CNTMCN}` }}
                   </span>
                   - {{ notif.NTFCMM.TRDCCM }}
                 </span>
-                <span class="v-list__tile__sub-title align-start caption">
+                <span class="v-list-item__subtitle align-start caption">
                   <v-icon small>chat</v-icon>
                   {{ getRelativeTime(notif.created_at) }}
                 </span>
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-content>
+            </v-list-item>
 
             <v-divider v-if="index !== Notifications.length - 1" :key="index"></v-divider>
           </template>

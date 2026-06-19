@@ -1,9 +1,9 @@
 <template>
-  <v-breadcrumbs>
+  <v-breadcrumbs class="app-breadcrumbs">
     <v-breadcrumbs-item :to="home">Home</v-breadcrumbs-item>
 
     <v-breadcrumbs-item v-if="client && client.href" :to="client.href">
-      <h5>{{ client.text }}</h5>
+      <span>{{ client.text }}</span>
     </v-breadcrumbs-item>
 
     <v-breadcrumbs-item
@@ -155,4 +155,19 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.app-breadcrumbs {
+  padding: 0;
+}
+
+.app-breadcrumbs a,
+.app-breadcrumbs .v-breadcrumbs__item {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.app-breadcrumbs .v-breadcrumbs__item--disabled {
+  color: #0f766e !important;
+}
+</style>

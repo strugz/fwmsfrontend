@@ -7,8 +7,8 @@
     column
     fill-height
   >
-    <v-flex x12 style="font-size: .85em;" class="pb-0"> {{ header }} </v-flex>
-    <v-flex class="font-weight-bold ml-2 black--text text-xs-left pt-0" x12>{{ details }}</v-flex>
+    <v-flex x12 style="font-size: 0.85em" class="pb-0"> {{ header }} </v-flex>
+    <v-flex class="font-weight-bold ml-2 black--text text-left pt-0" x12>{{ details }}</v-flex>
   </v-layout>
 </template>
 

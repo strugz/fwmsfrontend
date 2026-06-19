@@ -9,13 +9,13 @@
           :items="DataTableItems"
         >
           <template v-slot:items="props">
-            <td class="text-xs-center">{{ props.item.accmst.ACCMNM }}</td>
-            <td class="text-xs-center">{{ props.item.CSTNME }}</td>
-            <td class="text-xs-center">{{ props.item.CSTEML }}</td>
-            <td class="text-xs-center">{{ props.item.CSTADD }}</td>
-            <td class="text-xs-center">{{ props.item.CSTCDL }}</td>
-            <td class="text-xs-center">{{ props.item.CSTPOS }}</td>
-            <td class="text-xs-center">{{ props.item.CSTTPR }}</td>
+            <td class="text-center">{{ props.item.accmst.ACCMNM }}</td>
+            <td class="text-center">{{ props.item.CSTNME }}</td>
+            <td class="text-center">{{ props.item.CSTEML }}</td>
+            <td class="text-center">{{ props.item.CSTADD }}</td>
+            <td class="text-center">{{ props.item.CSTCDL }}</td>
+            <td class="text-center">{{ props.item.CSTPOS }}</td>
+            <td class="text-center">{{ props.item.CSTTPR }}</td>
           </template>
         </v-data-table>
       </v-flex>

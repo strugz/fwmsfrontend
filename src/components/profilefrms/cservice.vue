@@ -1,24 +1,21 @@
 <template>
-  <v-container grid-list-md pt-2>
+  <v-container fluid class="thread-workspace">
     <app-filter-thread></app-filter-thread>
-    <v-layout row wrap>
-      <v-flex xs12> </v-flex>
-      <v-flex v-for="(thread, key) in CurThreads" :key="key" xs12>
-        <v-badge color="red" left overlap style="width: 100%;">
-          <card-thread
-            v-if="
-              thread.TRDMTY !== 'Service Report' &&
-                thread.TRDMTY !== 'TTP' &&
-                thread.TRDMTY !== 'MedRep Visit' &&
-                thread.TRDMTY !== 'PA Service Report' &&
-                thread.TRDMTY !== 'Collection Visit'
-            "
-            :thread="thread"
-          ></card-thread>
-          <card-sr v-else :data="thread"></card-sr>
-        </v-badge>
-      </v-flex>
-    </v-layout>
+    <div class="thread-list">
+      <div v-for="(thread, key) in CurThreads" :key="key" class="thread-list__item">
+        <card-thread
+          v-if="
+            thread.TRDMTY !== 'Service Report' &&
+            thread.TRDMTY !== 'TTP' &&
+            thread.TRDMTY !== 'MedRep Visit' &&
+            thread.TRDMTY !== 'PA Service Report' &&
+            thread.TRDMTY !== 'Collection Visit'
+          "
+          :thread="thread"
+        ></card-thread>
+        <card-sr v-else :data="thread"></card-sr>
+      </div>
+    </div>
     <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top" class="mb-5 mr-5">
       <template v-slot:activator>
         <v-btn color="blue darken-2" dark fab>
@@ -38,7 +35,7 @@
       <ps-form v-if="showSR && CurUserDetails.CNTMST.CNTSEC == 'TSR/PS'"></ps-form>
       <collection-visit class="mb-2" v-if="CurUserDetails.CNTMST.CNTSEC == 'COLLECTOR'"></collection-visit>
     </v-speed-dial>
-    <div class="text-xs-center">
+    <div class="text-center">
       <v-pagination v-model="pageNumber" :length="TotalPages" circle></v-pagination>
     </div>
   </v-container>
@@ -68,7 +65,8 @@ export default {
     // Try to restore last page for this account from sessionStorage so full page refresh
     // doesn't reset pagination to 1. Key is namespaced by account id when available.
     try {
-      const accKey = this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
+      const accKey =
+        this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
       const storedPage = sessionStorage.getItem(`threads_page_${accKey}`)
       if (storedPage) {
         this.pageNumber = Number(storedPage)
@@ -89,7 +87,8 @@ export default {
     pageNumber() {
       // persist the page number for this account so a full page refresh keeps it
       try {
-        const accKey = this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
+        const accKey =
+          this.$route && this.$route.params && this.$route.params.ACCMID ? this.$route.params.ACCMID : 'global'
         sessionStorage.setItem(`threads_page_${accKey}`, String(this.pageNumber))
       } catch (e) {
         // ignore session storage errors
@@ -184,6 +183,21 @@ export default {
 </script>
 
 <style>
+.thread-workspace {
+  max-width: 1280px;
+  padding-top: 20px;
+}
+
+.thread-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.thread-list__item {
+  position: relative;
+}
+
 .hoverClick:hover {
   text-decoration: underline;
   color: steelblue;

@@ -33,13 +33,13 @@
               <!-- Datatable -->
               <v-data-table :headers="headers" :items="itineraryList">
                 <template v-slot:items="props">
-                  <td class="text-xs-left responsive-date">{{ props.item.ITIDTE }}</td>
-                  <td class="text-xs-left">{{ props.item.ACCMNM }}</td>
-                  <td class="text-xs-left">{{ props.item.CSTNME }}</td>
-                  <td class="text-xs-left">{{ props.item.ITIOBJ }}</td>
-                  <td class="text-xs-left">{{ props.item.CSTADD }}</td>
-                  <td class="text-xs-left">{{ props.item.CNTMNN }}</td>
-                  <td class="text-xs-left">
+                  <td class="text-left responsive-date">{{ props.item.ITIDTE }}</td>
+                  <td class="text-left">{{ props.item.ACCMNM }}</td>
+                  <td class="text-left">{{ props.item.CSTNME }}</td>
+                  <td class="text-left">{{ props.item.ITIOBJ }}</td>
+                  <td class="text-left">{{ props.item.CSTADD }}</td>
+                  <td class="text-left">{{ props.item.CNTMNN }}</td>
+                  <td class="text-left">
                     <v-icon color="success" @click="approveItem(props.item)">check_circle</v-icon>
                   </td>
                 </template>

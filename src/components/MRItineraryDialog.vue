@@ -2,28 +2,26 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Visit
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Visit </v-btn>
       </template>
       <v-toolbar color="primary" dark class="fixed-toolbar">
         <v-toolbar-title>Itinerary</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
-      <v-card color="grey lighten-4" flat>
+      <v-card color="grey lighten-4" text>
         <v-container fluid>
           <v-flex xs12 class="mt-2">
-            <v-card color="grey lighten-4" flat class="mt-0">
+            <v-card color="grey lighten-4" text class="mt-0">
               <v-flex xs12>
                 <v-text-field v-model="searchQuery" label="Search Client"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-card color="grey lighten-4" class="mt-3 mb-3">
                   <v-card-title class="custom-card-title">Client</v-card-title>
-                  <v-card-text style="max-height: 150px; overflow-y: auto;">
+                  <v-card-text style="max-height: 150px; overflow-y: auto">
                     <v-radio-group v-model="clientSelected" column @change="getCustomer">
                       <v-radio
                         v-for="item in filteredClients"
@@ -42,7 +40,7 @@
               <v-card-title class="custom-card-title">
                 <b>Customer</b>
               </v-card-title>
-              <v-card-text style="max-height: 150px; overflow-y: auto;">
+              <v-card-text style="max-height: 150px; overflow-y: auto">
                 <v-radio-group v-model="customerSelected" column>
                   <v-radio
                     v-for="item in customerList"
@@ -59,7 +57,7 @@
               <v-card-title class="custom-card-title">
                 <b>Objective</b>
               </v-card-title>
-              <v-card-text style="max-height: 150px; overflow-y: auto;">
+              <v-card-text style="max-height: 150px; overflow-y: auto">
                 <div v-for="item in TSRObjectiveList" :key="item.ObjectiveName" class="custom-checkbox">
                   <v-checkbox
                     :label="item.ObjectiveName"
@@ -104,9 +102,7 @@
           <v-card-actions>
             <v-btn color="primary" :disabled="enableStart" @click="SaveItineraryValidation">Save</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialog = false">
-              Cancel
-            </v-btn>
+            <v-btn color="primary" @click="dialog = false"> Cancel </v-btn>
           </v-card-actions>
         </v-container>
       </v-card>

@@ -8,7 +8,7 @@
     app
     dark
   >
-    <v-toolbar color="teal darken-3" flat dark dense>
+    <v-toolbar color="teal darken-3" text dark dense>
       <v-toolbar-title class="text--white"> <v-icon>view_quilt</v-icon> Customers </v-toolbar-title>
     </v-toolbar>
     <v-flex>
@@ -16,8 +16,7 @@
         <v-flex>
           <v-text-field
             v-model="custSrch"
-            class="pt-2
-            px-3"
+            class="pt-2 px-3"
             hide-details
             placeholder="search"
             append-icon="search"
@@ -28,29 +27,29 @@
         </v-flex>
         <v-flex v-if="CurCheckInAcc.serviceLocLogAction == 'CheckIn'" class="mt-2">
           <v-list three-line subheader dark>
-            <v-list-tile class="teal darken-4" avatar @click="clientClick(CurCheckInAcc.customerID.ACCMID)">
-              <v-list-tile-avatar tile>
+            <v-list-item class="teal darken-4" avatar @click="clientClick(CurCheckInAcc.customerID.ACCMID)">
+              <v-list-item-avatar tile>
                 <v-icon large>fa-clinic-medical</v-icon>
-              </v-list-tile-avatar>
-              <v-list-tile-content style="opacity: 100! important" class="pl-4">
-                <v-list-tile-sub-title class="white--text caption">
+              </v-list-item-avatar>
+              <v-list-item-content style="opacity: 100 !important" class="pl-4">
+                <v-list-item-subtitle class="white--text caption">
                   {{ 'Check-In at: ' }}
-                </v-list-tile-sub-title>
-                <v-list-tile-title class="white--text">{{ CurCheckInAcc.customerID.ACCMSC }}</v-list-tile-title>
-                <v-list-tile-sub-title class="white--text caption">{{ checkInDuration }}</v-list-tile-sub-title>
-              </v-list-tile-content>
+                </v-list-item-subtitle>
+                <v-list-item-title class="white--text">{{ CurCheckInAcc.customerID.ACCMSC }}</v-list-item-title>
+                <v-list-item-subtitle class="white--text caption">{{ checkInDuration }}</v-list-item-subtitle>
+              </v-list-item-content>
 
-              <v-list-tile-action>
+              <v-list-item-action>
                 <checkInOut type="icon"></checkInOut>
-              </v-list-tile-action>
-            </v-list-tile>
+              </v-list-item-action>
+            </v-list-item>
           </v-list>
         </v-flex>
       </v-layout>
     </v-flex>
     <v-layout d-flex align-space-around column class="items">
       <v-list>
-        <v-list-tile
+        <v-list-item
           v-for="(client, key) in filtItems"
           :key="key"
           avatar
@@ -60,14 +59,14 @@
           :class="curClient == client.ACCMID ? 'yellow darken-4' : ''"
         >
           <v-badge color="red" overlap>
-            <v-list-tile-avatar tile>
+            <v-list-item-avatar tile>
               <!-- :src="require(`@/assets/${client.ACCMSC}.png`)" -->
-              <v-img v-if="defaultImg(key)" style="border-radius: 8px;"></v-img>
+              <v-img v-if="defaultImg(key)" style="border-radius: 8px"></v-img>
               <v-icon v-else large>fa-clinic-medical</v-icon>
-            </v-list-tile-avatar>
+            </v-list-item-avatar>
           </v-badge>
           <span class="pl-4 white--text">{{ client.ACCMSC }}</span>
-        </v-list-tile>
+        </v-list-item>
       </v-list>
     </v-layout>
   </v-navigation-drawer>
@@ -181,7 +180,7 @@ export default {
 .border_right {
   border-right: solid #004d40 1px;
 }
-.v-list__tile__content {
+.v-list-item__content {
   opacity: 100;
 }
 .items {

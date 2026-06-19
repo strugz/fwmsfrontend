@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <v-flex xs12 sm6 md4 xl3>
@@ -10,9 +10,7 @@
                   <img :src="require(`@/assets/ThreadLogo.svg`)" alt="avatar" />
                 </v-avatar>
               </div>
-              <div class="headline font-weight-black pl-2 pt-2">
-                Field Workforce MS (FWMS)
-              </div>
+              <div class="headline font-weight-black pl-2 pt-2">Field Workforce MS (FWMS)</div>
             </v-layout>
           </div>
           <v-card @keydown.enter="login()" color="transparent" class="elevation-1">
@@ -54,9 +52,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-1" flat="flat" @click="userAcceptance">
-                    Agree
-                  </v-btn>
+                  <v-btn color="green darken-1" text @click="userAcceptance"> Agree </v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -67,7 +63,7 @@
         </v-flex>
       </v-layout>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
@@ -90,8 +86,12 @@ export default {
   },
   methods: {
     ...mapActions(['userLogin', 'getCurUserDetails', 'userGetPrivacy', 'userPrivacyAcceptanceInsert']),
+    stringifyCookieValue(value) {
+      return typeof value === 'string' ? value : JSON.stringify(value)
+    },
     userAcceptance() {
       this.userPrivacyAcceptanceInsert(this.CurUserDetails.USRDTL.USRDCI).then(res => {
+        this.getCurUserDetails()
         this.$router.replace({ name: 'home' })
       })
     },
@@ -105,10 +105,11 @@ export default {
         .then(res => {
           if (res.status == 200 && res.data.message == 'Auth successful') {
             Cookies.set('token', res.data.token, { expires: 1, path: '/' })
-            Cookies.set('user_details', res.data.details, {
+            Cookies.set('user_details', this.stringifyCookieValue(res.data.details), {
               expires: 1,
               path: '/',
             })
+            this.getCurUserDetails()
             this.userGetPrivacy(res.data.details.USRDTL.USRDCI)
               .then(res => {
                 console.log(res)
@@ -121,7 +122,6 @@ export default {
               .catch(error => {
                 this.dialog = true
               })
-            this.getCurUserDetails()
           }
         })
         .catch(error => {

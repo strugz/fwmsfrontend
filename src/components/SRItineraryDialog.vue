@@ -2,12 +2,10 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn class="no-print" v-on="on" small round dark color="teal">
-          Add Itinerary
-        </v-btn>
+        <v-btn class="no-print" v-on="on" small rounded dark color="teal"> Add Itinerary </v-btn>
       </template>
       <v-flex xs12>
-        <v-card color="grey lighten-4" min-width="350px" flat class="mt-0">
+        <v-card color="grey lighten-4" min-width="350px" text class="mt-0">
           <v-toolbar color="primary" dark>
             <v-toolbar-title>Itinerary</v-toolbar-title>
             <v-spacer></v-spacer>
@@ -85,9 +83,7 @@
           <v-card-actions>
             <v-btn color="primary" :disabled="enableStart" @click="SaveItineraryValidation">Save</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialog = false">
-              Cancel
-            </v-btn>
+            <v-btn color="primary" @click="dialog = false"> Cancel </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>

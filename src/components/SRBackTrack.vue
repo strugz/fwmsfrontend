@@ -14,7 +14,7 @@
         </v-toolbar>
         <v-container fluid>
           <v-layout align-center justify-center row class="mt-5" v-show="loading == true">
-            <v-card flat>
+            <v-card text>
               <v-flex xs12>
                 <v-progress-circular :size="70" :width="7" color="black" indeterminate></v-progress-circular>
               </v-flex>
@@ -26,7 +26,7 @@
           <v-flex>
             <v-layout row wrap>
               <v-flex v-for="(thread, key) in CurThreads" :key="key" xs12 class="mt-5">
-                <v-badge color="red" left overlap style="width: 100%;">
+                <v-badge color="red" left overlap style="width: 100%">
                   <card-sr :data="thread"></card-sr>
                 </v-badge>
               </v-flex>
@@ -43,7 +43,7 @@
         </v-container>
       </v-card>
       <v-card-text class="fixed">
-        <div class="text-xs-center">
+        <div class="text-center">
           <v-pagination v-model="pageNumber" :length="TotalPages" circle></v-pagination>
         </div>
       </v-card-text>

@@ -9,17 +9,18 @@
           :items="DataTableItems"
         >
           <template v-slot:items="props">
-            <td class="text-xs-center">{{ props.item.CNTMCN }}</td>
-            <td class="text-xs-center">{{ props.item.CNTMNN }}</td>
-            <td class="text-xs-center">{{ props.item.CNTARE }}</td>
-            <td class="text-xs-center">{{ props.item.CNTEPS }}</td>
-            <td class="text-xs-center">{{ props.item.CNTDPT }}</td>
+            <td class="text-center">{{ props.item.CNTMCN }}</td>
+            <td class="text-center">{{ props.item.CNTMNN }}</td>
+            <td class="text-center">{{ props.item.CNTARE }}</td>
+            <td class="text-center">{{ props.item.CNTEPS }}</td>
+            <td class="text-center">{{ props.item.CNTDPT }}</td>
           </template>
         </v-data-table>
       </v-flex>
     </v-layout>
-  </v-container> </template
->>
+  </v-container>
+</template>
+>
 <script>
 import { mapState, mapActions } from 'vuex'
 export default {

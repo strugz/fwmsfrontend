@@ -2,15 +2,13 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Other Act.
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Other Act. </v-btn>
       </template>
       <v-flex xs12>
-        <v-card color="grey lighten-4" flat class="mt-0">
+        <v-card color="grey lighten-4" text class="mt-0">
           <v-toolbar color="primary" dark>
             <v-toolbar-title>Leave Details</v-toolbar-title>
             <v-spacer></v-spacer>
@@ -63,9 +61,7 @@
           <v-card-actions>
             <v-btn color="primary" :disabled="enableStart" @click="SaveAdditionalItinerary">Save</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialog = false">
-              Cancel
-            </v-btn>
+            <v-btn color="primary" @click="dialog = false"> Cancel </v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>

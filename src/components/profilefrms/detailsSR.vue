@@ -5,22 +5,24 @@
         <v-layout wrap column>
           <v-flex>
             <v-card>
-              <v-toolbar flat dense light color="white">
+              <v-toolbar text dense light color="white">
                 <template class="caption">
                   <span class="indigo darken-1 pa-1 caption white--text mr-1">
                     {{ CurThreadDetails.TRDSEC }}
                   </span>
-                  <span class="red darken-1 pa-1 caption white--text ">Service Report</span>
+                  <span class="red darken-1 pa-1 caption white--text">Service Report</span>
                   <span class="ml-1 font-weight-medium">SR: #{{ CurThreadDetails.TRDMTT }} </span>
                 </template>
                 <v-spacer></v-spacer>
                 <timer-sr v-if="ownTRD && CurThreadDetails.TRDSTS !== 'WORK COMPLETE'"></timer-sr>
-                <image-report v-if="
-                  CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG'
-                "></image-report>
+                <image-report
+                  v-if="
+                    CurThreadDetails.TRDSTS === 'WORK COMPLETE' && CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG'
+                  "
+                ></image-report>
                 <v-dialog>
                   <template v-slot:activator="{ on }">
-                    <v-btn small flat icon color="indigo" class="ma-0" dark v-on="on" @click="loadCurSrDetails">
+                    <v-btn small text icon color="indigo" class="ma-0" dark v-on="on" @click="loadCurSrDetails">
                       <v-icon>print</v-icon>
                     </v-btn>
                   </template>
@@ -37,8 +39,14 @@
               <v-expansion-panel-content lazy>
                 <template v-slot:header>
                   <v-container pa-1>
-                    <v-layout class="caption font-weight-regular text-uppercase" align-center justify-start row
-                      fill-height wrap>
+                    <v-layout
+                      class="caption font-weight-regular text-uppercase"
+                      align-center
+                      justify-start
+                      row
+                      fill-height
+                      wrap
+                    >
                       <v-flex xs12>
                         <v-layout align-start row fill-height wrap>
                           <v-flex>
@@ -49,16 +57,22 @@
                           <v-flex>
                             <template v-if="CurSRDetails.header">
                               <v-flex v-if="CurThreadDetails.TRDSEC != 'InHouse'">
-                                <app-label header="Service Time:"
-                                  :detail="getRelativeTime(CurSRDetails.header.dateTimeCreated)"></app-label>
+                                <app-label
+                                  header="Service Time:"
+                                  :detail="getRelativeTime(CurSRDetails.header.dateTimeCreated)"
+                                ></app-label>
                               </v-flex>
                             </template>
                           </v-flex>
                           <v-flex v-if="CurSRDetails.workWith && CurSRDetails.workWith.length > 0">
-                            <app-label header="workWith" :detail="CurSRDetails.workWith[0].userInitials !== '1'
-                              ? concatinate(CurSRDetails.workWith, 'userInitials')
-                              : ''
-                              "></app-label>
+                            <app-label
+                              header="workWith"
+                              :detail="
+                                CurSRDetails.workWith[0].userInitials !== '1'
+                                  ? concatinate(CurSRDetails.workWith, 'userInitials')
+                                  : ''
+                              "
+                            ></app-label>
                           </v-flex>
                         </v-layout>
                       </v-flex>
@@ -68,8 +82,10 @@
                             <app-label header="Instrument Model:" :detail="CurThreadDetails.TRDMDE"></app-label>
                           </v-flex>
                           <v-flex xs6>
-                            <app-label header="Service Type:"
-                              :detail="concatinate(CurSRDetails.serviceTypes || [], 'srTypeDescription')"></app-label>
+                            <app-label
+                              header="Service Type:"
+                              :detail="concatinate(CurSRDetails.serviceTypes || [], 'srTypeDescription')"
+                            ></app-label>
                           </v-flex>
                           <v-flex></v-flex>
                         </v-layout>
@@ -78,21 +94,24 @@
                   </v-container>
                 </template>
                 <v-container grid-list-lg>
-                  <v-layout class="caption font-weight-regular text-uppercase" align-center justify-start row
-                    fill-height wrap>
-                    <v-flex xs12 pt-0  v-if="CurSRDetails.purposeOfVisits.length != 0">
+                  <v-layout
+                    class="caption font-weight-regular text-uppercase"
+                    align-center
+                    justify-start
+                    row
+                    fill-height
+                    wrap
+                  >
+                    <v-flex xs12 pt-0 v-if="CurSRDetails.purposeOfVisits.length != 0">
                       <v-layout align-start justify-start row fill-height wrap>
-                        <v-flex xs12> 
-                          <span class="font-weight-bold black--text text-xs-left pa-0">
-                            Purpose of Visit
-                          </span>
+                        <v-flex xs12>
+                          <span class="font-weight-bold black--text text-left pa-0"> Purpose of Visit </span>
                           <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Remarks</v-flex>
+                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Description</v-flex>
+                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Remarks</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout wrap pl-3 pt-0 v-for="(itm, key) in (CurSRDetails.purposeOfVisits || [])"
-                            :key="key">
+                          <v-layout wrap pl-3 pt-0 v-for="(itm, key) in CurSRDetails.purposeOfVisits || []" :key="key">
                             <v-flex xs6 py-1>
                               {{ itm.pvDescription }}
                             </v-flex>
@@ -107,15 +126,13 @@
                     <v-flex xs12 v-if="CurSRDetails.actionTakens">
                       <v-layout align-start justify-start row fill-height wrap>
                         <v-flex xs12>
-                          <span class="font-weight-bold black--text text-xs-left pa-0">
-                            Action Taken
-                          </span>
+                          <span class="font-weight-bold black--text text-left pa-0"> Action Taken </span>
                           <v-layout pt-0 wrap>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex xs6 py-1 class="font-weight-medium black--text text-xs-left">Remarks</v-flex>
+                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Description</v-flex>
+                            <v-flex xs6 py-1 class="font-weight-medium black--text text-left">Remarks</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in (CurSRDetails.actionTakens || [])" :key="key">
+                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.actionTakens || []" :key="key">
                             <v-flex xs6 py-1>
                               {{ itm.atDescription }}
                             </v-flex>
@@ -130,17 +147,15 @@
                     <v-flex xs12 v-if="CurSRDetails.partsUsed.length != 0">
                       <v-layout align-start justify-start row fill-height wrap>
                         <v-flex xs12>
-                          <span class="font-weight-bold black--text text-xs-left pa-0">
-                            Parts Used
-                          </span>
+                          <span class="font-weight-bold black--text text-left pa-0"> Parts Used </span>
                           <v-layout wrap pt-0>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Quantity</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Part Number</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Description</v-flex>
-                            <v-flex py-1 class="font-weight-medium black--text text-xs-left">Serial Number</v-flex>
+                            <v-flex py-1 class="font-weight-medium black--text text-left">Quantity</v-flex>
+                            <v-flex py-1 class="font-weight-medium black--text text-left">Part Number</v-flex>
+                            <v-flex py-1 class="font-weight-medium black--text text-left">Description</v-flex>
+                            <v-flex py-1 class="font-weight-medium black--text text-left">Serial Number</v-flex>
                           </v-layout>
                           <v-divider></v-divider>
-                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in (CurSRDetails.partsUsed || [])" :key="key">
+                          <v-layout pl-3 pt-0 wrap v-for="(itm, key) in CurSRDetails.partsUsed || []" :key="key">
                             <v-flex py-1>
                               {{ itm.puqty }}
                             </v-flex>
@@ -159,42 +174,45 @@
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 v-if="CurSRDetails.remarks">
-                      <app-label style="white-space: pre-line" header="Significant Remarks:"
-                        :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"></app-label>
+                      <app-label
+                        style="white-space: pre-line"
+                        header="Significant Remarks:"
+                        :detail="CurSRDetails.remarks ? CurSRDetails.remarks.srRemarks : ''"
+                      ></app-label>
                     </v-flex>
                     <v-flex xs12 v-if="CurSRDetails.charges.length != 0">
-                      <span class="font-weight-bold black--text text-xs-left pa-0">
-                        Charges
-                      </span>
+                      <span class="font-weight-bold black--text text-left pa-0"> Charges </span>
                       <v-layout wrap>
-                        <v-flex v-for="(chrg, key) in (CurSRDetails.charges || [])" :key="key">
+                        <v-flex v-for="(chrg, key) in CurSRDetails.charges || []" :key="key">
                           <app-label :header="chrg.srChargesDescription" :detail="chrg.srChargesRemarks"></app-label>
                         </v-flex>
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 v-if="CurSRDetails.footer">
-                      <span class="font-weight-bold black--text text-xs-left pa-0">
-                        Customer Acceptance:
-                      </span>
+                      <span class="font-weight-bold black--text text-left pa-0"> Customer Acceptance: </span>
                       <v-layout wrap>
                         <v-flex>
-                          <app-label header="Laboratory Representative"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"></app-label>
+                          <app-label
+                            header="Laboratory Representative"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.customerUserID : ''"
+                          ></app-label>
                         </v-flex>
                         <v-flex>
-                          <app-label header="Date Time In"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeIn : ''"></app-label>
+                          <app-label
+                            header="Date Time In"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeIn : ''"
+                          ></app-label>
                         </v-flex>
                         <v-flex>
-                          <app-label header="Date Time Out"
-                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeOut : ''"></app-label>
+                          <app-label
+                            header="Date Time Out"
+                            :detail="CurSRDetails.footer ? CurSRDetails.footer.srfDateTimeOut : ''"
+                          ></app-label>
                         </v-flex>
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 v-if="CurSRDetails.footerSignature">
-                      <v-flex x12 style="font-size: .85em;" class="pb-0 pl-0">
-                        Acceptance Signature
-                      </v-flex>
+                      <v-flex x12 style="font-size: 0.85em" class="pb-0 pl-0"> Acceptance Signature </v-flex>
                       <v-card width="300" class="ml-2">
                         <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
                       </v-card>
@@ -314,7 +332,10 @@ export default {
     concatinate(data, key) {
       if (!Array.isArray(data) || data.length === 0) return ''
       try {
-        return data.map(elm => elm[key]).filter(Boolean).join(' / ')
+        return data
+          .map(elm => elm[key])
+          .filter(Boolean)
+          .join(' / ')
       } catch (e) {
         return ''
       }

@@ -2,11 +2,9 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn small round dark color="teal" v-on="on">
-          Service Report
-        </v-btn>
+        <v-btn small rounded dark color="teal" v-on="on"> Service Report </v-btn>
       </template>
-      <v-card class="hide-overflow" style="position: relative;">
+      <v-card class="hide-overflow" style="position: relative">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Service Report Form</v-toolbar-title>
           <!-- <span>{{ srFormURL }}</span> -->
@@ -15,7 +13,7 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
+        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px">
           <iframe allow="geolocation" v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
@@ -31,7 +29,7 @@ export default {
     }
   },
   watch: {
-    dialog: function() {
+    dialog: function () {
       if (this.dialog == false) {
         this.clientClick(this.CurClientDetails.ACCMID)
       }
@@ -77,8 +75,7 @@ export default {
     srFormURL() {
       // return `http://localhost:8081/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
       const base = process.env.VUE_APP_SR_URL
-      return `${base}/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID
-  }`
+      return `${base}/#/startservice/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`
     },
   },
 }

@@ -1,11 +1,11 @@
 <template>
-  <div class="text-xs-center">
+  <div class="text-center">
     <v-dialog v-model="dialog" lazy width="500" persistent>
       <template v-slot:activator="{ on }">
         <span v-on="on"> Change Password </span>
       </template>
       <v-card>
-        <v-toolbar dense dark flat color="primary darken-1 text--white">
+        <v-toolbar dense dark text color="primary darken-1 text--white">
           <v-toolbar-title class="title">Change Password</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
@@ -53,7 +53,7 @@
             <v-flex xs12>
               <v-layout row>
                 <v-flex class="row" xs6 sm6 md3>
-                  <v-text-field v-model="OTPvalue" hide-details label="OTP" outline></v-text-field>
+                  <v-text-field v-model="OTPvalue" hide-details label="OTP" outlined></v-text-field>
                 </v-flex>
                 <v-flex class="row" xs6 sm6 md3>
                   <v-btn :loading="otploading" :disabled="otploading" color="success" @click="sendOTP()">
@@ -70,15 +70,13 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn flat color="indigo" @click="save()">Save</v-btn>
-          <v-btn flat color="orange" @click="close_click()">Cancel</v-btn>
+          <v-btn text color="indigo" @click="save()">Save</v-btn>
+          <v-btn text color="orange" @click="close_click()">Cancel</v-btn>
         </v-card-actions>
       </v-card>
       <v-snackbar v-model="snackbar" right :color="color" :timeout="6000">
         {{ message }}
-        <v-btn dark flat @click="snackbar = false">
-          Close
-        </v-btn>
+        <v-btn dark text @click="snackbar = false"> Close </v-btn>
       </v-snackbar>
     </v-dialog>
   </div>

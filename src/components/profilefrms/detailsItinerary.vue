@@ -5,12 +5,12 @@
         <v-layout wrap column>
           <v-flex>
             <v-card>
-              <v-toolbar flat dense light color="white">
+              <v-toolbar text dense light color="white">
                 <template class="caption">
                   <span class="indigo darken-1 pa-1 caption white--text mr-1">
                     {{ CurThreadDetails.TRDSEC }}
                   </span>
-                  <span class="red darken-1 pa-1 caption white--text ">MedRep Visit</span>
+                  <span class="red darken-1 pa-1 caption white--text">MedRep Visit</span>
                   <span class="ml-1 font-weight-medium">SR: #{{ CurThreadDetails.TRDMTT }} </span>
                 </template>
                 <v-spacer></v-spacer>
@@ -57,7 +57,7 @@
                 <v-flex>
                   <span>Med Rep Location</span>
                   <v-btn
-                    flat
+                    text
                     class="primary"
                     :href="'https://www.google.com/maps?q=' + lat + ',' + long"
                     target="_blank"
@@ -75,9 +75,7 @@
                 </v-flex>
               </template>
               <v-flex xs12 v-if="CurSRDetails.footerSignature">
-                <v-flex x12>
-                  Acceptance Signature
-                </v-flex>
+                <v-flex x12> Acceptance Signature </v-flex>
                 <v-card width="300" class="ml-2">
                   <v-img :src="`${CurSRDetails.footerSignature.srFooterAcceptance}`" />
                 </v-card>

@@ -2,9 +2,7 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="WorkWithDialog" width="500">
       <template v-slot:activator="{ on }">
-        <v-btn small round dark color="teal" v-on="on">
-          Work With
-        </v-btn>
+        <v-btn small rounded dark color="teal" v-on="on"> Work With </v-btn>
       </template>
       <v-toolbar class="primary" dark>
         <v-toolbar-title>Add Work With</v-toolbar-title>
@@ -15,7 +13,7 @@
             <v-text-field v-model="SRNumber" label="Service Number"></v-text-field>
           </v-flex>
           <v-flex xs12>
-            <v-btn class="primary" dark flat @click="addDataWorkWith">Add</v-btn>
+            <v-btn class="primary" dark text @click="addDataWorkWith">Add</v-btn>
           </v-flex>
         </v-card-text>
       </v-card>

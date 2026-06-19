@@ -9,22 +9,22 @@
       hide-actions
     >
       <template v-slot:items="props">
-        <td class="text-xs-center">
+        <td class="text-center">
           <span class="bold-text">
             {{ props.item.occdsc }}
           </span>
         </td>
-        <td class="text-xs-center">{{ props.item.occche }}</td>
-        <td class="text-xs-center">{{ props.item.occhem }}</td>
-        <td class="text-xs-center">{{ props.item.occimm }}</td>
-        <td class="text-xs-center">{{ props.item.occmcb }}</td>
-        <td class="text-xs-center">{{ props.item.occuri }}</td>
-        <td class="text-xs-center">{{ props.item.occbld }}</td>
-        <td class="text-xs-center">{{ props.item.occele }}</td>
-        <td class="text-xs-center">{{ props.item.occcoa }}</td>
-        <td class="text-xs-center">{{ props.item.occblb }}</td>
-        <td class="text-xs-center">{{ props.item.occlis }}</td>
-        <td class="text-xs-center">{{ props.item.occlab }}</td>
+        <td class="text-center">{{ props.item.occche }}</td>
+        <td class="text-center">{{ props.item.occhem }}</td>
+        <td class="text-center">{{ props.item.occimm }}</td>
+        <td class="text-center">{{ props.item.occmcb }}</td>
+        <td class="text-center">{{ props.item.occuri }}</td>
+        <td class="text-center">{{ props.item.occbld }}</td>
+        <td class="text-center">{{ props.item.occele }}</td>
+        <td class="text-center">{{ props.item.occcoa }}</td>
+        <td class="text-center">{{ props.item.occblb }}</td>
+        <td class="text-center">{{ props.item.occlis }}</td>
+        <td class="text-center">{{ props.item.occlab }}</td>
       </template>
     </v-data-table>
   </v-flex>

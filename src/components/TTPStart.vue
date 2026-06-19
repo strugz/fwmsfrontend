@@ -2,14 +2,12 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon flat round dark color="teal" v-on="on">
+        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small round dark color="teal" v-on="on">
-          Create TTP
-        </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on"> Create TTP </v-btn>
       </template>
-      <v-card class="hide-overflow" style="position: relative;">
+      <v-card class="hide-overflow" style="position: relative">
         <v-toolbar absolute color="primary" dense dark scroll-off-screen scroll-target="#scrolling-techniques">
           <v-toolbar-title>Begin TTP</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -17,7 +15,7 @@
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px;">
+        <div id="scrolling-techniques" class="scroll-y my-4" style="max-height: 600px">
           <iframe v-if="dialog" :src="srFormURL"></iframe>
         </div>
       </v-card>
@@ -33,7 +31,7 @@ export default {
     }
   },
   watch: {
-    dialog: function() {
+    dialog: function () {
       if (this.dialog == false) {
         this.clientClick(this.CurClientDetails.ACCMID)
       }
@@ -55,9 +53,7 @@ export default {
     ...mapState(['CurClientDetails', 'CurUserDetails']),
     srFormURL() {
       const base = process.env.VUE_APP_SR_URL
-      return `${base}/#/ttpstart/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${
-        this.CurUserDetails.CNTMST.CNTMID
-      }`
+      return `${base}/#/ttpstart/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`
     },
   },
 }
