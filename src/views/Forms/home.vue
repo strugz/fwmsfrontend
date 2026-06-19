@@ -88,6 +88,9 @@
           <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT && CurUserDetails.CNTMST.CNTDPT.includes('TSG')">
             <span @click="gotoSROutbox">Outbox</span>
           </v-list-tile>
+          <v-list-tile v-if="CurUserDetails.CNTMST.CNTDPT && CurUserDetails.CNTMST.CNTDPT.includes('IMS')">
+            <span @click="gotoSROutbox">Outbox</span>
+          </v-list-tile>
           <!-- <v-list-tile>
             <service-card></service-card>
           </v-list-tile> -->
