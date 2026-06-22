@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid class="report-wrapper pa-4">
-    <div class="no-print" style="text-align: right; margin-bottom: 10px">
+  <v-container fluid class="report-wrapper pa-4" :class="{ 'report-wrapper--embedded': embedded }">
+    <div v-if="!embedded" class="no-print" style="text-align: right; margin-bottom: 10px">
       <v-btn @click="generatePDF">📄 Download PDF</v-btn>
       <v-btn color="success" @click="emailPDF">📧 Email PDF</v-btn>
       <div style="margin-top: 8px; max-width: 420px; margin-left: auto">
@@ -26,7 +26,7 @@
     <div id="printSection" class="report-container">
       <div class="report-sheet">
         <div class="report-top">
-          <section class="report-company">
+          <section class="report-company report-pad">
             <img :src="require('@/assets/logoMDMPI.png')" class="report-logo" />
 
             <div class="office-block">
@@ -46,138 +46,97 @@
             </div>
           </section>
 
-          <section class="report-service">
-            <div class="service-row">
-              <span>CALL DATE &amp; TIME</span>
-              <b>:</b>
-              <strong>{{ isValidDate(reportHeader.callDateTime) ? reportHeader.callDateTime : '' }}</strong>
-            </div>
-            <div class="service-row">
-              <span>SERVICE BY</span>
+          <section class="report-service report-pad">
+            <div class="compact-row">
+              <span>Service By</span>
               <b>:</b>
               <strong>{{ serviceByName }}</strong>
             </div>
-            <div class="service-row">
-              <span>WORK WITH</span>
-              <b>:</b>
-              <strong>{{ workWithText }}</strong>
-            </div>
-            <div class="service-row">
-              <span>INSTRUMENT</span>
+            <div class="compact-row">
+              <span>Instrument</span>
               <b>:</b>
               <strong>{{ sentenceCase(reportHeader.instrumentModelID) }}</strong>
             </div>
-            <div class="meter-row">
-              <span>METER READING</span>
+            <div class="compact-row">
+              <span>Arrival</span>
               <b>:</b>
+              <strong>{{ CurSRDetails.meterReading ? CurSRDetails.meterReading.arrival : '' }}</strong>
             </div>
-            <div class="meter-values">
-              <span>Arrival : {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.arrival : '' }}</span>
-              <span>Departure : {{ CurSRDetails.meterReading ? CurSRDetails.meterReading.departure : '' }}</span>
+            <div class="compact-row">
+              <span>Departure</span>
+              <b>:</b>
+              <strong>{{ CurSRDetails.meterReading ? CurSRDetails.meterReading.departure : '' }}</strong>
             </div>
-            <div class="meter-box"></div>
           </section>
         </div>
 
-        <div class="customer-grid">
-          <div class="customer-left">
-            <div class="field-row">
-              <span>CUSTOMER NAME</span>
-              <b>:</b>
-              <strong>{{ sentenceCase(CurClientDetails.ACCMNM) }}</strong>
-            </div>
-            <div class="field-row">
-              <span>ADDRESS</span>
-              <b>:</b>
-              <strong>{{ sentenceCase(CurClientDetails.ACCMAD) }}</strong>
-            </div>
+        <section class="report-row report-row--customer">
+          <div class="report-field">
+            <div class="report-label">Customer Name</div>
+            <div class="report-value">{{ sentenceCase(CurClientDetails.ACCMNM) }}</div>
           </div>
-          <div class="service-type-box">
-            <div class="section-label">SERVICE TYPE</div>
-            <div class="service-type-value">
-              {{
-                sentenceCase(
-                  (CurSRDetails.serviceTypes &&
-                    CurSRDetails.serviceTypes[0] &&
-                    CurSRDetails.serviceTypes[0].srTypeDescription) ||
-                    ''
-                )
-              }}
-            </div>
-          </div>
-        </div>
-
-        <section class="purpose-box">
-          <div class="section-label">PURPOSE OF VISIT</div>
-          <div class="purpose-list">
-            <div v-for="pv in CurSRDetails.purposeOfVisits || []" :key="pv.pvid">
-              {{ sentenceCase(pv.pvDescription) }}
-              <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
-            </div>
+          <div class="report-field">
+            <div class="report-label">Address</div>
+            <div class="report-value">{{ sentenceCase(CurClientDetails.ACCMAD) }}</div>
           </div>
         </section>
 
-        <section class="action-grid">
-          <div class="action-box">
-            <div class="section-label">ACTION TAKEN</div>
-            <div class="action-list">
-              <div v-for="(action, i) in normalActionList" :key="'action-' + i">
-                {{ sentenceCase(action.atDescription) }}
-                <span v-if="action.atDescription === 'OTHERS' && action.atRemarks">
-                  - {{ sentenceCase(action.atRemarks) }}
-                </span>
+        <section class="report-row report-row--service">
+          <div class="report-field">
+            <div class="report-label">Service Type</div>
+            <div class="report-value">{{ serviceTypeText }}</div>
+          </div>
+          <div class="report-field">
+            <div class="report-label">Purpose of Visit</div>
+            <div class="report-value">
+              <div v-for="pv in CurSRDetails.purposeOfVisits || []" :key="pv.pvid">
+                {{ sentenceCase(pv.pvDescription) }}
+                <span v-if="pv.pvRemarks">- {{ sentenceCase(pv.pvRemarks) }}</span>
               </div>
             </div>
           </div>
-          <div class="tested-box">
-            <div class="section-label">TESTED PARTS</div>
-            <div class="tested-header">
-              <span>PART NUMBER</span>
-              <span>DESCRIPTION</span>
-            </div>
-            <div v-for="(tp, idx) in testedPartsList" :key="'tp-' + idx" class="tested-row">
-              <span>{{ formatTestedParts(tp).partNumber }}</span>
-              <span>{{ sentenceCase(formatTestedParts(tp).description) }}</span>
+        </section>
+
+        <section class="report-section report-section--action">
+          <div class="report-label">Action Taken</div>
+          <div class="report-value">
+            <div v-for="(action, i) in normalActionList" :key="'action-' + i">
+              {{ i + 1 }}.
+              {{ sentenceCase(action.atDescription) }}
+              <span v-if="action.atDescription === 'OTHERS' && action.atRemarks">
+                - {{ sentenceCase(action.atRemarks) }}
+              </span>
             </div>
           </div>
         </section>
 
-        <section class="remarks-box">
-          <div class="section-label">SIGNIFICANT REMARKS :</div>
-          <div class="remarks-text">
+        <section class="report-section report-section--remarks">
+          <div class="report-label">Significant Remarks</div>
+          <div class="report-value">
             {{ CurSRDetails.remarks != null ? sentenceCase(CurSRDetails.remarks.srRemarks) : '' }}
           </div>
         </section>
 
-        <section class="parts-box">
-          <div class="section-label">PARTS USED</div>
-          <div class="parts-header">
-            <span>QTY</span>
-            <span>PART NUMBER</span>
-            <span>DESCRIPTION</span>
-          </div>
-          <div v-for="(part, idx) in CurSRDetails.partsUsed || []" :key="'part-' + idx" class="parts-row">
-            <span>{{ part.puqty }}</span>
-            <span>{{ part.puPartNo }}</span>
-            <span>{{ sentenceCase(part.puDescription) }}</span>
+        <section v-if="!isPsServiceBy" class="report-section report-section--parts">
+          <div class="report-label">Parts Used</div>
+          <div class="parts-table">
+            <div class="parts-header">
+              <span>Description</span>
+              <span>Part Number</span>
+              <span>Serial Number</span>
+              <span>Qty</span>
+            </div>
+            <div v-if="!reportPartsUsed.length" class="parts-empty">No parts used</div>
+            <div v-for="(part, idx) in reportPartsUsed" :key="'part-' + idx" class="parts-row">
+              <span>{{ sentenceCase(part.puDescription) }}</span>
+              <span>{{ part.puPartNo }}</span>
+              <span>{{ part.puSerialNo }}</span>
+              <span>{{ part.puqty }}</span>
+            </div>
           </div>
         </section>
 
-        <section class="bottom-grid">
-          <div class="result-box">
-            <div class="section-label">RESULT</div>
-          </div>
-          <div class="result-box result-box--middle">
-            <div class="section-label">RESULT</div>
-            <div class="result-value">
-              :
-              {{
-                sentenceCase(
-                  (CurSRDetails.results && CurSRDetails.results[0] && CurSRDetails.results[0].srResultDescription) || ''
-                )
-              }}
-            </div>
-          </div>
+        <section class="report-section report-section--acceptance">
           <div class="acceptance-box">
             <img
               v-if="CurSRDetails.footerSignature && CurSRDetails.footerSignature.srFooterAcceptance"
@@ -191,13 +150,17 @@
             <div class="acceptance-time">{{ (CurSRDetails.footer && CurSRDetails.footer.srfDateTimeOut) || '' }}</div>
           </div>
         </section>
-      </div>
 
-      <div class="report-page-footer">
-        <span class="report-page-count">Page 1 of 1</span>
-        <span class="report-sr-number">
-          SR No.<strong>{{ reportHeader.srid || '' }}</strong>
-        </span>
+        <section class="report-bottom">
+          <div class="report-bottom-row">
+            Result:
+            <strong>{{ resultText }}</strong>
+          </div>
+          <div class="report-bottom-row">
+            SR No.:
+            <strong class="report-sr-number">{{ reportHeader.srid || CurThreadDetails.TRDMTT || '' }}</strong>
+          </div>
+        </section>
       </div>
     </div>
   </v-container>
@@ -207,6 +170,12 @@
 import { mapState } from 'vuex'
 export default {
   name: 'ServiceReport',
+  props: {
+    embedded: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       // content placeholders
@@ -249,11 +218,38 @@ export default {
     serviceByName() {
       return this.CurThreadDetails.TRDMUI ? this.sentenceCase(this.CurThreadDetails.TRDMUI.CNTMCN) : ''
     },
+    serviceByRole() {
+      return this.CurThreadDetails.TRDMUI ? this.CurThreadDetails.TRDMUI.CNTSEC : ''
+    },
+    isPsServiceBy() {
+      return this.serviceByRole === 'PS'
+    },
+    reportPartsUsed() {
+      if (this.isPsServiceBy) return []
+      return this.CurSRDetails.partsUsed || []
+    },
     normalActionList() {
       return (this.CurSRDetails.actionTakens || []).filter(a => a.atDescription !== 'TESTED PARTS')
     },
     testedPartsList() {
       return (this.CurSRDetails.actionTakens || []).filter(a => a.atDescription === 'TESTED PARTS')
+    },
+    serviceTypeText() {
+      return this.sentenceCase(
+        (this.CurSRDetails.serviceTypes &&
+          this.CurSRDetails.serviceTypes[0] &&
+          this.CurSRDetails.serviceTypes[0].srTypeDescription) ||
+          ''
+      )
+    },
+    resultText() {
+      if (this.isPsServiceBy) return 'Work Complete'
+      return this.sentenceCase(
+        (this.CurSRDetails.results &&
+          this.CurSRDetails.results[0] &&
+          this.CurSRDetails.results[0].srResultDescription) ||
+          ''
+      )
     },
     workWithText() {
       const workWith = this.CurSRDetails.workWith || []
@@ -345,35 +341,17 @@ export default {
       return date instanceof Date && !isNaN(date.getTime())
     },
     async renderReportPdf() {
-      const reportEl = document.getElementById('printSection')
+      const reportEl = this.$el.querySelector('#printSection') || document.getElementById('printSection')
       if (!reportEl) throw new Error('Report section not found!')
 
       const wrapper = document.createElement('div')
       wrapper.style.display = 'inline-block'
       wrapper.style.background = 'white'
-      wrapper.style.padding = '6px'
+      wrapper.style.padding = '0'
       wrapper.style.boxSizing = 'border-box'
       const cloned = reportEl.cloneNode(true)
 
-      const imgs = cloned.querySelectorAll('img, .v-img')
-      imgs.forEach(el => {
-        try {
-          if (el.tagName === 'IMG') {
-            el.style.maxWidth = '300px'
-            el.style.height = 'auto'
-          } else {
-            const inner = el.querySelector('img')
-            if (inner) {
-              inner.style.maxWidth = '300px'
-              inner.style.height = 'auto'
-            }
-          }
-        } catch (e) {
-          /* ignore */
-        }
-      })
-
-      cloned.style.fontSize = '12px'
+      cloned.style.fontSize = '10px'
 
       wrapper.appendChild(cloned)
       document.body.appendChild(wrapper)
@@ -514,8 +492,8 @@ export default {
 
 .report-container {
   width: 8.5in;
-  min-height: 11in;
-  padding: 0.42in 0.36in 0.22in;
+  height: 11in;
+  padding: 0.12in 0.16in;
   color: #111;
   background: #fff;
   box-sizing: border-box;
@@ -523,311 +501,190 @@ export default {
 
 .report-sheet {
   display: flex;
-  min-height: 10.08in;
+  height: 100%;
   flex-direction: column;
-  border: 2px solid #111;
+  border: 1px solid #111;
   background: #fff;
+  box-sizing: border-box;
+  font-size: 10px;
+  line-height: 1.32;
 }
 
 .report-top {
   display: grid;
-  min-height: 1.78in;
-  grid-template-columns: 56% 44%;
-  border-bottom: 2px solid #111;
+  min-height: 2.5in;
+  grid-template-columns: 50.5% 49.5%;
+  border-bottom: 1px solid #111;
+}
+
+.report-pad {
+  padding: 0.14in 0.13in 0.1in;
 }
 
 .report-company {
-  padding: 14px 14px 10px;
-  border-right: 2px solid #111;
+  border-right: 1px solid #111;
 }
 
 .report-logo {
   display: block;
-  width: 3.65in;
+  width: 3.08in;
   max-width: 100%;
   height: auto;
-  margin-bottom: 6px;
+  margin-bottom: 0.08in;
 }
 
 .office-block {
-  margin-top: 8px;
-  padding-left: 2px;
-  font-size: 10.5px;
-  font-weight: 600;
-  line-height: 1.55;
+  margin-top: 0.04in;
+  font-size: 9px;
+  line-height: 1.35;
 }
 
 .office-block--davao {
-  margin-top: 14px;
-}
-
-.office-title,
-.section-label {
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.office-title {
-  text-transform: none;
+  margin-top: 0.11in;
 }
 
 .office-line {
   display: flex;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 0.18in;
 }
 
 .report-service {
-  padding: 10px 0 0;
-  font-size: 11px;
+  font-size: 10px;
+}
+
+.compact-row {
+  display: grid;
+  grid-template-columns: 0.88in 0.08in 1fr;
+  margin-bottom: 0.07in;
+}
+
+.compact-row span,
+.compact-row b {
   font-weight: 700;
 }
 
-.service-row {
+.report-row {
   display: grid;
-  min-height: 22px;
-  grid-template-columns: 138px 14px 1fr;
-  align-items: end;
-  padding: 0 0 0 12px;
+  grid-template-columns: 50.5% 49.5%;
+  min-height: 0.86in;
+  border-bottom: 1px dashed #888;
 }
 
-.service-row strong {
-  min-height: 18px;
-  padding-left: 6px;
-  border-bottom: 2px solid #111;
-  font-size: 11px;
-  line-height: 18px;
+.report-row--service {
+  min-height: 1.02in;
 }
 
-.meter-row {
-  display: grid;
-  grid-template-columns: 138px 14px 1fr;
-  padding: 14px 0 0 12px;
+.report-field {
+  padding: 0.11in 0.13in 0.08in;
 }
 
-.meter-values {
-  display: flex;
-  justify-content: center;
-  gap: 82px;
-  padding: 10px 12px 8px;
-  font-size: 11px;
-}
-
-.meter-box {
-  height: 47px;
-  margin: 0 3px 2px 10px;
-  border: 2px solid #111;
-}
-
-.customer-grid {
-  display: grid;
-  min-height: 0.62in;
-  grid-template-columns: 56% 44%;
-  border-bottom: 2px solid #111;
-}
-
-.customer-left {
-  border-right: 2px solid #111;
-}
-
-.field-row {
-  display: grid;
-  min-height: 31px;
-  grid-template-columns: 128px 18px 1fr;
-  align-items: center;
-  padding: 0 14px;
-  border-bottom: 1px solid #777;
-}
-
-.field-row:last-child {
-  border-bottom: 0;
-}
-
-.field-row span,
-.field-row b {
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.field-row strong {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.service-type-box {
-  padding: 9px 12px;
-}
-
-.service-type-value {
-  margin-top: 24px;
-  font-size: 13px;
+.report-label {
+  margin-bottom: 0.03in;
+  font-size: 10px;
   font-weight: 700;
 }
 
-.purpose-box {
-  min-height: 0.58in;
-  padding: 12px 14px;
-  border-bottom: 2px solid #111;
+.report-value {
+  min-height: 0.14in;
+  font-size: 10px;
 }
 
-.purpose-list,
-.action-list {
-  margin-top: 14px;
-  padding-left: 16px;
-  font-size: 14px;
-  line-height: 1.55;
+.report-section {
+  padding: 0.11in 0.13in 0.08in;
+  border-bottom: 1px dashed #888;
 }
 
-.action-grid {
-  display: grid;
-  min-height: 1.12in;
-  grid-template-columns: 56% 44%;
-  border-bottom: 2px solid #111;
+.report-section--action {
+  min-height: 0.95in;
 }
 
-.action-box {
-  padding: 8px 14px;
-  border-right: 2px solid #111;
+.report-section--remarks {
+  min-height: 0.38in;
 }
 
-.tested-box {
-  padding: 8px 12px;
+.report-section--parts {
+  min-height: 1.5in;
 }
 
-.tested-header,
-.tested-row {
-  display: grid;
-  grid-template-columns: 150px 1fr;
-  gap: 18px;
-}
-
-.tested-header {
-  margin-top: 16px;
-  font-size: 12px;
-  font-weight: 800;
-  text-decoration: underline;
-}
-
-.tested-row {
-  margin-top: 8px;
-  font-size: 12px;
-}
-
-.remarks-box {
-  min-height: 0.46in;
-  padding: 7px 14px 10px;
-  border-bottom: 2px solid #111;
-}
-
-.remarks-text {
-  margin-top: 9px;
-  padding-left: 14px;
-  font-size: 16px;
-  line-height: 1.35;
-}
-
-.parts-box {
-  flex: 1 1 auto;
-  min-height: 3.62in;
-  padding: 8px 14px;
-  border-bottom: 2px solid #111;
+.parts-table {
+  padding-top: 0.08in;
 }
 
 .parts-header,
 .parts-row {
   display: grid;
-  grid-template-columns: 100px 210px 1fr;
-  gap: 12px;
-  padding-left: 66px;
+  grid-template-columns: 1.8in 1.95in 1.95in 0.55in;
+  column-gap: 0.16in;
+  padding: 0 0.18in;
 }
 
 .parts-header {
-  margin-top: 14px;
-  font-size: 12px;
-  font-weight: 800;
-  text-decoration: underline;
+  min-height: 0.23in;
+  border-bottom: 1px solid #d6d6d6;
+  font-weight: 700;
+  text-align: center;
 }
 
 .parts-row {
-  margin-top: 8px;
-  font-size: 12px;
+  padding-top: 0.04in;
 }
 
-.bottom-grid {
-  display: grid;
-  min-height: 1.55in;
-  grid-template-columns: 31% 28% 41%;
+.parts-empty {
+  display: inline-block;
+  margin: 0.08in 0 0 0.27in;
+  padding: 0.03in 0.18in;
+  border: 1px solid #aaa;
+  color: #555;
 }
 
-.result-box {
-  padding: 14px;
-  border-right: 2px solid #111;
-}
-
-.result-box--middle {
-  position: relative;
-}
-
-.result-value {
-  margin-top: 26px;
-  text-align: center;
-  font-size: 13px;
+.report-section--acceptance {
+  min-height: 1.85in;
+  border-bottom: 1px dashed #888;
 }
 
 .acceptance-box {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 12px 14px 16px;
-  text-align: center;
+  width: 2.15in;
+  margin-top: 0.07in;
 }
 
 .acceptance-signature {
-  position: absolute;
-  right: 16px;
-  bottom: 52px;
-  max-width: 190px;
-  max-height: 58px;
+  display: block;
+  width: 1.7in;
+  max-height: 0.5in;
+  margin-bottom: 0.2in;
   object-fit: contain;
 }
 
 .acceptance-name,
 .acceptance-time {
-  position: relative;
-  z-index: 1;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 10px;
 }
 
-.acceptance-time {
-  margin-top: 4px;
+.acceptance-name {
+  margin-bottom: 0.02in;
 }
 
-.report-page-footer {
-  position: relative;
-  height: 22px;
-  font-size: 14px;
-  line-height: 22px;
+.report-bottom {
+  padding: 0.1in 0.16in;
+  font-size: 11px;
 }
 
-.report-page-count {
-  position: absolute;
-  left: 0;
-  right: 0;
-  text-align: center;
+.report-bottom-row + .report-bottom-row {
+  margin-top: 0.04in;
 }
 
 .report-sr-number {
-  position: absolute;
-  right: 0;
-  font-weight: 800;
+  color: #f00;
+  font-weight: 700;
 }
 
-.report-sr-number strong {
-  color: #f00;
+.office-title {
+  font-weight: 700;
+}
+
+.report-wrapper--embedded {
+  padding: 0 !important;
+  background: #fff;
 }
 
 .recipient-combobox .v-input__slot {

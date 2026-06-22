@@ -56,7 +56,7 @@ export default {
 
         const base = process.env.VUE_APP_SR_URL
 
-        return `${base}/#/startedservice/${this.CurClientDetails.ACCMID}/
+        return `${base}startedservice/${this.CurClientDetails.ACCMID}/
         ${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}/
         ${this.CurThreadDetails.TRDMTT}/${this.CurThreadDetails.TRDMTI}`
       } else {

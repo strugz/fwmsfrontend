@@ -8,11 +8,21 @@
       </template>
 
       <v-card class="report-preview">
-        <v-toolbar color="teal darken-2" dark flat height="64" class="report-preview__toolbar">
-          <div class="report-preview__title">
-            <span>Print Preview</span>
-            <small>{{ CurThreadDetails.TRDMTT || 'Service report' }}</small>
+        <v-toolbar dark flat height="74" class="report-preview__toolbar">
+          <div class="report-preview__brand">
+            <div class="report-preview__icon">
+              <v-icon color="white">assignment</v-icon>
+            </div>
+            <div class="report-preview__title">
+              <span>Service Report Preview</span>
+              <small>{{ clientName }}</small>
+            </div>
           </div>
+
+          <div class="report-preview__meta">
+            <span class="report-preview__chip">{{ CurThreadDetails.TRDMTT || 'Service report' }}</span>
+          </div>
+
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -29,8 +39,15 @@
 
         <div class="report-preview__content">
           <aside class="report-preview__panel">
-            <div class="report-preview__panel-title">Send Copy</div>
-            <div class="report-preview__panel-text">Email this report directly to the customer or download a PDF.</div>
+            <div class="report-preview__panel-card">
+              <div class="report-preview__panel-kicker">Quick action</div>
+              <div class="report-preview__panel-title">Service Report</div>
+              <div class="report-preview__panel-text">
+                Preview the generated field report, download a PDF, or send a copy.
+              </div>
+            </div>
+
+            <div class="report-preview__section-title">Recipient</div>
 
             <v-text-field
               ref="email"
@@ -44,22 +61,30 @@
               hide-details="auto"
             ></v-text-field>
 
-            <v-btn
-              block
-              depressed
-              color="teal darken-2"
-              dark
-              :loading="sendBTNDisbled"
-              :disabled="sendBTNDisbled"
-              @click="Emailvalidation"
-            >
-              Send to Email
-            </v-btn>
+            <div class="report-preview__actions">
+              <v-btn
+                block
+                depressed
+                color="teal darken-2"
+                dark
+                :loading="sendBTNDisbled"
+                :disabled="sendBTNDisbled"
+                @click="Emailvalidation"
+              >
+                <v-icon left size="18">send</v-icon>
+                Send to Email
+              </v-btn>
 
-            <v-btn block text color="teal darken-2" class="mt-2" :disabled="loading" @click="LoadPdf">
-              <v-icon left size="18">file_download</v-icon>
-              Download PDF
-            </v-btn>
+              <v-btn block outlined color="teal darken-2" class="mt-3" :disabled="loading" @click="LoadPdf">
+                <v-icon left size="18">file_download</v-icon>
+                Download PDF
+              </v-btn>
+            </div>
+
+            <div class="report-preview__hint">
+              <v-icon size="16" color="blue-grey lighten-1">info</v-icon>
+              <span>Preview and download use the latest report layout.</span>
+            </div>
           </aside>
 
           <main class="report-preview__viewer">
@@ -68,15 +93,31 @@
               <span>Preparing report preview...</span>
             </div>
 
+            <div v-else-if="previewError" class="report-preview__state report-preview__state--error">
+              <v-icon size="44" color="red lighten-1">error_outline</v-icon>
+              <span>{{ previewError }}</span>
+              <v-btn small depressed color="teal darken-2" dark @click="PrintPreview">Try again</v-btn>
+            </div>
+
             <div v-else-if="!pdfsrc" class="report-preview__state">
               <v-icon size="44" color="blue-grey lighten-1">picture_as_pdf</v-icon>
               <span>No preview loaded yet</span>
             </div>
 
-            <div v-else class="report-preview__document">
-              <pdf :src="pdfsrc"></pdf>
+            <div v-else class="report-preview__document-shell">
+              <div class="report-preview__document-toolbar">
+                <span>PDF Preview</span>
+                <span>{{ CurThreadDetails.TRDMTT || '' }}</span>
+              </div>
+              <div class="report-preview__document">
+                <pdf :src="pdfsrc"></pdf>
+              </div>
             </div>
           </main>
+        </div>
+
+        <div class="report-preview__renderer" aria-hidden="true">
+          <field-report ref="fieldReportRenderer" embedded></field-report>
         </div>
       </v-card>
     </v-dialog>
@@ -87,9 +128,11 @@
 import pdf from 'vue-pdf'
 import { mapState } from 'vuex'
 import axios from 'axios'
+import fieldReport from '@/reports/engineer/field/fieldReports.vue'
 
 export default {
   components: {
+    fieldReport,
     pdf,
   },
   data() {
@@ -98,6 +141,7 @@ export default {
       loading: false,
       dialog: false,
       pdfsrc: null,
+      previewError: '',
       pdfDialog: false,
       EmailReceiver: '',
       rules: {
@@ -111,6 +155,9 @@ export default {
   },
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails', 'CurThreadDetails']),
+    clientName() {
+      return this.CurClientDetails.ACCMNM || this.CurClientDetails.ACCMSC || 'Customer'
+    },
     reportMachineCode() {
       return (this.CurThreadDetails.TRDMMC || '').replace(':', '').replace('/', ' ').replace('/', ' ').trim()
     },
@@ -148,21 +195,27 @@ export default {
         this.$refs.email.reset()
       }
     },
-    LoadPdf() {
-      axios(this.reportRequest)
-        .then(res => {
-          const fileURL = window.URL.createObjectURL(new Blob([res.data]))
-          const fileLink = document.createElement('a')
-          fileLink.href = fileURL
-          fileLink.setAttribute('download', `${this.CurThreadDetails.TRDMTT}.pdf`)
-          document.body.appendChild(fileLink)
-          fileLink.click()
-          document.body.removeChild(fileLink)
-          window.URL.revokeObjectURL(fileURL)
-        })
-        .catch(error => {
-          alert(error)
-        })
+    async buildLocalReportPdf() {
+      await this.$nextTick()
+      const renderer = this.$refs.fieldReportRenderer
+      if (!renderer || typeof renderer.renderReportPdf !== 'function') {
+        throw new Error('Local report renderer is not ready.')
+      }
+      return renderer.renderReportPdf()
+    },
+    async LoadPdf() {
+      this.previewError = ''
+      this.loading = true
+      try {
+        const pdfDoc = await this.buildLocalReportPdf()
+        pdfDoc.save(`${this.CurThreadDetails.TRDMTT}.pdf`)
+      } catch (error) {
+        this.previewError = 'Unable to generate the local field report PDF.'
+        console.error('Local PDF Download Error:', error)
+        alert(error)
+      } finally {
+        this.loading = false
+      }
     },
     Emailvalidation() {
       if (this.EmailReceiver != '') {
@@ -193,23 +246,27 @@ export default {
           alert(error)
         })
     },
-    PrintPreview() {
+    async PrintPreview() {
       this.loading = true
+      this.previewError = ''
 
-      axios(this.reportRequest)
-        .then(res => {
-          if (this.pdfsrc) {
-            URL.revokeObjectURL(this.pdfsrc)
-          }
+      try {
+        const pdfDoc = await this.buildLocalReportPdf()
+        const blob = pdfDoc.output('blob')
 
-          const blob = new Blob([res.data])
-          this.pdfsrc = URL.createObjectURL(blob)
-          this.loading = false
-        })
-        .catch(error => {
-          this.loading = false
-          alert(error)
-        })
+        if (this.pdfsrc) {
+          URL.revokeObjectURL(this.pdfsrc)
+        }
+
+        this.pdfsrc = URL.createObjectURL(blob)
+      } catch (error) {
+        this.pdfsrc = null
+        this.previewError = 'Unable to prepare the local field report preview.'
+        console.error('Local PDF Preview Error:', error)
+        alert(error)
+      } finally {
+        this.loading = false
+      }
     },
   },
 }
@@ -225,11 +282,32 @@ export default {
   height: 100vh;
   flex-direction: column;
   overflow: hidden;
-  background: #eef4f7;
+  background: #f3f7f8;
 }
 
 .report-preview__toolbar {
   flex: 0 0 auto;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #00695c 0%, #00897b 100%);
+  box-shadow: 0 4px 18px rgba(0, 77, 64, 0.22);
+}
+
+.report-preview__brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-preview__icon {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .report-preview__title {
@@ -240,50 +318,113 @@ export default {
 }
 
 .report-preview__title span {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
 }
 
 .report-preview__title small {
   color: rgba(255, 255, 255, 0.82);
   font-size: 12px;
+  max-width: 520px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.report-preview__meta {
+  margin-left: 18px;
+}
+
+.report-preview__chip {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.13);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .report-preview__content {
   display: grid;
   flex: 1 1 auto;
   min-height: 0;
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: 340px minmax(0, 1fr);
 }
 
 .report-preview__panel {
-  padding: 20px;
+  padding: 22px;
   border-right: 1px solid #d9e2ec;
   background: #fff;
 }
 
+.report-preview__panel-card {
+  border: 1px solid #dbe7ed;
+  border-radius: 8px;
+  padding: 16px;
+  background: #f8fbfc;
+}
+
+.report-preview__panel-kicker {
+  margin-bottom: 5px;
+  color: #00796b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .report-preview__panel-title {
   color: #102a43;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
 }
 
 .report-preview__panel-text {
-  margin: 6px 0 18px;
+  margin: 8px 0 0;
   color: #62748a;
   font-size: 13px;
   line-height: 1.5;
+}
+
+.report-preview__section-title {
+  margin: 22px 0 10px;
+  color: #334e68;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .report-preview__field {
   margin-bottom: 14px;
 }
 
+.report-preview__actions {
+  margin-top: 8px;
+}
+
+.report-preview__hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 18px;
+  border-top: 1px solid #edf2f7;
+  padding-top: 14px;
+  color: #62748a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .report-preview__viewer {
   position: relative;
   min-width: 0;
   overflow: auto;
-  padding: 28px;
+  padding: 28px 32px;
+  background: radial-gradient(circle at top left, rgba(0, 137, 123, 0.08), transparent 30%),
+    linear-gradient(180deg, #eef5f7 0%, #f8fafb 100%);
 }
 
 .report-preview__state {
@@ -297,14 +438,48 @@ export default {
   font-size: 14px;
 }
 
-.report-preview__document {
+.report-preview__state--error {
+  color: #9b1c1c;
+  text-align: center;
+}
+
+.report-preview__document-shell {
   width: min(100%, 920px);
-  min-height: calc(100vh - 120px);
   margin: 0 auto;
+}
+
+.report-preview__document-toolbar {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #d7e2e8;
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  padding: 0 14px;
+  background: #fff;
+  color: #334e68;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.report-preview__document {
+  min-height: calc(100vh - 150px);
   overflow: hidden;
-  border-radius: 8px;
+  border: 1px solid #d7e2e8;
+  border-radius: 0 0 8px 8px;
   background: #fff;
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+}
+
+.report-preview__renderer {
+  position: fixed;
+  top: 0;
+  left: -12000px;
+  width: 9in;
+  height: 12in;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 @media (max-width: 860px) {
@@ -317,6 +492,10 @@ export default {
     border-right: 0;
     border-bottom: 1px solid #d9e2ec;
     padding: 14px;
+  }
+
+  .report-preview__meta {
+    display: none;
   }
 
   .report-preview__viewer {

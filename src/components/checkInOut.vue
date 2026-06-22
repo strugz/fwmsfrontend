@@ -97,7 +97,7 @@ export default {
       return this.CurClientDetails.ACCMSC || this.CurClientDetails.ACCMNM || ''
     },
     srFormURL() {
-      const base = process.env.VUE_APP_SR_URL_2
+      const base = process.env.VUE_APP_SR_URL
       return `${base}${this.InOut}/${this.CurUserDetails.CNTMST.CNTMID}/${
         this.InOut == 'checkin' ? this.CurClientDetails.ACCMID : this.CurCheckInAcc.customerID.ACCMID
       }`

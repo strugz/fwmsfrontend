@@ -64,7 +64,7 @@ export default {
     ...mapState(['CurClientDetails', 'CurUserDetails']),
     srFormURL() {
       const base = process.env.VUE_APP_SR_URL
-      return `${base}/#/ttpstart/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`
+      return `${base}ttpstart/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`
     },
   },
 }

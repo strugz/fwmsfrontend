@@ -17,7 +17,15 @@
       </div>
     </div>
     <div class="thread-actions">
-      <div class="thread-actions__label">Quick actions</div>
+      <div class="thread-actions__header">
+        <div class="thread-actions__icon">
+          <v-icon size="16" color="teal darken-2">flash_on</v-icon>
+        </div>
+        <div>
+          <div class="thread-actions__label">Quick actions</div>
+          <div class="thread-actions__subtext">Start common tasks</div>
+        </div>
+      </div>
       <div class="thread-actions__list">
         <checkInOut
           v-if="CurUserDetails.CNTMST.CNTSEC != 'TSR' && CurUserDetails.CNTMST.CNTSEC != 'COLLECTOR'"
@@ -204,29 +212,64 @@ export default {
 
 .thread-actions {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
+  right: 28px;
+  bottom: 28px;
   z-index: 8;
-  width: 180px;
-  padding: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+  width: 218px;
+  padding: 14px;
+  border: 1px solid rgba(0, 121, 107, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+}
+
+.thread-actions::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(0, 137, 123, 0.08), rgba(255, 255, 255, 0));
+  content: '';
+  pointer-events: none;
+}
+
+.thread-actions__header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.thread-actions__icon {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #e0f2f1;
 }
 
 .thread-actions__label {
-  margin-bottom: 8px;
-  color: #52606d;
+  color: #102a43;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
+.thread-actions__subtext {
+  margin-top: 2px;
+  color: #62748a;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
 .thread-actions__list {
+  position: relative;
   display: grid;
-  gap: 8px;
+  gap: 9px;
 }
 
 .thread-actions .layout {
@@ -237,9 +280,20 @@ export default {
 
 .thread-actions .v-btn {
   width: 100%;
+  height: 34px !important;
   min-width: 0 !important;
   margin: 0 !important;
+  border-radius: 999px !important;
   justify-content: center;
+  box-shadow: 0 8px 18px rgba(0, 121, 107, 0.22) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase;
+}
+
+.thread-actions .v-btn:hover {
+  transform: translateY(-1px);
 }
 
 @media (max-width: 760px) {
@@ -252,11 +306,15 @@ export default {
     bottom: 10px;
     left: 10px;
     width: auto;
-    padding: 10px;
+    padding: 12px;
   }
 
   .thread-actions__list {
     grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
+
+  .thread-actions__header {
+    margin-bottom: 10px;
   }
 }
 </style>
