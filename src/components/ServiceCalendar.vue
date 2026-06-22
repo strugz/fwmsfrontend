@@ -109,7 +109,7 @@
                     <div v-ripple class="calendar-event mb-1" :class="eventClass(event)" v-on="on">
                       <div class="calendar-event__top">
                         <span>{{ eventTitleLine(event) }}</span>
-                        <small v-if="event.trdsts">{{ event.trdsts }}</small>
+                        <small v-if="eventStatusLabel(event)">{{ eventStatusLabel(event) }}</small>
                       </div>
                       <p v-for="(line, index) in eventDetailLines(event)" :key="index">
                         {{ line }}
@@ -174,7 +174,7 @@
                       </v-card-actions>
                     </v-card>
                     <v-card
-                      v-show="event.trdsts == 'LEAVE'"
+                      v-show="isLeaveEvent(event)"
                       class="calendar-menu-card"
                       min-width="320px"
                       max-width="380px"
@@ -287,7 +287,7 @@ export default {
       return this.CurServiceCalendar.filter(event => event.trdsts == 'START').length
     },
     leaveCount() {
-      return this.CurServiceCalendar.filter(event => event.trdsts == 'LEAVE').length
+      return this.CurServiceCalendar.filter(event => this.isLeaveEvent(event)).length
     },
   },
   mounted() {
@@ -307,22 +307,31 @@ export default {
     ]),
     ...mapMutations(['upCurServiceCalendar', 'upCurServiceCalendarDeleteItem']),
     eventClass(event) {
-      if (event.trdsts == 'LEAVE') {
-        return 'calendar-event--leave'
+      const classes = []
+      if (this.isScheduledEvent(event)) {
+        classes.push('calendar-event--print-hidden')
+      }
+
+      if (this.isLeaveEvent(event)) {
+        classes.push('calendar-event--leave')
+        return classes
       }
       if (event.trdsts == 'START') {
-        return 'calendar-event--start'
+        classes.push('calendar-event--start')
+        return classes
       }
       if (event.trdsts == 'SCHEDULED') {
-        return 'calendar-event--scheduled'
+        classes.push('calendar-event--scheduled')
+        return classes
       }
-      return 'calendar-event--note'
+      classes.push('calendar-event--note')
+      return classes
     },
     eventTitleLine(event) {
-      return event.trdsts == 'LEAVE' ? event.title : event.client || event.title || 'Calendar item'
+      return this.isLeaveEvent(event) ? event.title : event.client || event.title || 'Calendar item'
     },
     eventDetailLines(event) {
-      if (event.trdsts == 'LEAVE') {
+      if (this.isLeaveEvent(event)) {
         return []
       }
 
@@ -335,6 +344,24 @@ export default {
       }
 
       return []
+    },
+    eventStatusLabel(event) {
+      if (this.isLeaveEvent(event)) {
+        return 'LEAVE'
+      }
+      if (event.trdsts == 'LEAVE') {
+        return ''
+      }
+      return event.trdsts || ''
+    },
+    isLeaveEvent(event) {
+      const title = String(event.title || '')
+        .trim()
+        .toUpperCase()
+      return event.trdsts == 'LEAVE' && ['VL', 'SL'].includes(title)
+    },
+    isScheduledEvent(event) {
+      return event.trdsts == 'SCHEDULED'
     },
     CancelAddedData(item) {
       this.deleteSRCalendarAdditional({
@@ -801,8 +828,25 @@ export default {
   background: #fff;
 }
 
+.service-calendar__sheet ::v-deep .v-calendar-weekly__day {
+  overflow: hidden auto;
+  min-width: 0;
+  contain: paint;
+}
+
+.service-calendar__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar {
+  width: 4px;
+}
+
+.service-calendar__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c7d5dd;
+}
+
 .calendar-event {
+  box-sizing: border-box;
   width: 100%;
+  max-width: 100%;
   padding: 6px 7px;
   overflow: hidden;
   border-left: 4px solid #1976d2;
@@ -819,9 +863,11 @@ export default {
   align-items: flex-start;
   justify-content: space-between;
   gap: 6px;
+  min-width: 0;
 }
 
 .calendar-event__top span {
+  min-width: 0;
   overflow: hidden;
   font-weight: 900;
   text-overflow: ellipsis;
@@ -840,6 +886,7 @@ export default {
   margin: 3px 0 0;
   overflow: hidden;
   color: #52606d;
+  overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -1013,6 +1060,14 @@ export default {
   .service-calendar__sheet {
     height: auto;
     padding: 0;
+  }
+
+  .calendar-event__top small {
+    display: none;
+  }
+
+  .calendar-event--print-hidden {
+    display: none !important;
   }
 }
 </style>

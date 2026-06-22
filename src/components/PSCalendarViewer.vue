@@ -231,23 +231,49 @@ export default {
 }
 </script>
 <style scoped>
+.my-event3 ::v-deep .v-calendar-weekly__day {
+  overflow: hidden auto;
+  min-width: 0;
+  contain: paint;
+}
+
+.my-event3 ::v-deep .v-calendar-weekly__day::-webkit-scrollbar {
+  width: 4px;
+}
+
+.my-event3 ::v-deep .v-calendar-weekly__day::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c7d5dd;
+}
+
 .my-event1 {
+  box-sizing: border-box;
   border-radius: 2px;
   color: #000000;
   border: 1px solid #1867c0;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 10px;
 }
 
 .my-event2 {
+  box-sizing: border-box;
   border-radius: 2px;
   color: #000000;
   border: 1px solid #f1cc52;
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 8px;
 }
 
 .my-event4 {
+  box-sizing: border-box;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

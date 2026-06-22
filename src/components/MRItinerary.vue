@@ -1,155 +1,206 @@
 <template>
-  <v-layout wrap>
-    <v-flex xs12 class="mb-3">
-      <div id="printDiv">
-        <span>
-          <h1>{{ myDate }}</h1>
-        </span>
-        <v-flex sm4 xs12>
-          <v-btn @click="$refs.calendar.prev()">
-            <v-icon dark left> keyboard_arrow_left </v-icon>
-            Prev
-          </v-btn>
-          <v-btn class="no-print" @click="printDiv('printDiv')" color="primary">Print</v-btn>
-          <v-btn @click="$refs.calendar.next()">
-            Next
-            <v-icon right dark> keyboard_arrow_right </v-icon>
-          </v-btn>
-        </v-flex>
-        <v-sheet height="500">
-          <v-calendar ref="calendar" v-model="today" type="month" color="primary">
+  <v-container fluid class="mr-itinerary-page">
+    <div id="printDiv" class="mr-itinerary">
+      <section class="mr-itinerary__hero">
+        <div>
+          <p class="mr-itinerary__eyebrow">Marsman Drysdale Medical Product Inc.</p>
+          <h1>MR Itinerary</h1>
+          <p class="mr-itinerary__subtitle">Plan, start, and manage your medical representative visits.</p>
+        </div>
+
+        <div class="mr-itinerary__month">
+          <span>{{ myDate }}</span>
+          <small>{{ ownerName }}</small>
+        </div>
+      </section>
+
+      <section class="mr-itinerary__stats no-print">
+        <div class="mr-itinerary__stat">
+          <span>{{ itineraryCount }}</span>
+          <small>Total items</small>
+        </div>
+        <div class="mr-itinerary__stat">
+          <span>{{ pendingApprovalCount }}</span>
+          <small>Pending approval</small>
+        </div>
+        <div class="mr-itinerary__stat">
+          <span>{{ startedCount }}</span>
+          <small>Started</small>
+        </div>
+        <div class="mr-itinerary__stat">
+          <span>{{ completedCount }}</span>
+          <small>Completed</small>
+        </div>
+      </section>
+
+      <v-card class="mr-itinerary__calendar-card" flat>
+        <div class="mr-itinerary__calendar-head">
+          <div>
+            <h2>{{ myDate }}</h2>
+            <p>Click an itinerary item to start, view, delete, or manage leave entries.</p>
+          </div>
+          <div class="mr-itinerary__actions no-print">
+            <v-btn depressed color="teal darken-2" dark @click="dataReload">
+              <v-icon left small>refresh</v-icon>
+              Reload
+            </v-btn>
+            <v-btn depressed color="grey lighten-3" class="mr-itinerary__nav-btn" @click="$refs.calendar.prev()">
+              <v-icon left small>keyboard_arrow_left</v-icon>
+              Prev
+            </v-btn>
+            <v-btn depressed color="indigo" dark @click="printDiv('printDiv')">
+              <v-icon left small>print</v-icon>
+              Print
+            </v-btn>
+            <v-btn depressed color="grey lighten-3" class="mr-itinerary__nav-btn" @click="$refs.calendar.next()">
+              Next
+              <v-icon right small>keyboard_arrow_right</v-icon>
+            </v-btn>
+          </div>
+        </div>
+
+        <v-sheet class="mr-itinerary__sheet">
+          <v-calendar ref="calendar" v-model="today" type="month" color="teal darken-2">
             <template v-slot:day="{ date }">
               <template v-for="event in eventsMap[date]">
-                <v-menu :key="event.itimid" v-model="event.open" :close-on-content-click="false" full-width offset-x>
+                <v-menu
+                  :key="event.itimid || event.trdmti || event.title + date"
+                  v-model="event.open"
+                  :close-on-content-click="false"
+                  max-width="420"
+                  offset-y
+                >
                   <template v-slot:activator="{ on }">
-                    <div v-if="event.validation == 'NOT APPROVE'">
-                      <div class="my-event3" v-if="!event.time" v-ripple v-on="on">
-                        <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
-                        <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
+                    <div
+                      v-if="!event.time"
+                      class="mr-itinerary-event mb-1"
+                      :class="eventClass(event)"
+                      v-ripple
+                      v-on="on"
+                    >
+                      <div class="mr-itinerary-event__top">
+                        <span>{{ eventTitleLine(event) }}</span>
+                        <small v-if="eventStatusLabel(event)">{{ eventStatusLabel(event) }}</small>
                       </div>
-                    </div>
-                    <div v-else>
-                      <div v-show="event.trdsts != 'LEAVE'">
-                        <div
-                          :class="
-                            event.trdsts == 'START'
-                              ? 'my-event'
-                              : event.trdsts == 'WORK COMPLETE'
-                              ? 'my-event1'
-                              : 'my-event2'
-                          "
-                          v-if="!event.time"
-                          v-ripple
-                          v-on="on"
-                        >
-                          <span v-if="event.trdsts == 'LEAVE'">{{ event.title }}</span>
-                          <span v-if="event.trdsts != 'LEAVE'">{{ event.client }}</span>
-                          <span v-show="event.trdsts == 'WORK COMPLETE'"
-                            >{{ ' - ' }}
-                            {{
-                              new Date(event.trdmcd).toLocaleTimeString('en-GB', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false,
-                              })
-                            }}
-                            {{ ' to ' }}
-                            {{
-                              new Date(event.trdupd).toLocaleTimeString('en-GB', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false,
-                              })
-                            }}</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    <div v-show="event.trdsts == 'LEAVE'" class="my-event1" v-ripple v-on="on">
-                      {{ event.title }}
+                      <p v-if="event.trdsts == 'WORK COMPLETE'">{{ completedTimeRange(event) }}</p>
+                      <p v-else-if="event.itiobj">{{ event.itiobj }}</p>
                     </div>
                   </template>
-                  <v-layout wrap row>
+                  <v-row no-gutters>
                     <v-card
-                      v-show="event.trdsts != 'LEAVE'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      text
+                      v-show="!isLeaveEvent(event)"
+                      class="mr-itinerary-menu-card"
+                      min-width="340px"
+                      max-width="420px"
+                      flat
                     >
-                      <v-toolbar color="primary" dark>
+                      <v-toolbar dark flat height="56" class="mr-itinerary-menu-card__toolbar">
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                      <v-card-title primary-title>
-                        <v-flex xs12>
-                          <p>
-                            <span style="color: blue; font-weight: bold">Customer:</span>
-                            {{ ' ' + event.customer }}
-                          </p>
-                        </v-flex>
-                        <v-flex xs12 v-show="event.itiobj">
-                          <p>
-                            <span style="color: blue; font-weight: bold">Objective:</span>
-                            {{ ' ' + event.itiobj }}
-                          </p>
-                        </v-flex>
-                        <v-flex xs12 v-if="event.validation != 'NOT APPROVE'">
+                      <v-card-text>
+                        <div v-if="event.client" class="mr-itinerary-menu-card__meta">
+                          <strong>Client</strong>
+                          <span>{{ event.client }}</span>
+                        </div>
+                        <div v-if="event.customer" class="mr-itinerary-menu-card__meta">
+                          <strong>Customer</strong>
+                          <span>{{ event.customer }}</span>
+                        </div>
+                        <div v-if="event.itiobj" class="mr-itinerary-menu-card__meta">
+                          <strong>Objective</strong>
+                          <span>{{ event.itiobj }}</span>
+                        </div>
+                        <div v-if="event.trdsts == 'WORK COMPLETE'" class="mr-itinerary-menu-card__meta">
+                          <strong>Time</strong>
+                          <span>{{ completedTimeRange(event) }}</span>
+                        </div>
+                        <div class="mr-itinerary-menu-card__meta">
+                          <strong>Status</strong>
+                          <span>{{ eventStatusLabel(event) }}</span>
+                        </div>
+                        <div v-if="event.validation != 'NOT APPROVE'" class="mr-itinerary-menu-card__location">
                           <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"
-                            ><i>
-                              <h5>Verify your location.</h5>
-                            </i></a
+                            ><v-icon small color="teal darken-2">place</v-icon> Verify your location</a
                           >
-                        </v-flex>
-                        <div v-if="event.validation != 'NOT APPROVE'">
+                        </div>
+                      </v-card-text>
+                      <v-card-actions class="mr-itinerary-menu-card__actions">
+                        <v-chip
+                          v-if="event.validation == 'NOT APPROVE'"
+                          small
+                          color="red lighten-5"
+                          text-color="red darken-3"
+                        >
+                          Pending approval
+                        </v-chip>
+                        <v-spacer></v-spacer>
+                        <template v-if="event.validation != 'NOT APPROVE'">
                           <v-btn
                             v-show="event.itists == '1'"
                             @click="EndTravelValidation(event)"
                             :disabled="enableStart"
-                            color="primary"
-                            >START</v-btn
+                            color="teal darken-2"
+                            dark
+                            depressed
+                            small
                           >
-                        </div>
-                        <v-btn color="primary" v-show="event.itists != '1'" @click="goToCustomer(event.accmid)"
-                          >View</v-btn
+                            START
+                          </v-btn>
+                        </template>
+                        <v-btn
+                          color="indigo"
+                          dark
+                          depressed
+                          small
+                          v-show="event.itists != '1'"
+                          @click="goToCustomer(event.accmid)"
                         >
+                          View
+                        </v-btn>
                         <v-btn
                           v-show="event.trdsts != 'WORK COMPLETE' && event.trdsts != 'START'"
-                          color="primary"
+                          color="red darken-1"
+                          text
+                          small
                           @click="cancelItineraryTSR(event)"
-                          >DELETE</v-btn
                         >
+                          Delete
+                        </v-btn>
                         <v-progress-circular v-show="progValue" indeterminate color="primary"></v-progress-circular>
-                      </v-card-title>
-                      <v-card-actions> </v-card-actions>
+                      </v-card-actions>
                     </v-card>
                     <v-card
-                      v-show="event.trdsts == 'LEAVE'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      text
+                      v-show="isLeaveEvent(event)"
+                      class="mr-itinerary-menu-card"
+                      min-width="340px"
+                      max-width="420px"
+                      flat
                     >
-                      <v-toolbar color="primary" dark>
+                      <v-toolbar dark flat height="56" class="mr-itinerary-menu-card__toolbar">
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                      <v-card-title>
-                        <v-btn color="primary" @click="CancelAddedData(event)">Cancel Added Data</v-btn>
-                      </v-card-title>
-                      <v-card-actions> </v-card-actions>
+                      <v-card-text>
+                        <p class="mb-0">This day is marked as leave or additional calendar data.</p>
+                      </v-card-text>
+                      <v-card-actions class="mr-itinerary-menu-card__actions">
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text small @click="CancelAddedData(event)">Cancel Added Data</v-btn>
+                      </v-card-actions>
                     </v-card>
-                  </v-layout>
+                  </v-row>
                 </v-menu>
               </template>
             </template>
           </v-calendar>
         </v-sheet>
-      </div>
-    </v-flex>
-    <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top" class="mb-6 mr-0">
+      </v-card>
+    </div>
+
+    <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top" class="mb-6 mr-0 no-print">
       <template v-slot:activator>
-        <v-btn color="primary" dark fab>
+        <v-btn color="teal darken-2" dark fab>
           <v-icon>add</v-icon>
         </v-btn>
       </template>
@@ -157,7 +208,7 @@
       <itinerary-travel v-show="CurUserDetails.CNTMST.CNTMGP == '1'"></itinerary-travel>
       <additional-dialog></additional-dialog>
     </v-speed-dial>
-  </v-layout>
+  </v-container>
 </template>
 <script>
 import { mapActions, mapState, mapMutations } from 'vuex'
@@ -191,6 +242,21 @@ export default {
     myDate() {
       return moment(this.today).format('MMMM YYYY')
     },
+    ownerName() {
+      return this.CurUserDetails.CNTMST ? this.CurUserDetails.CNTMST.CNTMCN : 'Itinerary'
+    },
+    itineraryCount() {
+      return this.CurITIMSTList.length
+    },
+    pendingApprovalCount() {
+      return this.CurITIMSTList.filter(event => event.validation == 'NOT APPROVE').length
+    },
+    startedCount() {
+      return this.CurITIMSTList.filter(event => event.trdsts == 'START').length
+    },
+    completedCount() {
+      return this.CurITIMSTList.filter(event => event.trdsts == 'WORK COMPLETE').length
+    },
   },
   mounted() {
     this.dataReload()
@@ -206,6 +272,76 @@ export default {
       'deleteLVETSR',
     ]),
     ...mapMutations(['upCurITIMSTList', 'upCurServiceCalendarDeleteItem']),
+    eventClass(event) {
+      const classes = []
+      if (this.isScheduledEvent(event)) {
+        classes.push('calendar-event--print-hidden')
+      }
+
+      if (event.validation == 'NOT APPROVE') {
+        classes.push('mr-itinerary-event--approval')
+        return classes
+      }
+      if (this.isLeaveEvent(event)) {
+        classes.push('mr-itinerary-event--leave')
+        return classes
+      }
+      if (event.trdsts == 'WORK COMPLETE') {
+        classes.push('mr-itinerary-event--complete')
+        return classes
+      }
+      if (event.trdsts == 'START') {
+        classes.push('mr-itinerary-event--start')
+        return classes
+      }
+      classes.push('mr-itinerary-event--pending')
+      return classes
+    },
+    eventTitleLine(event) {
+      return this.isLeaveEvent(event) ? event.title : event.client || event.customer || event.title || 'Itinerary item'
+    },
+    eventStatusLabel(event) {
+      if (this.isLeaveEvent(event)) {
+        return 'LEAVE'
+      }
+      if (event.trdsts == 'LEAVE') {
+        return ''
+      }
+      if (event.validation == 'NOT APPROVE') {
+        return 'PENDING'
+      }
+      if (event.trdsts) {
+        return event.trdsts
+      }
+      return 'ITINERARY'
+    },
+    isLeaveEvent(event) {
+      const title = String(event.title || '')
+        .trim()
+        .toUpperCase()
+      return event.trdsts == 'LEAVE' && ['VL', 'SL'].includes(title)
+    },
+    isScheduledEvent(event) {
+      return event.trdsts == 'SCHEDULED'
+    },
+    completedTimeRange(event) {
+      if (!event.trdmcd || !event.trdupd) {
+        return ''
+      }
+
+      const started = new Date(event.trdmcd).toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+      const ended = new Date(event.trdupd).toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
+
+      return `${started} to ${ended}`
+    },
     cancelItineraryTSR(item) {
       this.deleteITITSR({ itimid: item.itimid })
         .then(res => {
@@ -401,77 +537,370 @@ export default {
 }
 </script>
 <style scoped>
-.my-event {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #1867c0;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
+.mr-itinerary-page {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(180deg, #f7fbfc 0%, #eef5f7 100%);
 }
 
-.my-event1 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #127509;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
+.mr-itinerary {
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
-.my-event2 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: hsl(54, 92%, 52%);
-  color: #000000;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
+.mr-itinerary__hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+  color: #fff;
 }
 
-.my-event3 {
+.mr-itinerary__eyebrow {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mr-itinerary__hero h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.mr-itinerary__subtitle {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+}
+
+.mr-itinerary__month {
+  display: flex;
+  min-width: 220px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.mr-itinerary__month span {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.mr-itinerary__month small {
+  max-width: 280px;
   overflow: hidden;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border-radius: 2px;
-  background-color: #df0404;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
+}
+
+.mr-itinerary__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.mr-itinerary__stat {
+  padding: 14px 16px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.mr-itinerary__stat span {
+  display: block;
+  color: #102a43;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.mr-itinerary__stat small {
+  color: #62748a;
   font-size: 12px;
-  padding: 3px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mr-itinerary__calendar-card {
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mr-itinerary__calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e4edf1;
+}
+
+.mr-itinerary__calendar-head h2 {
+  margin: 0;
+  color: #102a43;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.mr-itinerary__calendar-head p {
+  margin: 4px 0 0;
+  color: #62748a;
+  font-size: 13px;
+}
+
+.mr-itinerary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.mr-itinerary__nav-btn {
+  color: #344054;
+}
+
+.mr-itinerary__sheet {
+  height: 1180px;
+  padding: 12px;
+  background: #fff;
+}
+
+.mr-itinerary__sheet ::v-deep .v-calendar-weekly__day {
+  overflow: hidden auto;
+  min-width: 0;
+  contain: paint;
+}
+
+.mr-itinerary__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mr-itinerary__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #c7d5dd;
+}
+
+.mr-itinerary-event {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  padding: 3px 5px;
+  overflow: hidden;
+  border-left: 3px solid #f0a202;
+  border-radius: 4px;
+  background: #fff8e6;
+  color: #102a43;
   cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
+  font-size: 9px;
+  line-height: 1.15;
+}
+
+.mr-itinerary-event__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mr-itinerary-event__top span {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mr-itinerary-event__top small {
+  flex: 0 0 auto;
+  color: #52606d;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.mr-itinerary-event p {
+  display: -webkit-box;
+  margin: 1px 0 0;
+  overflow: hidden;
+  color: #52606d;
+  font-size: 8px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.mr-itinerary-event--approval {
+  border-left-color: #df0404;
+  background: #fff1f1;
+}
+
+.mr-itinerary-event--start {
+  border-left-color: #1976d2;
+  background: #eff6ff;
+}
+
+.mr-itinerary-event--complete,
+.mr-itinerary-event--leave {
+  border-left-color: #2e7d32;
+  background: #e9f6eb;
+}
+
+.mr-itinerary-event--pending {
+  border-left-color: #f0a202;
+  background: #fff8e6;
+}
+
+.mr-itinerary-menu-card {
+  overflow: hidden;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+}
+
+.mr-itinerary-menu-card__toolbar {
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%) !important;
+}
+
+.mr-itinerary-menu-card__toolbar .v-toolbar__title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mr-itinerary-menu-card__meta {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #344054;
+  font-size: 13px;
+}
+
+.mr-itinerary-menu-card__meta strong {
+  color: #102a43;
+}
+
+.mr-itinerary-menu-card__location a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #00695c;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.mr-itinerary-menu-card__actions {
+  border-top: 1px solid #e4edf1;
+}
+
+@media (max-width: 960px) {
+  .mr-itinerary-page {
+    padding: 12px;
+  }
+
+  .mr-itinerary__hero,
+  .mr-itinerary__calendar-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mr-itinerary__month {
+    align-items: flex-start;
+  }
+
+  .mr-itinerary__month small {
+    text-align: left;
+  }
+
+  .mr-itinerary__actions {
+    justify-content: flex-start;
+  }
+
+  .mr-itinerary__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mr-itinerary__sheet {
+    height: 980px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mr-itinerary__hero {
+    padding: 18px;
+  }
+
+  .mr-itinerary__hero h1 {
+    font-size: 26px;
+  }
+
+  .mr-itinerary__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .mr-itinerary__sheet {
+    height: 860px;
+    padding: 6px;
+  }
+
+  .mr-itinerary-event {
+    padding: 3px 4px;
+    font-size: 8px;
+  }
 }
 
 @media print {
+  .mr-itinerary-page {
+    padding: 0;
+    background: #fff;
+  }
+
+  .mr-itinerary {
+    max-width: none;
+  }
+
   .no-print {
     display: none;
+  }
+
+  .mr-itinerary__hero,
+  .mr-itinerary__calendar-card {
+    box-shadow: none;
+  }
+
+  .mr-itinerary__sheet {
+    height: auto;
+    padding: 0;
+  }
+
+  .mr-itinerary-event__top small {
+    display: none;
+  }
+
+  .calendar-event--print-hidden {
+    display: none !important;
   }
 }
 </style>
