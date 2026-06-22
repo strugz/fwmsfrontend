@@ -10,13 +10,18 @@
         </v-btn>
       </template>
       <v-card class="checkin-dialog">
-        <v-toolbar color="teal darken-2" dark flat height="64" class="checkin-dialog__toolbar">
-          <div class="checkin-dialog__title">
-            <span>{{ dialogTitle }}</span>
-            <small>{{ activeClientName }}</small>
+        <v-toolbar dark flat height="72" class="checkin-dialog__toolbar">
+          <div class="checkin-dialog__brand">
+            <div class="checkin-dialog__icon">
+              <v-icon color="white">place</v-icon>
+            </div>
+            <div class="checkin-dialog__title">
+              <span>{{ dialogTitle }}</span>
+              <small>{{ activeClientName }}</small>
+            </div>
           </div>
           <v-spacer></v-spacer>
-          <v-btn icon @click="dialog = false">
+          <v-btn icon color="white" @click="dialog = false">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -130,6 +135,28 @@ export default {
 
 .checkin-dialog__toolbar {
   flex: 0 0 auto;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.2);
+}
+
+.checkin-dialog__brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.checkin-dialog__icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .checkin-dialog__title {
@@ -140,8 +167,9 @@ export default {
 }
 
 .checkin-dialog__title span {
-  font-size: 16px;
-  font-weight: 800;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
 }
 
 .checkin-dialog__title small {

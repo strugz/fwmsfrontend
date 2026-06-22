@@ -1,165 +1,217 @@
 <template>
-  <v-container>
-    <v-layout app wrap id="printDiv">
-      <v-flex xs12 class="ml-3 mr-3 mt-3">
-        <span>
-          <h4>MARSMAN DRYSDALE MEDICAL PRODUCT INC.</h4>
-          <h4>CALENDAR PLANNER</h4>
-        </span>
-        <span>
-          <h3>{{ myDate }}</h3>
-        </span>
-        <v-layout row wrap>
-          <v-flex sm2 md2 xs12>
-            <v-text-field v-model="datefrom" class="no-print ml-2" type="date" label="From"></v-text-field>
-          </v-flex>
-          <v-flex sm2 md2 xs12>
-            <v-text-field v-model="dateto" class="no-print ml-2" type="date" label="To"></v-text-field>
-          </v-flex>
-          <v-flex sm1 md1 xs12>
-            <v-btn class="no-print primary" @click="dataReload">Load</v-btn>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="red no-print" @click="removeCalendarData">Reset Data</v-btn>
-          </v-flex>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="no-print" @click="$refs.calendar.prev()">
-              <v-icon dark left> keyboard_arrow_left </v-icon>
-              Prev
-            </v-btn>
-          </v-flex>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="no-print" @click="$refs.calendar.next()">
-              Next
-              <v-icon right dark> keyboard_arrow_right </v-icon>
-            </v-btn>
-          </v-flex>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="no-print" @click="printDiv('printDiv')" color="primary">Print</v-btn>
-          </v-flex>
-        </v-layout>
-        <v-sheet height="800" class="my-event3">
-          <v-calendar ref="calendar" v-model="today" type="month" color="primary">
+  <v-container fluid class="service-calendar-page">
+    <div id="printDiv" class="service-calendar">
+      <section class="service-calendar__hero">
+        <div>
+          <p class="service-calendar__eyebrow">Marsman Drysdale Medical Product Inc.</p>
+          <h1>Service Calendar</h1>
+          <p class="service-calendar__subtitle">
+            Calendar planner for scheduled visits, check-ins, and service starts.
+          </p>
+        </div>
+
+        <div class="service-calendar__month">
+          <span>{{ myDate }}</span>
+          <small>{{ CurUserDetails.CNTMST.CNTMCN }}</small>
+        </div>
+      </section>
+
+      <v-card class="service-calendar__controls no-print" flat>
+        <v-row align="center" dense>
+          <v-col cols="12" sm="6" md="3">
+            <v-text-field
+              v-model="datefrom"
+              type="date"
+              label="From"
+              outlined
+              dense
+              hide-details
+              prepend-inner-icon="event"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" md="3">
+            <v-text-field
+              v-model="dateto"
+              type="date"
+              label="To"
+              outlined
+              dense
+              hide-details
+              prepend-inner-icon="event"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" md="6">
+            <div class="service-calendar__actions">
+              <v-btn depressed color="teal darken-2" dark @click="dataReload">
+                <v-icon left small>refresh</v-icon>
+                Load
+              </v-btn>
+              <v-btn depressed color="grey lighten-3" class="service-calendar__nav-btn" @click="$refs.calendar.prev()">
+                <v-icon left small>keyboard_arrow_left</v-icon>
+                Prev
+              </v-btn>
+              <v-btn depressed color="grey lighten-3" class="service-calendar__nav-btn" @click="$refs.calendar.next()">
+                Next
+                <v-icon right small>keyboard_arrow_right</v-icon>
+              </v-btn>
+              <v-btn depressed color="indigo" dark @click="printDiv('printDiv')">
+                <v-icon left small>print</v-icon>
+                Print
+              </v-btn>
+              <v-btn depressed color="red lighten-1" dark @click="removeCalendarData">
+                <v-icon left small>delete_sweep</v-icon>
+                Reset
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <section class="service-calendar__stats no-print">
+        <div class="service-calendar__stat">
+          <span>{{ calendarCount }}</span>
+          <small>Total items</small>
+        </div>
+        <div class="service-calendar__stat">
+          <span>{{ scheduledCount }}</span>
+          <small>Scheduled</small>
+        </div>
+        <div class="service-calendar__stat">
+          <span>{{ startedCount }}</span>
+          <small>Started</small>
+        </div>
+        <div class="service-calendar__stat">
+          <span>{{ leaveCount }}</span>
+          <small>Leave</small>
+        </div>
+      </section>
+
+      <v-card class="service-calendar__calendar-card" flat>
+        <div class="service-calendar__calendar-head">
+          <div>
+            <h2>{{ myDate }}</h2>
+            <p>Click a calendar item to start service, check in, or cancel a scheduled entry.</p>
+          </div>
+        </div>
+
+        <v-sheet class="service-calendar__sheet">
+          <v-calendar ref="calendar" v-model="today" type="month" color="teal darken-2">
             <template v-slot:day="{ date }">
               <template v-for="event in eventsMap[date]">
-                <v-menu :key="event.trdmti" v-model="event.open" :close-on-content-click="false" full-width offset-x>
+                <v-menu
+                  :key="event.trdmti || event.itimid || event.title + date"
+                  v-model="event.open"
+                  :close-on-content-click="false"
+                  max-width="380"
+                  offset-y
+                >
                   <template v-slot:activator="{ on }">
-                    <div class="my-event1 mb-1" v-ripple v-on="on" v-show="event.trdsts != 'LEAVE'">
-                      <div v-if="!event.time && event.trdmde != '' && event.trdsts != ''">
-                        {{ event.client }}
+                    <div v-ripple class="calendar-event mb-1" :class="eventClass(event)" v-on="on">
+                      <div class="calendar-event__top">
+                        <span>{{ eventTitleLine(event) }}</span>
+                        <small v-if="event.trdsts">{{ event.trdsts }}</small>
                       </div>
-                      <div v-if="event.trdmde == '' && event.trdsts == 'SCHEDULED'" v-ripple>
-                        {{ event.client }}
-                      </div>
-                      <div v-show="event.trdsts == ''">
-                        {{ event.client }}
-                      </div>
-                    </div>
-                    <div
-                      v-show="event.trdsts != '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                      v-on="on"
-                      v-for="(text, index) in event.trdmde.split('|')"
-                      :key="index"
-                    >
-                      <div v-show="event.trdmde != '' && event.trdsts != 'SCHEDULED'">
-                        {{ text }}
-                      </div>
-                      <div v-show="(event.trdmde == '' && event.trdsts == 'SCHEDULED') || event.trdsts == 'START'">
-                        {{ event.trdsts + ':' }}
-                        {{ event.itiobj + ' - ' }} {{ event.itiins }}
-                      </div>
-                    </div>
-                    <div
-                      v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                    >
-                      {{ event.trdmde }}
-                    </div>
-                    <div v-show="event.trdsts == 'LEAVE'" class="my-event4" v-ripple v-on="on">
-                      {{ event.title }}
+                      <p v-for="(line, index) in eventDetailLines(event)" :key="index">
+                        {{ line }}
+                      </p>
                     </div>
                   </template>
-                  <v-layout wrap row>
+                  <v-row no-gutters>
                     <v-card
                       v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      text
+                      class="calendar-menu-card"
+                      min-width="320px"
+                      max-width="380px"
+                      flat
                     >
-                      <v-toolbar color="primary" dark>
+                      <v-toolbar dark flat height="56" class="calendar-menu-card__toolbar">
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                      <v-card-title primary-title>
-                        <v-flex xs12 v-show="event.itiobj">
-                          <p>
-                            <span style="color: blue; font-weight: bold">Instrument:</span>
-                            {{ ' ' + event.itiins }}
-                          </p>
-                        </v-flex>
-                        <v-flex xs12>
-                          <a :href="'https://www.google.com/maps?q=' + lat + ',' + long" target="_blank" color="success"
-                            ><i>
-                              <h5>Verify your location.</h5>
-                            </i></a
-                          >
-                        </v-flex>
+                      <v-card-text>
+                        <div v-if="event.itiobj" class="calendar-menu-card__meta">
+                          <strong>Instrument</strong>
+                          <span>{{ event.itiins }}</span>
+                        </div>
+                        <div v-if="event.itiobj" class="calendar-menu-card__meta">
+                          <strong>Purpose</strong>
+                          <span>{{ event.itiobj }}</span>
+                        </div>
+                        <a
+                          class="calendar-menu-card__location"
+                          :href="'https://www.google.com/maps?q=' + lat + ',' + long"
+                          target="_blank"
+                        >
+                          <v-icon small color="teal darken-2">place</v-icon>
+                          Verify your location
+                        </a>
+                      </v-card-text>
+                      <v-card-actions class="calendar-menu-card__actions">
                         <v-btn
                           v-show="event.itists == '1'"
                           @click="InsertCheckInStartServiceValidation(event)"
                           :disabled="enableStart"
-                          color="primary"
-                          >START</v-btn
+                          color="teal darken-2"
+                          dark
+                          depressed
+                          small
                         >
+                          START
+                        </v-btn>
                         <v-btn
                           v-show="event.itists == '1'"
                           :disabled="enableStart"
-                          color="primary"
+                          color="teal darken-2"
+                          dark
+                          depressed
+                          small
                           @click="InsertServiceLocationLogs(event)"
-                          >CHECK-IN</v-btn
                         >
-                        <v-btn color="primary" @click="cancelItinerary(event)">Cancel</v-btn>
-                      </v-card-title>
-                      <v-card-actions> </v-card-actions>
+                          CHECK-IN
+                        </v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn text color="red darken-1" small @click="cancelItinerary(event)">Cancel</v-btn>
+                      </v-card-actions>
                     </v-card>
                     <v-card
                       v-show="event.trdsts == 'LEAVE'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      text
+                      class="calendar-menu-card"
+                      min-width="320px"
+                      max-width="380px"
+                      flat
                     >
-                      <v-toolbar color="primary" dark>
+                      <v-toolbar dark flat height="56" class="calendar-menu-card__toolbar">
                         <v-toolbar-title>{{ event.title }}</v-toolbar-title>
                         <v-spacer></v-spacer>
                       </v-toolbar>
-                      <v-card-title>
-                        <v-btn color="primary" @click="CancelAddedData(event)">Cancel Added Data</v-btn>
-                      </v-card-title>
-                      <v-card-actions> </v-card-actions>
+                      <v-card-text>
+                        <p class="mb-0">This day is marked as leave or additional calendar data.</p>
+                      </v-card-text>
+                      <v-card-actions class="calendar-menu-card__actions">
+                        <v-spacer></v-spacer>
+                        <v-btn color="red darken-1" text small @click="CancelAddedData(event)">Cancel Added Data</v-btn>
+                      </v-card-actions>
                     </v-card>
-                  </v-layout>
+                  </v-row>
                 </v-menu>
               </template>
             </template>
           </v-calendar>
         </v-sheet>
-      </v-flex>
-      <v-footer app fixed class="mb-2 mr-2 ml-2">
-        <span>
-          <h4>PREPARED BY{{ ': ' + CurUserDetails.CNTMST.CNTMCN }}</h4>
-        </span>
-        <v-spacer></v-spacer>
-        <h4>Noted By:</h4>
-        <h4>{{ CurUserDetails.CNTMST.CNTMSF }} ___________________</h4>
-        <h4>{{ CurUserDetails.CNTMST.CNTMBD }} ___________________</h4>
-      </v-footer>
+      </v-card>
+
+      <footer class="service-calendar__footer">
+        <div>
+          <span>Prepared by</span>
+          <strong>{{ CurUserDetails.CNTMST.CNTMCN }}</strong>
+        </div>
+        <div>
+          <span>Noted by</span>
+          <strong>{{ CurUserDetails.CNTMST.CNTMSF }} ___________________</strong>
+          <strong>{{ CurUserDetails.CNTMST.CNTMBD }} ___________________</strong>
+        </div>
+      </footer>
+
       <v-speed-dial
         bottom
         right
@@ -177,7 +229,7 @@
         <!-- <work-with v-show="CurUserDetails.CNTMST.CNTDPT != 'COLLECTOR'"></work-with> -->
         <add-data></add-data>
       </v-speed-dial>
-    </v-layout>
+    </div>
   </v-container>
 </template>
 <script>
@@ -225,6 +277,18 @@ export default {
     myDate() {
       return moment(this.today).format('MMMM YYYY')
     },
+    calendarCount() {
+      return this.CurServiceCalendar.length
+    },
+    scheduledCount() {
+      return this.CurServiceCalendar.filter(event => event.trdsts == 'SCHEDULED').length
+    },
+    startedCount() {
+      return this.CurServiceCalendar.filter(event => event.trdsts == 'START').length
+    },
+    leaveCount() {
+      return this.CurServiceCalendar.filter(event => event.trdsts == 'LEAVE').length
+    },
   },
   mounted() {
     if (localStorage.mydata != undefined) {
@@ -242,6 +306,36 @@ export default {
       'cancelMyItinerary',
     ]),
     ...mapMutations(['upCurServiceCalendar', 'upCurServiceCalendarDeleteItem']),
+    eventClass(event) {
+      if (event.trdsts == 'LEAVE') {
+        return 'calendar-event--leave'
+      }
+      if (event.trdsts == 'START') {
+        return 'calendar-event--start'
+      }
+      if (event.trdsts == 'SCHEDULED') {
+        return 'calendar-event--scheduled'
+      }
+      return 'calendar-event--note'
+    },
+    eventTitleLine(event) {
+      return event.trdsts == 'LEAVE' ? event.title : event.client || event.title || 'Calendar item'
+    },
+    eventDetailLines(event) {
+      if (event.trdsts == 'LEAVE') {
+        return []
+      }
+
+      if ((event.trdmde == '' && event.trdsts == 'SCHEDULED') || event.trdsts == 'START') {
+        return [`${event.trdsts}: ${event.itiobj || ''} - ${event.itiins || ''}`]
+      }
+
+      if (event.trdmde != '') {
+        return String(event.trdmde).split('|').filter(Boolean)
+      }
+
+      return []
+    },
     CancelAddedData(item) {
       this.deleteSRCalendarAdditional({
         lvecnt: this.CurUserDetails.CNTMST.CNTMID,
@@ -556,47 +650,369 @@ export default {
 }
 </script>
 <style scoped>
-.my-event1 {
-  border-radius: 2px;
-  color: #000000;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 10px;
+.service-calendar-page {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(180deg, #f7fbfc 0%, #eef5f7 100%);
 }
 
-.my-event2 {
-  border-radius: 2px;
-  color: #000000;
-  border: 1px solid #f1cc52;
-  width: 100%;
-  font-size: 8px;
+.service-calendar {
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
-.my-event4 {
+.service-calendar__hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%);
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+  color: #fff;
+}
+
+.service-calendar__eyebrow {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.service-calendar__hero h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.service-calendar__subtitle {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+}
+
+.service-calendar__month {
+  display: flex;
+  min-width: 220px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.service-calendar__month span {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.service-calendar__month small {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.service-calendar__controls {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.service-calendar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.service-calendar__nav-btn {
+  color: #344054;
+}
+
+.service-calendar__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.service-calendar__stat {
+  padding: 14px 16px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.service-calendar__stat span {
+  display: block;
+  color: #102a43;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.service-calendar__stat small {
+  color: #62748a;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.service-calendar__calendar-card {
+  margin-top: 16px;
   overflow: hidden;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.service-calendar__calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e4edf1;
+}
+
+.service-calendar__calendar-head h2 {
+  margin: 0;
+  color: #102a43;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.service-calendar__calendar-head p {
+  margin: 4px 0 0;
+  color: #62748a;
+  font-size: 13px;
+}
+
+.service-calendar__sheet {
+  height: 780px;
+  padding: 12px;
+  background: #fff;
+}
+
+.calendar-event {
+  width: 100%;
+  padding: 6px 7px;
+  overflow: hidden;
+  border-left: 4px solid #1976d2;
+  border-radius: 6px;
+  background: #eff6ff;
+  color: #102a43;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.calendar-event__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.calendar-event__top span {
+  overflow: hidden;
+  font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
-  border-radius: 2px;
-  background-color: #127509;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
-  cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
 }
 
-.my-event3 {
-  border-color: red;
-  border: 2px solid;
+.calendar-event__top small {
+  flex: 0 0 auto;
+  color: #52606d;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.calendar-event p {
+  display: -webkit-box;
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: #52606d;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.calendar-event--scheduled {
+  border-left-color: #1976d2;
+  background: #eff6ff;
+}
+
+.calendar-event--start {
+  border-left-color: #00897b;
+  background: #e7f8f4;
+}
+
+.calendar-event--leave {
+  border-left-color: #2e7d32;
+  background: #e9f6eb;
+}
+
+.calendar-event--note {
+  border-left-color: #f0a202;
+  background: #fff8e6;
+}
+
+.calendar-menu-card {
+  overflow: hidden;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+}
+
+.calendar-menu-card__toolbar {
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%) !important;
+}
+
+.calendar-menu-card__toolbar .v-toolbar__title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-menu-card__meta {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+  color: #344054;
+  font-size: 13px;
+}
+
+.calendar-menu-card__meta strong {
+  color: #102a43;
+}
+
+.calendar-menu-card__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #00695c;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.calendar-menu-card__actions {
+  border-top: 1px solid #e4edf1;
+}
+
+.service-calendar__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid #dbe7ec;
+  border-radius: 8px;
+  background: #fff;
+  color: #102a43;
+}
+
+.service-calendar__footer div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.service-calendar__footer span {
+  color: #62748a;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.service-calendar__footer strong {
+  font-size: 13px;
+}
+
+@media (max-width: 960px) {
+  .service-calendar-page {
+    padding: 12px;
+  }
+
+  .service-calendar__hero,
+  .service-calendar__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .service-calendar__month {
+    align-items: flex-start;
+  }
+
+  .service-calendar__actions {
+    justify-content: flex-start;
+  }
+
+  .service-calendar__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .service-calendar__sheet {
+    height: 680px;
+  }
+}
+
+@media (max-width: 600px) {
+  .service-calendar__hero {
+    padding: 18px;
+  }
+
+  .service-calendar__hero h1 {
+    font-size: 26px;
+  }
+
+  .service-calendar__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .service-calendar__sheet {
+    height: 620px;
+    padding: 6px;
+  }
+
+  .calendar-event {
+    padding: 5px;
+    font-size: 10px;
+  }
 }
 
 @media print {
+  .service-calendar-page {
+    padding: 0;
+    background: #fff;
+  }
+
+  .service-calendar {
+    max-width: none;
+  }
+
   .no-print {
     display: none;
+  }
+
+  .service-calendar__hero,
+  .service-calendar__calendar-card,
+  .service-calendar__footer {
+    box-shadow: none;
+  }
+
+  .service-calendar__sheet {
+    height: auto;
+    padding: 0;
   }
 }
 </style>

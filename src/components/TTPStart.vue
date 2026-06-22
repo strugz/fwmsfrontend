@@ -8,13 +8,18 @@
         <v-btn v-else small rounded dark color="teal" class="ttp-launcher__button" v-on="on"> Create TTP </v-btn>
       </template>
       <v-card class="ttp-dialog">
-        <v-toolbar color="teal darken-2" dark flat height="64" class="ttp-dialog__toolbar">
-          <div class="ttp-dialog__title">
-            <span>Begin TTP</span>
-            <small>{{ CurClientDetails.ACCMSC || CurClientDetails.ACCMNM }}</small>
+        <v-toolbar dark flat height="72" class="ttp-dialog__toolbar">
+          <div class="ttp-dialog__brand">
+            <div class="ttp-dialog__icon">
+              <v-icon color="white">timer_off</v-icon>
+            </div>
+            <div class="ttp-dialog__title">
+              <span>Begin TTP</span>
+              <small>{{ activeClientName }}</small>
+            </div>
           </div>
           <v-spacer></v-spacer>
-          <v-btn icon @click="dialog = false">
+          <v-btn icon color="white" @click="dialog = false">
             <v-icon>close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -62,6 +67,9 @@ export default {
   },
   computed: {
     ...mapState(['CurClientDetails', 'CurUserDetails']),
+    activeClientName() {
+      return this.CurClientDetails.ACCMSC || this.CurClientDetails.ACCMNM || 'Customer'
+    },
     srFormURL() {
       const base = process.env.VUE_APP_SR_URL
       return `${base}ttpstart/${this.CurClientDetails.ACCMID}/${this.CurClientDetails.ACCMNM}/${this.CurUserDetails.CNTMST.CNTMID}`
@@ -95,6 +103,28 @@ export default {
 
 .ttp-dialog__toolbar {
   flex: 0 0 auto;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #00695c 0%, #1976d2 100%);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.2);
+}
+
+.ttp-dialog__brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.ttp-dialog__icon {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .ttp-dialog__title {
@@ -105,8 +135,9 @@ export default {
 }
 
 .ttp-dialog__title span {
-  font-size: 16px;
-  font-weight: 800;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
 }
 
 .ttp-dialog__title small {

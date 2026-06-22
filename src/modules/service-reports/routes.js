@@ -12,7 +12,7 @@ export default [
     path: 'sroutbox',
     component: SROutbox,
     props: route => ({
-      iframeUrl: route.query.url || `${SR_BASE}/#/outbox`,
+      iframeUrl: route.query.url || `${SR_BASE}outbox`,
       title: route.query.title || 'Service Report Outbox',
     }),
   },

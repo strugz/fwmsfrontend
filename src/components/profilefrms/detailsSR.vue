@@ -35,18 +35,6 @@
             <div v-if="CurThreadDetails.TRDSTS === 'WORK COMPLETE'" class="sr-detail-action">
               <service-report></service-report>
             </div>
-
-            <v-dialog v-else max-width="1100">
-              <template v-slot:activator="{ on }">
-                <v-btn small depressed color="teal darken-2" dark v-on="on" @click="loadCurSrDetails">
-                  <v-icon left size="18">print</v-icon>
-                  Report
-                </v-btn>
-              </template>
-              <v-card class="sr-detail-report-dialog">
-                <report-viewer></report-viewer>
-              </v-card>
-            </v-dialog>
           </div>
         </v-card>
 

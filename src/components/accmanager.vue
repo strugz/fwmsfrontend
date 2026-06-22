@@ -233,13 +233,3 @@ export default {
   },
 }
 </script>
-
-<style>
-iframe {
-  border: none;
-  position: absolute;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-</style>
