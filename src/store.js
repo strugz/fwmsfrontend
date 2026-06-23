@@ -2,11 +2,92 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from '@/modules/shared/api/client'
+import { INVENTORY_API_URL, SERVICE_REPORT_API_URL } from '@/modules/shared/api/config'
 import moment from 'moment'
 import router from './router.js'
 import Cookies from 'js-cookie'
 
 Vue.use(Vuex)
+
+const CUSTOMER_TABLE_HEADERS = [
+  {
+    text: 'Client',
+    align: 'center',
+    sortable: true,
+    value: 'ACCMNM',
+  },
+  {
+    text: 'Customer',
+    align: 'center',
+    sortable: false,
+    value: 'CSTNME',
+  },
+  {
+    text: 'Email Adress',
+    align: 'center',
+    sortable: false,
+    value: 'CSTEML',
+  },
+  {
+    text: 'Address',
+    align: 'center',
+    sortable: false,
+    value: 'CSTADD',
+  },
+  {
+    text: 'Contact Details',
+    align: 'center',
+    sortable: false,
+    value: 'CSTCDL',
+  },
+  {
+    text: 'Specialty / Position',
+    align: 'center',
+    sortable: false,
+    value: 'CSTPOS',
+  },
+  {
+    text: 'Target Product',
+    align: 'center',
+    sortable: false,
+    value: 'CSTTPR',
+  },
+]
+
+const CONTACT_TABLE_HEADERS = [
+  {
+    text: 'Fullname',
+    align: 'center',
+    sortable: true,
+    value: 'CNTMCN',
+  },
+  {
+    text: 'Initial',
+    align: 'center',
+    sortable: true,
+    value: 'CNTMNN',
+  },
+  {
+    text: 'Area',
+    align: 'center',
+    sortable: true,
+    value: 'CNTARE',
+  },
+  {
+    text: 'Position',
+    align: 'center',
+    sortable: true,
+    value: 'CNTEPS',
+  },
+  {
+    text: 'Department',
+    align: 'center',
+    sortable: true,
+    value: 'CNTDPT',
+  },
+]
+
+const DEPARTMENT_ITEMS = ['IMS', 'TSGLUZON', 'TSGVISMIN', 'PMD', 'TSR']
 
 export default new Vuex.Store({
   state: {
@@ -36,84 +117,9 @@ export default new Vuex.Store({
     CurITIMSTList: [],
     CurServiceCalendar: [],
     SRTimerDialog: false,
-    CurCSTMSTTableHeaders: [
-      {
-        text: 'Client',
-        align: 'center',
-        sortable: true,
-        value: 'ACCMNM',
-      },
-      {
-        text: 'Customer',
-        align: 'center',
-        sortable: false,
-        value: 'CSTNME',
-      },
-      {
-        text: 'Email Adress',
-        align: 'center',
-        sortable: false,
-        value: 'CSTEML',
-      },
-      {
-        text: 'Address',
-        align: 'center',
-        sortable: false,
-        value: 'CSTADD',
-      },
-      {
-        text: 'Contact Details',
-        align: 'center',
-        sortable: false,
-        value: 'CSTCDL',
-      },
-      {
-        text: 'Specialty / Position',
-        align: 'center',
-        sortable: false,
-        value: 'CSTPOS',
-      },
-      {
-        text: 'Target Product',
-        align: 'center',
-        sortable: false,
-        value: 'CSTTPR',
-      },
-      // { text: 'Actions', align: 'center', value: 'name', sortable: false }
-    ],
-    CurCNTTableHeaders: [
-      {
-        text: 'Fullname',
-        align: 'center',
-        sortable: true,
-        value: 'CNTMCN',
-      },
-      {
-        text: 'Initial',
-        align: 'center',
-        sortable: true,
-        value: 'CNTMNN',
-      },
-      {
-        text: 'Area',
-        align: 'center',
-        sortable: true,
-        value: 'CNTARE',
-      },
-      {
-        text: 'Position',
-        align: 'center',
-        sortable: true,
-        value: 'CNTEPS',
-      },
-      {
-        text: 'Department',
-        align: 'center',
-        sortable: true,
-        value: 'CNTDPT',
-      },
-    ],
-    CurDPTItems: ['IMS', 'TSGLUZON', 'TSGVISMIN', 'PMD', 'TSR'],
+    CurCSTMSTTableHeaders: CUSTOMER_TABLE_HEADERS,
+    CurCNTTableHeaders: CONTACT_TABLE_HEADERS,
+    CurDPTItems: DEPARTMENT_ITEMS,
     PageNumber: 1,
     TotalPages: 1,
     TextFilter: '',
@@ -242,7 +248,7 @@ export default new Vuex.Store({
     getCollectorDetails({}, trdmtt) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`https://inventory.mdmpi.com.ph/api2/trdmst/collect/${trdmtt}`)
+          .get(`${INVENTORY_API_URL}/api2/trdmst/collect/${trdmtt}`)
           .then(result => {
             resolve(result)
           })
@@ -254,7 +260,7 @@ export default new Vuex.Store({
     getPOV({}, dpt) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`https://inventory.mdmpi.com.ph/api2/DRPMST/pov/${dpt}`)
+          .get(`${INVENTORY_API_URL}/api2/DRPMST/pov/${dpt}`)
           .then(result => {
             resolve(result)
           })
@@ -281,7 +287,7 @@ export default new Vuex.Store({
     userGetPrivacy({}, usrId) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`https://inventory.mdmpi.com.ph/api2/USRMST/${usrId}`)
+          .get(`${INVENTORY_API_URL}/api2/USRMST/${usrId}`)
           .then(result => {
             resolve(result)
           })
@@ -319,7 +325,7 @@ export default new Vuex.Store({
       try {
         commit('upCurUserDetails', Cookies.get('user_details'))
       } catch (error) {
-        console.log(error.message)
+        console.error(error.message)
       }
     },
     getCurCheckInAcc({ commit }, usrId) {
@@ -467,7 +473,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/CNTMST/',
+          url: `${INVENTORY_API_URL}/api2/CNTMST/`,
         }
         axios(Opheaders)
           .then(res => {
@@ -554,7 +560,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/',
+          url: `${INVENTORY_API_URL}/api2/ITIMST/`,
         }
         axios(Opheaders)
           .then(res => {
@@ -574,7 +580,7 @@ export default new Vuex.Store({
             'content-type': 'application/json',
           },
           // url: 'https://localhost:44361/api/ITIMST/tsg',
-          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/tsg',
+          url: `${INVENTORY_API_URL}/api2/ITIMST/tsg`,
         }
         axios(Opheaders)
           .then(res => {
@@ -588,7 +594,7 @@ export default new Vuex.Store({
     getITIMST({}, val) {
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/ITIMST/iti' + `/${val}`)
+          .get(`${INVENTORY_API_URL}/api2/ITIMST/iti/${val}`)
           .then(result => {
             resolve(result.data)
           })
@@ -606,7 +612,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/validation',
+          url: `${INVENTORY_API_URL}/api2/ITIMST/validation`,
         }
         axios(Opheaders)
           .then(res => {
@@ -626,7 +632,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/ITIMST/trd/validation',
+          url: `${INVENTORY_API_URL}/api2/ITIMST/trd/validation`,
         }
         axios(Opheaders)
           .then(res => {
@@ -641,7 +647,7 @@ export default new Vuex.Store({
     getInstrumentByAccId({}, accId) {
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api/instruments/account' + `/${accId}`)
+          .get(`${INVENTORY_API_URL}/api/instruments/account/${accId}`)
           .then(result => {
             resolve(result)
           })
@@ -654,7 +660,7 @@ export default new Vuex.Store({
       accId = accId !== undefined ? accId : ''
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api/drops/ITEM_CODE')
+          .get(`${INVENTORY_API_URL}/api/drops/ITEM_CODE`)
           .then(result => {
             resolve(result)
           })
@@ -667,7 +673,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         axios
           .get(
-            'https://inventory.mdmpi.com.ph/api2/TRDMST' +
+            `${INVENTORY_API_URL}/api2/TRDMST` +
               `/${val.cntdpt}` +
               `/${val.accID}` +
               `?PageNumber=${val.pageNumber}&PageSize=25`
@@ -690,7 +696,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://sr.mdmpi.com.ph/sr/collectionreport/begincollection',
+          url: `${SERVICE_REPORT_API_URL}/sr/collectionreport/begincollection`,
         }
         axios(Opheaders)
           .then(res => {
@@ -730,10 +736,9 @@ export default new Vuex.Store({
     //
     //OCC
     getOCCMST({}, val) {
-      console.log(val)
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/occmst/' + val)
+          .get(`${INVENTORY_API_URL}/api2/occmst/${val}`)
           .then(result => {
             resolve(result)
           })
@@ -750,7 +755,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/OCCMST',
+          url: `${INVENTORY_API_URL}/api2/OCCMST`,
         }
         axios(Opheaders)
           .then(res => {
@@ -769,7 +774,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/OCCMST/occimport',
+          url: `${INVENTORY_API_URL}/api2/OCCMST/occimport`,
         }
         axios(Opheaders)
           .then(res => {
@@ -791,7 +796,7 @@ export default new Vuex.Store({
             'content-type': 'application/json',
           },
           // url: 'https://localhost:44361/api/CSTMST/',
-          url: 'https://inventory.mdmpi.com.ph/api2/CSTMST/',
+          url: `${INVENTORY_API_URL}/api2/CSTMST/`,
         }
         axios(Opheaders)
           .then(res => {
@@ -805,7 +810,7 @@ export default new Vuex.Store({
     getCSTMSTPerCust({}, cstmid) {
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/CSTMST/percust' + `/${cstmid}`)
+          .get(`${INVENTORY_API_URL}/api2/CSTMST/percust/${cstmid}`)
           .then(result => {
             resolve(result)
           })
@@ -817,7 +822,7 @@ export default new Vuex.Store({
     getCSTMSTPerAcc({}, val) {
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/CSTMST' + `/${val.accmid}` + `/${val.cntmid}`)
+          .get(`${INVENTORY_API_URL}/api2/CSTMST/${val.accmid}/${val.cntmid}`)
           .then(result => {
             resolve(result)
           })
@@ -830,7 +835,7 @@ export default new Vuex.Store({
     getCSTMSTcntacc({}, val) {
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/CSTMST/cntacc' + `/${val.cntmid}`)
+          .get(`${INVENTORY_API_URL}/api2/CSTMST/cntacc/${val.cntmid}`)
           .then(result => {
             resolve(result)
           })
@@ -841,10 +846,9 @@ export default new Vuex.Store({
     },
 
     getCSTMSTAllAcc({}, val) {
-      console.log(val)
       return new Promise((resolve, reject) => {
         axios
-          .get('https://inventory.mdmpi.com.ph/api2/CSTMST')
+          .get(`${INVENTORY_API_URL}/api2/CSTMST`)
           .then(result => {
             resolve(result)
           })
@@ -862,7 +866,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/TRDMST/',
+          url: `${INVENTORY_API_URL}/api2/TRDMST/`,
         }
         axios(Opheaders)
           .then(res => {
@@ -881,7 +885,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/TRLMST/ongoing',
+          url: `${INVENTORY_API_URL}/api2/TRLMST/ongoing`,
         }
         axios(Opheaders)
           .then(res => {
@@ -900,7 +904,7 @@ export default new Vuex.Store({
           headers: {
             'content-type': 'application/json',
           },
-          url: 'https://inventory.mdmpi.com.ph/api2/TRLMST',
+          url: `${INVENTORY_API_URL}/api2/TRLMST`,
         }
         axios(Opheaders)
           .then(res => {
@@ -968,7 +972,9 @@ export default new Vuex.Store({
     filterAcct({}, filter) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/api2/ACCMST/filter/${filter}`, { params: { api_key: process.env.VUE_APP_PRIVATE_KEY } })
+          .get(`/api2/ACCMST/filter/${filter}`, {
+            params: { api_key: process.env.VUE_APP_PRIVATE_KEY },
+          })
           .then(result => {
             resolve(result.data)
           })
@@ -1049,7 +1055,7 @@ export default new Vuex.Store({
     getSRDetailsById({ commit }, trdId) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`https://sr.mdmpi.com.ph/sr/servicereport/${trdId}`)
+          .get(`${SERVICE_REPORT_API_URL}/sr/servicereport/${trdId}`)
           .then(result => {
             commit('upSRdDetails', result.data)
             resolve(result.data)
@@ -1067,7 +1073,7 @@ export default new Vuex.Store({
           commit('upTrdDetails', result.data)
         })
         .catch(error => {
-          console.log(error)
+          console.error(error)
         })
     },
     getProv() {

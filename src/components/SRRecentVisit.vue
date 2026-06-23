@@ -1,61 +1,48 @@
 <template>
-  <v-container fluid class="recent-page">
-    <v-row justify="center">
-      <v-col cols="12" md="9" lg="7" xl="5">
-        <v-card class="recent-card" elevation="0">
-          <div class="recent-card__header">
-            <div>
-              <div class="recent-eyebrow">Workspace</div>
-              <h2 class="recent-title">Recent Visits</h2>
-              <p class="recent-subtitle">Resume the latest customer threads and field work.</p>
-            </div>
-            <v-chip small color="teal darken-2" text-color="white"> {{ CurRecentVisit.length }} visits </v-chip>
-          </div>
+  <div class="recent-page">
+    <v-card class="recent-card" elevation="0">
+      <div class="recent-card__header">
+        <div>
+          <div class="recent-eyebrow">Workspace</div>
+          <h2 class="recent-title">Recent Visits</h2>
+          <p class="recent-subtitle">Resume the latest customer threads and field work.</p>
+        </div>
+        <v-chip small color="teal darken-2" text-color="white"> {{ CurRecentVisit.length }} visits </v-chip>
+      </div>
 
-          <v-list v-if="CurRecentVisit.length" class="recent-list" two-line>
-            <v-list-item
-              class="recent-list__item"
-              v-for="item in CurRecentVisit"
-              :key="item.RCTACC + '-' + item.RCTCDT"
-              @click="GoTo(item.RCTACC)"
-            >
-              <v-list-item-avatar color="teal lighten-5" size="42">
-                <v-icon color="teal darken-2">business</v-icon>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class="recent-list__title">
-                  {{ item.ACCMNM }}
-                </v-list-item-title>
-                <v-list-item-subtitle class="recent-list__subtitle">
-                  Last visited {{ item.RCTCDT }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon color="blue-grey lighten-1">chevron_right</v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
+      <v-list v-if="CurRecentVisit.length" class="recent-list" two-line>
+        <v-list-item
+          class="recent-list__item"
+          v-for="item in CurRecentVisit"
+          :key="item.RCTACC + '-' + item.RCTCDT"
+          @click="GoTo(item.RCTACC)"
+        >
+          <v-list-item-avatar color="teal lighten-5" size="42">
+            <v-icon color="teal darken-2">business</v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="recent-list__title">
+              {{ item.ACCMNM }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="recent-list__subtitle"> Last visited {{ item.RCTCDT }} </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon color="blue-grey lighten-1">chevron_right</v-icon>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
 
-          <div v-else class="recent-empty">
-            <v-icon size="42" color="blue-grey lighten-2">history</v-icon>
-            <div class="recent-empty__title">No recent visits yet</div>
-            <div class="recent-empty__text">Search for a client above to start a new visit thread.</div>
-          </div>
-
-          <v-card-actions v-if="showItineraryButton" class="recent-actions">
-            <v-spacer></v-spacer>
-            <v-btn color="teal darken-2" dark depressed rounded @click="ValidationItinerary">
-              Go To Itinerary
-              <v-icon right>event_note</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+      <div v-else class="recent-empty">
+        <v-icon size="42" color="blue-grey lighten-2">history</v-icon>
+        <div class="recent-empty__title">No recent visits yet</div>
+        <div class="recent-empty__text">Search for a client above to start a new visit thread.</div>
+      </div>
+    </v-card>
+  </div>
 </template>
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
+import { canViewRecentVisits, shouldOpenItinerary } from '@/modules/auth/sections'
 import moment from 'moment'
 export default {
   data() {
@@ -68,12 +55,19 @@ export default {
   },
   computed: {
     ...mapState(['CurRecentVisit', 'CurUserDetails']),
-    showItineraryButton() {
-      const section = this.CurUserDetails && this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTSEC
-      return section === 'TSR/PS' || section === 'TSR/ENGINEER'
+    currentUserId() {
+      return this.CurUserDetails && this.CurUserDetails.USRDTL && this.CurUserDetails.USRDTL.USRDCI
+    },
+    section() {
+      return (this.CurUserDetails && this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTSEC) || ''
+    },
+    canViewRecentVisits() {
+      return canViewRecentVisits(this.section)
     },
   },
-  mounted() {
+  created() {
+    if (!this.ensureRecentVisitAccess()) return
+
     this.getYesterdayDate()
     this.getTodayDate()
   },
@@ -90,7 +84,16 @@ export default {
       var date = new Date()
       date = date.toJSON().slice(0, 10).replace(/-/g, '/')
       this.today = moment(date).format('MM/DD/YYYY')
-      console.log(this.today)
+    },
+    ensureRecentVisitAccess() {
+      if (this.canViewRecentVisits) return true
+
+      if (shouldOpenItinerary(this.section)) {
+        this.ValidationItinerary()
+      } else {
+        this.$router.replace({ path: '/' })
+      }
+      return false
     },
     GoTo(accmid) {
       this.getAcc(accmid).then(
@@ -106,7 +109,7 @@ export default {
     ValidationItinerary() {
       this.$router.push({
         name: 'mritinerary',
-        params: { CNTMID: this.CurUserDetails.USRDTL.USRDCI },
+        params: { CNTMID: this.currentUserId },
       })
     },
   },
@@ -114,14 +117,21 @@ export default {
 </script>
 <style>
 .recent-page {
+  display: flex;
+  justify-content: center;
   padding-bottom: 32px;
   padding-top: 8px;
+  width: 100%;
 }
 
 .recent-card {
   border: 1px solid rgba(15, 76, 76, 0.1);
   border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 170px);
   overflow: hidden;
+  width: min(100%, 720px);
 }
 
 .recent-card__header {
@@ -155,6 +165,9 @@ export default {
 }
 
 .recent-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   padding: 8px;
 }
 
@@ -196,8 +209,14 @@ export default {
   margin-top: 4px;
 }
 
-.recent-actions {
-  border-top: 1px solid rgba(15, 76, 76, 0.08);
-  padding: 16px 24px 20px;
+@media (max-width: 600px) {
+  .recent-card {
+    max-height: calc(100vh - 140px);
+  }
+
+  .recent-card__header {
+    gap: 12px;
+    padding: 20px 18px 16px;
+  }
 }
 </style>

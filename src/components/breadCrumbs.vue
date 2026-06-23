@@ -22,24 +22,15 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex'
+import { canViewRecentVisits, shouldOpenItinerary } from '@/modules/auth/sections'
 
 export default {
-  data() {
-    return {
-      BreadCrumbItems: [
-        {
-          text: 'Home',
-          href: '/',
-        },
-      ],
-      homeValidation: '',
-    }
-  },
-  created() {},
   computed: {
     ...mapState(['CurClientDetails', 'CurThreadDetails', 'CurUserDetails']),
+    currentUserId() {
+      return this.CurUserDetails && this.CurUserDetails.USRDTL && this.CurUserDetails.USRDTL.USRDCI
+    },
     client() {
-      // 1) Prefer Vuex CurClientDetails when available
       if (this.CurClientDetails && this.CurClientDetails.ACCMID) {
         const name = this.CurClientDetails.ACCMSC || this.CurClientDetails.ACCMNM || 'Client'
         return {
@@ -48,7 +39,6 @@ export default {
         }
       }
 
-      // 2) Fallback: try to restore from sessionStorage (persisted by the store mutation)
       try {
         const raw = sessionStorage.getItem('CurClientDetails')
         if (raw) {
@@ -66,11 +56,9 @@ export default {
         // ignore parse errors
       }
 
-      // 3) Fallback: try to use route params directly (some routes use ClientID, others ACCMID)
-      const routeName = this.$route && this.$route.params
-      const routeId = routeName && (routeName.ClientID || routeName.ACCMID)
+      const routeParams = this.$route && this.$route.params
+      const routeId = routeParams && (routeParams.ClientID || routeParams.ACCMID)
       if (routeId) {
-        // We don't have the text (ACCMSC) in params typically; try to use a param called ClientName if present
         const clientName = this.$route.params.ClientName || this.$route.query.clientName || null
         return {
           text: clientName || `Client #${routeId}`,
@@ -81,27 +69,22 @@ export default {
       return null
     },
     thread() {
-      // If thread details available in store, use them
       if (this.CurThreadDetails && this.CurThreadDetails.TRDMTI) {
         const prefix = this.CurThreadDetails.TRDMTY === 'Service Report' ? 'SR: #' : ''
-        const routeName = this.CurThreadDetails.TRDMTY === 'Service Report' ? 'sr' : 'thread'
         return {
           text: `${prefix}${this.CurThreadDetails.TRDMTT}`,
           href: null,
         }
       }
 
-      // Fallback: when navigating to fieldreport route we may only have SRID in route params
       const srid = this.$route && (this.$route.params.SRID || this.$route.params.TRDMTI)
       if (srid) {
-        // If the route is specifically fieldreport, show 'SR: #<SRID>' text without href
         if (this.$route && this.$route.name === 'fieldreport') {
           return {
             text: `SR: #${srid}`,
             href: null,
           }
         }
-        // For other routes, build a default link
         return {
           text: `SR: #${srid}`,
           href: null,
@@ -111,42 +94,26 @@ export default {
       return null
     },
     home() {
-      // Guard for missing CurUserDetails
       if (!this.CurUserDetails || !this.CurUserDetails.USRDTL) return '/'
 
-      const role = this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTSEC
-      // if user has either role, go to mritinerary, otherwise recentvisit
-      if (role === 'TSR/ENGINEER' || role === 'TSR/PS') {
+      const section = this.CurUserDetails.CNTMST && this.CurUserDetails.CNTMST.CNTSEC
+      if (shouldOpenItinerary(section)) {
         return '/mritinerary/' + this.CurUserDetails.USRDTL.USRDCI
       }
-      return '/recentvisit/' + this.CurUserDetails.USRDTL.USRDCI
+      if (canViewRecentVisits(section)) {
+        return '/recentvisit/' + this.CurUserDetails.USRDTL.USRDCI
+      }
+      return '/'
     },
   },
   methods: {
     ...mapMutations(['upClient', 'upTrdDetails']),
   },
   watch: {
-    client(val) {
-      if (val !== '') {
-        this.BreadCrumbItems[1] = val
-      }
-    },
-    thread(val) {
-      if (val !== '') {
-        this.BreadCrumbItems[2] = val
-      }
-    },
     $route(to) {
-      if (to.path == '/recentvisit/' + this.CurUserDetails.USRDTL.USRDCI) {
+      if (this.currentUserId && to.path == '/recentvisit/' + this.currentUserId) {
         this.upClient({})
         this.upTrdDetails([])
-        this.BreadCrumbItems = [
-          {
-            text: 'Home',
-            disabled: false,
-            href: '/',
-          },
-        ]
       } else if (to.name == 'customer') {
         this.upTrdDetails([])
       }

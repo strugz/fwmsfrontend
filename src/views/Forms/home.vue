@@ -1,144 +1,114 @@
 <template>
-  <v-main v-if="hasUserDetails" app class="home-main">
-    <v-app-bar app flat height="72" extension-height="38" class="home-app-bar">
-      <div class="home-brand" @click="backToHomePage">
-        <v-avatar size="36" color="teal darken-3" class="mr-3">
-          <v-icon color="white">forum</v-icon>
-        </v-avatar>
-        <div>
-          <div class="home-brand__title">FWMS</div>
-          <div class="home-brand__subtitle hidden-sm-and-down">Field Workforce Management</div>
+  <div class="home-shell">
+    <v-main v-if="hasUserDetails" app class="home-main" :class="{ 'home-main--mobile': isMobileShell }">
+      <v-app-bar app flat height="72" extension-height="38" class="home-app-bar">
+        <div class="home-brand" @click="backToHomePage">
+          <v-avatar size="36" color="teal darken-3" class="mr-3">
+            <v-icon color="white">forum</v-icon>
+          </v-avatar>
+          <div>
+            <div class="home-brand__title">FWMS</div>
+            <div class="home-brand__subtitle hidden-sm-and-down">Field Workforce Management</div>
+          </div>
         </div>
-      </div>
 
-      <div class="home-search">
-        <client-search></client-search>
-      </div>
-
-      <v-spacer></v-spacer>
-      <v-menu v-if="isAdmin" transition="slide-y-transition" bottom offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn icon color="teal darken-2" class="home-icon-btn" v-on="on">
-            <v-icon>settings</v-icon>
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item>
-            <span class="v-list-item__title body-1">{{ 'Client Manager' }}</span>
-          </v-list-item>
-          <v-list-item>
-            <acc-manager></acc-manager>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-menu transition="slide-y-transition" bottom offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn icon color="teal darken-2" class="home-icon-btn" v-on="on">
-            <v-icon>account_circle</v-icon>
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item>
-            <change-pass></change-pass>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'TL' && CurUserDetails.CNTMST.CNTDPT != 'IMG'">
-            <back-track></back-track>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
-            <user-manager></user-manager>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'ADMIN'">
-            <customer-manager></customer-manager>
-          </v-list-item>
-          <v-list-item
-            v-if="
-              CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'TSG' ||
-              CurUserDetails.CNTMST.CNTDPT.substring(0, 3) == 'PMD' ||
-              CurUserDetails.CNTMST.CNTSEC.includes('PS') ||
-              CurUserDetails.CNTMST.CNTSEC.includes('IMS')
-            "
-          >
-            <span @click="goTo">Service Calendar</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
-            <span @click="goTo">Service Calendar</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'BUVISMIN'">
-            <span @click="goToViewer">Itinerary Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSRVISMIN'">
-            <span @click="goToViewer">Itinerary Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'AHBU'">
-            <span @click="goToViewer">Itinerary Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'POCT'">
-            <span @click="goToViewer">Itinerary Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'POCT'">
-            <span @click="goToPSCalendarViewer">PS Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'TSGLUZON'">
-            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'IMS'">
-            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'COLLECTOR'">
-            <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'PMDLUZON'">
-            <span @click="goToPSCalendarViewer">PS Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTLDR == 'HEAD' && CurUserDetails.CNTMST.CNTDPT == 'IMG'">
-            <span @click="goToViewer">Itinerary Viewer</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTDPT && CurUserDetails.CNTMST.CNTDPT.includes('TSG')">
-            <span @click="gotoSROutbox">Outbox</span>
-          </v-list-item>
-          <v-list-item v-if="CurUserDetails.CNTMST.CNTDPT && CurUserDetails.CNTMST.CNTDPT.includes('IMS')">
-            <span @click="gotoSROutbox">Outbox</span>
-          </v-list-item>
-          <!-- <v-list-item>
-            <service-card></service-card>
-          </v-list-item> -->
-          <v-list-item @click="logout()">
-            <span class="v-list-item__title body-1">{{ 'Logout' }}</span>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <template v-slot:extension>
-        <div class="home-breadcrumbs">
-          <bread-crumb></bread-crumb>
+        <div class="home-search">
+          <client-search></client-search>
         </div>
-      </template>
-    </v-app-bar>
-    <div id="helloElement"></div>
-    <!-- <app-drawer v-model="drawer"></app-drawer> -->
-    <div class="home-content">
-      <router-view :key="$route.fullPath" />
-    </div>
-  </v-main>
+
+        <v-spacer></v-spacer>
+        <v-menu v-if="isAdmin" transition="slide-y-transition" bottom offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn icon color="teal darken-2" class="home-icon-btn" v-on="on">
+              <v-icon>settings</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item>
+              <span class="v-list-item__title body-1">{{ 'Client Manager' }}</span>
+            </v-list-item>
+            <v-list-item>
+              <acc-manager></acc-manager>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-menu transition="slide-y-transition" bottom offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn icon color="teal darken-2" class="home-icon-btn" v-on="on">
+              <v-icon>account_circle</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item>
+              <change-pass></change-pass>
+            </v-list-item>
+            <v-list-item v-if="canBackTrack">
+              <back-track></back-track>
+            </v-list-item>
+            <v-list-item v-if="isAdminLeader">
+              <user-manager></user-manager>
+            </v-list-item>
+            <v-list-item v-if="isAdminLeader">
+              <customer-manager></customer-manager>
+            </v-list-item>
+            <v-list-item v-if="canOpenServiceCalendar">
+              <span @click="goTo">Service Calendar</span>
+            </v-list-item>
+            <v-list-item v-if="canOpenItineraryViewer">
+              <span @click="goToViewer">Itinerary Viewer</span>
+            </v-list-item>
+            <v-list-item v-if="canOpenPsViewer">
+              <span @click="goToPSCalendarViewer">PS Viewer</span>
+            </v-list-item>
+            <v-list-item v-if="canOpenCalendarViewer">
+              <span @click="goToServiceCalendarViewer">Calendar Viewer</span>
+            </v-list-item>
+            <v-list-item v-if="canOpenOutbox">
+              <span @click="gotoSROutbox">Outbox</span>
+            </v-list-item>
+            <v-list-item @click="logout()">
+              <span class="v-list-item__title body-1">{{ 'Logout' }}</span>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <template v-slot:extension>
+          <div class="home-breadcrumbs">
+            <bread-crumb></bread-crumb>
+          </div>
+        </template>
+      </v-app-bar>
+      <div id="helloElement"></div>
+      <div class="home-content">
+        <router-view :key="$route.fullPath" />
+      </div>
+    </v-main>
+    <v-main v-else app class="home-loading">
+      <div class="home-loading__panel">
+        <v-progress-circular indeterminate color="teal darken-2" size="42" width="4"></v-progress-circular>
+        <div class="home-loading__title">Preparing your workspace</div>
+        <div class="home-loading__text">Loading your account access and starting route.</div>
+      </div>
+    </v-main>
+  </div>
 </template>
 <script>
-/* eslint-disable */
-import appDrawer from "@/components/drawer";
-import clientSearch from "@/components/searchClient";
-import changePass from "@/components/changePass";
-import accManager from "@/components/accmanager";
-import breadCrumb from "@/components/breadCrumbs";
-import backTrack from "@/components/SRBackTrack";
-import customerManager from "@/components/CustomerManager";
-import userManager from "@/components/UserRegistrationManager";
-import ServiceCalendar from "@/components/ServiceCalendar";
-import ServiceCard from "@/components/profilefrms/cardOcc";
-import { mapState, mapActions, mapMutations } from "vuex";
-import Cookies from "js-cookie";
-import ItineraryForms from "@/components/ItineraryForms";
+import clientSearch from '@/components/searchClient'
+import changePass from '@/components/changePass'
+import accManager from '@/components/accmanager'
+import breadCrumb from '@/components/breadCrumbs'
+import backTrack from '@/components/SRBackTrack'
+import customerManager from '@/components/CustomerManager'
+import userManager from '@/components/UserRegistrationManager'
+import { canViewRecentVisits, shouldOpenItinerary } from '@/modules/auth/sections'
+import { mapState, mapActions, mapMutations } from 'vuex'
+import Cookies from 'js-cookie'
+
+const ITINERARY_VIEWER_DEPARTMENTS = ['BUVISMIN', 'TSRVISMIN', 'AHBU', 'POCT', 'IMG']
+const CALENDAR_VIEWER_DEPARTMENTS = ['TSGLUZON', 'IMS', 'COLLECTOR']
+const PS_VIEWER_DEPARTMENTS = ['POCT', 'PMDLUZON']
 
 export default {
   components: {
-    appDrawer,
     breadCrumb,
     changePass,
     accManager,
@@ -146,143 +116,209 @@ export default {
     backTrack,
     customerManager,
     userManager,
-    ServiceCalendar,
-    ServiceCard,
-    ItineraryForms
   },
   computed: {
-    ...mapState(["CurClientDetails", "CurUserDetails"]),
+    ...mapState(['CurClientDetails', 'CurUserDetails']),
     hasUserDetails() {
-      return Boolean(this.CurUserDetails && this.CurUserDetails.USRDTL && this.CurUserDetails.CNTMST);
+      return Boolean(this.CurUserDetails && this.CurUserDetails.USRDTL && this.CurUserDetails.CNTMST)
+    },
+    isMobileShell() {
+      return Boolean(this.$vuetify && this.$vuetify.breakpoint && this.$vuetify.breakpoint.smAndDown)
+    },
+    userDetails() {
+      return this.CurUserDetails || {}
+    },
+    userAccount() {
+      return this.userDetails.USRDTL || {}
+    },
+    contactDetails() {
+      return this.userDetails.CNTMST || {}
+    },
+    currentUserId() {
+      return this.userAccount.USRDCI
+    },
+    department() {
+      return this.contactDetails.CNTDPT || ''
+    },
+    section() {
+      return this.contactDetails.CNTSEC || ''
+    },
+    leader() {
+      return this.contactDetails.CNTLDR || ''
+    },
+    isHead() {
+      return this.leader === 'HEAD'
+    },
+    isAdminLeader() {
+      return this.leader === 'ADMIN'
     },
     isAdmin() {
-      if (this.CurUserDetails.USRDTL.hasOwnProperty("USRDRT")) {
-        if (this.CurUserDetails.USRDTL.USRDRT.hasOwnProperty("ADMIN")) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
+      const roles = this.userAccount.USRDRT || {}
+      return Object.prototype.hasOwnProperty.call(roles, 'ADMIN')
+    },
+    canBackTrack() {
+      return this.leader === 'TL' && this.department !== 'IMG'
+    },
+    canOpenServiceCalendar() {
+      const departmentPrefix = this.department.substring(0, 3)
+      return (
+        departmentPrefix === 'TSG' ||
+        departmentPrefix === 'PMD' ||
+        this.section.includes('PS') ||
+        this.section.includes('IMS') ||
+        this.department === 'COLLECTOR'
+      )
+    },
+    canOpenItineraryViewer() {
+      return this.isHead && ITINERARY_VIEWER_DEPARTMENTS.includes(this.department)
+    },
+    canOpenCalendarViewer() {
+      return this.isHead && CALENDAR_VIEWER_DEPARTMENTS.includes(this.department)
+    },
+    canOpenPsViewer() {
+      return this.isHead && PS_VIEWER_DEPARTMENTS.includes(this.department)
+    },
+    canOpenOutbox() {
+      return this.department.includes('TSG') || this.department.includes('IMS')
+    },
+    canViewRecentVisits() {
+      return canViewRecentVisits(this.section)
     },
   },
-  data() {
-    return {
-      dialog: false,
-      clientlist: [],
-      drawer: true,
-      search_text: "",
-      eventDialog: false,
-      setDate: new Date("02/20/2023").toDateString(),
-      setDateNow: new Date().toDateString(),
-      eventValidation: "0",
-    };
-  },
   mounted() {
-    if (!this.hasUserDetails) return;
+    if (!this.hasUserDetails) return
 
-    if (this.setDate == this.setDateNow) {
-      this.eventValidation = "1";
-      this.eventDialog = true;
-    } else {
-      this.eventValidation = "0";
-      this.eventDialog = false;
-    }
-
-    this.userGetPrivacy(this.CurUserDetails.USRDTL.USRDCI)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((error) => {
-        this.logout();
-        console.error(error);
-      });
+    this.userGetPrivacy(this.currentUserId).catch(error => {
+      this.logout()
+      console.error(error)
+    })
   },
   created() {
     if (!this.hasUserDetails) {
-      this.getCurUserDetails();
+      this.getCurUserDetails()
     }
     if (!this.hasUserDetails) {
-      this.logout();
-      return;
+      this.logout()
+      return
     }
 
-    this.getCurCheckInAcc(this.CurUserDetails.USRDTL.USRDCI).then((res) => {
-      if (res.serviceLocLogAction != "CheckOut") {
-        if (res.customerID != undefined) {
-          this.upCheckInAcc({ items: res.customerID });
+    this.getCurCheckInAcc(this.currentUserId).then(res => {
+      if (res && res.serviceLocLogAction !== 'CheckOut') {
+        if (res.customerID !== undefined) {
+          this.upCheckInAcc({ items: res.customerID })
         }
       }
-    });
-    this.ValidationItinerary();
+    })
+    this.ValidationItinerary()
   },
   methods: {
-    ...mapActions(["getCurCheckInAcc", "getRecentVisit", "userGetPrivacy", "getCurUserDetails"]),
-    ...mapMutations(["upCheckInAcc", "upRecentVisit"]),
+    ...mapActions(['getCurCheckInAcc', 'getRecentVisit', 'userGetPrivacy', 'getCurUserDetails']),
+    ...mapMutations(['upCheckInAcc', 'upRecentVisit']),
     logout() {
-      Cookies.remove("token", { path: "/" });
-      Cookies.remove("user_details", { path: "/" });
-      this.$router.replace({ name: "Login" });
+      Cookies.remove('token', { path: '/' })
+      Cookies.remove('user_details', { path: '/' })
+      this.$router.replace({ name: 'Login' })
     },
     goTo() {
-      this.$router.push({ path: `/servicecalendar/${this.CurUserDetails.USRDTL.USRDCI}` });
+      this.$router.push({ path: `/servicecalendar/${this.currentUserId}` })
     },
     goToViewer() {
-      this.$router.push({ path: `/itineraryviewer` });
+      this.$router.push({ path: `/itineraryviewer` })
     },
     goToServiceCalendarViewer() {
-      this.$router.push({ path: `/servicecalendarviewer` });
+      this.$router.push({ path: `/servicecalendarviewer` })
     },
     goToPSCalendarViewer() {
-      this.$router.push({ path: `/pscalendarviewer` });
+      this.$router.push({ path: `/pscalendarviewer` })
     },
     gotoSROutbox() {
-      this.$router.push({ name: 'sroutbox' });
+      this.$router.push({ name: 'sroutbox' })
     },
     backToHomePage() {
-      this.$router.push({
-        name: "recentvisit",
-        params: { RCTCNT: this.CurUserDetails.USRDTL.USRDCI },
-      });
+      if (!this.canViewRecentVisits) {
+        this.ValidationItinerary()
+        return
+      }
+
+      this.goToRecentVisits()
     },
 
     ValidationRecentVisit() {
-      this.getRecentVisit({ CNTMID: this.CurUserDetails.USRDTL.USRDCI }).then(
-        (res) => {
-          this.upRecentVisit(res.data);
-          if (res.data.length == undefined) {
-            this.$router.push("/");
-          }
+      this.getRecentVisit({ CNTMID: this.currentUserId }).then(res => {
+        this.upRecentVisit(res.data)
+        if (res.data.length === undefined) {
+          this.$router.push('/')
+          return
         }
-      );
+        this.goToRecentVisits()
+      })
     },
     ValidationItinerary() {
-      if (this.CurUserDetails.CNTMST.CNTSEC == "TSR/ENGINEER") {
-        this.$router.push({
-          name: "mritinerary",
-          params: { CNTMID: this.CurUserDetails.USRDTL.USRDCI },
-        });
-      } else if (this.CurUserDetails.CNTMST.CNTSEC == "TSR/PS") {
-        this.$router.push({
-          name: "mritinerary",
-          params: { CNTMID: this.CurUserDetails.USRDTL.USRDCI },
-        });
-      } else if (this.CurUserDetails.CNTMST.CNTSEC == "TSR") {
-        this.$router.push({
-          name: "mritinerary",
-          params: { CNTMID: this.CurUserDetails.USRDTL.USRDCI },
-        });
-      } else {
-        this.ValidationRecentVisit();
+      if (shouldOpenItinerary(this.section)) {
+        this.goToItinerary()
+      } else if (this.canViewRecentVisits) {
+        this.ValidationRecentVisit()
+      }
+    },
+    routeMatches(name, params) {
+      return (
+        this.$route.name === name &&
+        Object.keys(params).every(key => String(this.$route.params[key]) === String(params[key]))
+      )
+    },
+    goToRecentVisits() {
+      const params = { RCTCNT: this.currentUserId }
+      if (!this.routeMatches('recentvisit', params)) {
+        this.$router.push({ name: 'recentvisit', params })
+      }
+    },
+    goToItinerary() {
+      const params = { CNTMID: this.currentUserId }
+      if (!this.routeMatches('mritinerary', params)) {
+        this.$router.push({ name: 'mritinerary', params })
       }
     },
   },
-};
+}
 </script>
 <style>
+.home-shell,
 .home-main {
   min-height: 100vh;
+  width: 100%;
+}
+
+.home-loading {
+  align-items: center;
+  background: linear-gradient(135deg, #f8fafc, #ecfdf5);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.home-loading__panel {
+  align-items: center;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  text-align: center;
+}
+
+.home-loading__title {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 16px;
+}
+
+.home-loading__text {
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+.home-main--mobile .home-content {
+  padding-bottom: 24px;
 }
 
 .home-app-bar {

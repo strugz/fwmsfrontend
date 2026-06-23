@@ -16,20 +16,19 @@
     prepend-inner-icon="search"
     placeholder="Search by: Client name or Initial"
     @focus="$event.target.select()"
-  >
-  </v-combobox>
+  ></v-combobox>
 </template>
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   data() {
     return {
-      fieldSearch: '' ? [] : '',
+      fieldSearch: '',
       show: true,
     }
   },
   computed: {
-    ...mapState(['CurCheckInAcc', 'itemsAcct']),
+    ...mapState(['itemsAcct']),
   },
   watch: {
     fieldSearch() {
@@ -45,35 +44,30 @@ export default {
     ...mapActions(['filterAcct', 'getAcc']),
     ...mapMutations(['upClient', 'upCheckInAcc']),
     verifier() {
-      if (this.fieldSearch != null) {
-        if (this.fieldSearch != '') {
-          if (this.fieldSearch.ACCMNM != undefined) {
-            this.getFilteredAcct(this.fieldSearch.ACCMNM)
-          } else {
-            this.getFilteredAcct(this.fieldSearch)
-          }
-        }
+      if (this.fieldSearch === null || this.fieldSearch === '') {
+        return
       }
+
+      const searchText = this.fieldSearch.ACCMNM !== undefined ? this.fieldSearch.ACCMNM : this.fieldSearch
+      this.getFilteredAcct(searchText)
     },
     clickSearch() {
       this.$router.push({ path: `/` })
     },
     getFilteredAcct(e) {
-      console.log(1)
-      console.time()
       this.filterAcct(e).then(
         res => {
-          console.log(res)
           res.forEach(element => {
             this.upCheckInAcc({ items: element })
           })
-          this.clientClick(this.fieldSearch.ACCMID)
+
+          const selectedAccountId = this.fieldSearch && this.fieldSearch.ACCMID
+          this.clientClick(selectedAccountId)
         },
         error => {
           console.error(error)
         }
       )
-      console.timeEnd()
     },
     clientClick(id) {
       if (id != undefined) {
