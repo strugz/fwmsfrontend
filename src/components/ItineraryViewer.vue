@@ -163,17 +163,21 @@ export default {
       }
       return 'Itinerary'
     },
+    selectedMonthEvents() {
+      const selectedMonth = moment(this.today).format('YYYY-MM')
+      return this.CurITIMSTList.filter(event => moment(event.date).format('YYYY-MM') === selectedMonth)
+    },
     itineraryCount() {
-      return this.CurITIMSTList.length
+      return this.selectedMonthEvents.length
     },
     startedCount() {
-      return this.CurITIMSTList.filter(event => event.trdsts == 'START').length
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'START').length
     },
     completedCount() {
-      return this.CurITIMSTList.filter(event => event.trdsts == 'WORK COMPLETE' || event.itists != '1').length
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'WORK COMPLETE' || event.itists != '1').length
     },
     leaveCount() {
-      return this.CurITIMSTList.filter(event => this.isLeaveEvent(event)).length
+      return this.selectedMonthEvents.filter(event => this.isLeaveEvent(event)).length
     },
   },
   mounted() {

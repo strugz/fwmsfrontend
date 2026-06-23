@@ -245,17 +245,21 @@ export default {
     ownerName() {
       return this.CurUserDetails.CNTMST ? this.CurUserDetails.CNTMST.CNTMCN : 'Itinerary'
     },
+    selectedMonthEvents() {
+      const selectedMonth = moment(this.today).format('YYYY-MM')
+      return this.CurITIMSTList.filter(event => moment(event.date).format('YYYY-MM') === selectedMonth)
+    },
     itineraryCount() {
-      return this.CurITIMSTList.length
+      return this.selectedMonthEvents.length
     },
     pendingApprovalCount() {
-      return this.CurITIMSTList.filter(event => event.validation == 'NOT APPROVE').length
+      return this.selectedMonthEvents.filter(event => event.validation == 'NOT APPROVE').length
     },
     startedCount() {
-      return this.CurITIMSTList.filter(event => event.trdsts == 'START').length
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'START').length
     },
     completedCount() {
-      return this.CurITIMSTList.filter(event => event.trdsts == 'WORK COMPLETE').length
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'WORK COMPLETE').length
     },
   },
   mounted() {

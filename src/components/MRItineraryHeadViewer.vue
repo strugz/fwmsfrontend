@@ -249,17 +249,21 @@ export default {
     selectedUserName() {
       return this.selectedItemUser ? this.selectedItemUser.CNTMCN || this.selectedItemUser.CNTMNN : 'Select a user'
     },
+    selectedMonthEvents() {
+      const selectedMonth = moment(this.today).format('YYYY-MM')
+      return this.CurITIMSTList.filter(event => moment(event.date).format('YYYY-MM') === selectedMonth)
+    },
     itineraryCount() {
-      return this.CurITIMSTList.length
+      return this.selectedMonthEvents.length
     },
     pendingApprovalCount() {
-      return this.CurITIMSTList.filter(event => event.validation == 'NOT APPROVE').length
+      return this.selectedMonthEvents.filter(event => event.validation == 'NOT APPROVE').length
     },
     completedCount() {
-      return this.CurITIMSTList.filter(event => event.trdsts == 'WORK COMPLETE').length
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'WORK COMPLETE').length
     },
     leaveCount() {
-      return this.CurITIMSTList.filter(event => this.isLeaveEvent(event)).length
+      return this.selectedMonthEvents.filter(event => this.isLeaveEvent(event)).length
     },
   },
   methods: {
