@@ -2,10 +2,10 @@
   <div class="mr-travel">
     <v-dialog v-model="dialog" max-width="460" transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
+        <v-btn v-if="showActivator && type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small rounded dark color="teal" v-on="on">
+        <v-btn v-else-if="showActivator" small rounded dark color="teal" v-on="on">
           <v-icon left small>near_me</v-icon>
           Travel
         </v-btn>
@@ -67,6 +67,9 @@ export default {
   },
   methods: {
     ...mapActions(['getTRLMSTOnGoing', 'InsertTRLMST']),
+    open() {
+      this.dialog = true
+    },
     startTravel() {
       let dataTemp = JSON.stringify({
         TRLCDT: moment(new Date()).format('YYYY-MM-DD'),
@@ -113,6 +116,10 @@ export default {
     type: {
       type: String,
       default: '',
+    },
+    showActivator: {
+      type: Boolean,
+      default: true,
     },
   },
 }

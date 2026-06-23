@@ -2,7 +2,7 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn class="no-print" v-on="on" small rounded dark color="teal"> Add Itinerary </v-btn>
+        <v-btn v-if="showActivator" class="no-print" v-on="on" small rounded dark color="teal"> Add Itinerary </v-btn>
       </template>
       <v-flex xs12>
         <v-card color="grey lighten-4" min-width="350px" text class="mt-0">
@@ -209,6 +209,9 @@ export default {
       'getInstrumentByAccId',
     ]),
     ...mapMutations(['upAllClient', 'upCurServiceCalendarUpdate']),
+    open() {
+      this.dialog = true
+    },
     getClientInstruments() {
       this.getInstrumentByAccId(this.ClientCurDetails.ACCMID).then(res => {
         this.ClientInstrument = res.data.tbinstruments
@@ -330,6 +333,10 @@ export default {
     type: {
       type: String,
       default: '',
+    },
+    showActivator: {
+      type: Boolean,
+      default: true,
     },
   },
 }

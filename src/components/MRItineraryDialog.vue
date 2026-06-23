@@ -2,10 +2,10 @@
   <div class="mr-visit">
     <v-dialog v-model="dialog" max-width="720" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
-        <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
+        <v-btn v-if="showActivator && type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small rounded dark color="teal" v-on="on">
+        <v-btn v-else-if="showActivator" small rounded dark color="teal" v-on="on">
           <v-icon left small>add_location_alt</v-icon>
           Visit
         </v-btn>
@@ -221,6 +221,9 @@ export default {
   methods: {
     ...mapActions(['getAllAcc', 'getCSTMSTPerAcc', 'insertITIMST', 'getCSTMSTcntacc', 'getITIMSTValidation']),
     ...mapMutations(['upAllClient', 'upCSTMSTList', 'upCurITIMSTListUpdate']),
+    open() {
+      this.dialog = true
+    },
     getCustomer(item) {
       this.upCSTMSTList([])
       this.customerSelected = ''
@@ -323,6 +326,10 @@ export default {
     type: {
       type: String,
       default: '',
+    },
+    showActivator: {
+      type: Boolean,
+      default: true,
     },
   },
 }

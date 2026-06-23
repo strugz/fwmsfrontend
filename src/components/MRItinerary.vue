@@ -34,25 +34,52 @@
       </section>
 
       <v-card class="mr-itinerary__calendar-card" flat>
+        <v-overlay absolute :value="calendarLoading" opacity="0.08" color="#0f766e">
+          <div class="mr-itinerary__loading">
+            <v-progress-circular indeterminate color="teal darken-2" size="42"></v-progress-circular>
+            <strong>Loading itinerary</strong>
+            <span>Fetching the latest calendar records...</span>
+          </div>
+        </v-overlay>
+
         <div class="mr-itinerary__calendar-head">
           <div>
             <h2>{{ myDate }}</h2>
             <p>Click an itinerary item to start, view, delete, or manage leave entries.</p>
           </div>
           <div class="mr-itinerary__actions no-print">
-            <v-btn depressed color="teal darken-2" dark @click="dataReload">
+            <v-btn
+              depressed
+              color="teal darken-2"
+              dark
+              :loading="calendarLoading"
+              :disabled="calendarLoading"
+              @click="dataReload"
+            >
               <v-icon left small>refresh</v-icon>
               Reload
             </v-btn>
-            <v-btn depressed color="grey lighten-3" class="mr-itinerary__nav-btn" @click="$refs.calendar.prev()">
+            <v-btn
+              depressed
+              color="grey lighten-3"
+              class="mr-itinerary__nav-btn"
+              :disabled="calendarLoading"
+              @click="$refs.calendar.prev()"
+            >
               <v-icon left small>keyboard_arrow_left</v-icon>
               Prev
             </v-btn>
-            <v-btn depressed color="indigo" dark @click="printDiv('printDiv')">
+            <v-btn depressed color="indigo" dark :disabled="calendarLoading" @click="printDiv('printDiv')">
               <v-icon left small>print</v-icon>
               Print
             </v-btn>
-            <v-btn depressed color="grey lighten-3" class="mr-itinerary__nav-btn" @click="$refs.calendar.next()">
+            <v-btn
+              depressed
+              color="grey lighten-3"
+              class="mr-itinerary__nav-btn"
+              :disabled="calendarLoading"
+              @click="$refs.calendar.next()"
+            >
               Next
               <v-icon right small>keyboard_arrow_right</v-icon>
             </v-btn>
@@ -82,7 +109,9 @@
                         <span>{{ eventTitleLine(event) }}</span>
                         <small v-if="eventStatusLabel(event)">{{ eventStatusLabel(event) }}</small>
                       </div>
-                      <p v-if="event.trdsts == 'WORK COMPLETE'">{{ completedTimeRange(event) }}</p>
+                      <p v-if="event.trdsts == 'WORK COMPLETE'">
+                        {{ completedTimeRange(event) }}
+                      </p>
                       <p v-else-if="event.itiobj">{{ event.itiobj }}</p>
                     </div>
                   </template>
@@ -200,14 +229,34 @@
 
     <v-speed-dial bottom right fixed transition="slide-x-reverse-transition" direction="top" class="mb-6 mr-0 no-print">
       <template v-slot:activator>
-        <v-btn color="teal darken-2" dark fab>
+        <v-btn color="teal darken-2" dark fab :disabled="calendarLoading">
           <v-icon>add</v-icon>
         </v-btn>
       </template>
-      <itinerary-dialog></itinerary-dialog>
-      <itinerary-travel v-show="CurUserDetails.CNTMST.CNTMGP == '1'"></itinerary-travel>
-      <additional-dialog></additional-dialog>
+      <v-btn small rounded dark color="teal" :disabled="calendarLoading" @click="openVisitDialog">
+        <v-icon left small>add_location_alt</v-icon>
+        Visit
+      </v-btn>
+      <v-btn
+        v-show="CurUserDetails.CNTMST.CNTMGP == '1'"
+        small
+        rounded
+        dark
+        color="teal"
+        :disabled="calendarLoading"
+        @click="openTravelDialog"
+      >
+        <v-icon left small>near_me</v-icon>
+        Travel
+      </v-btn>
+      <v-btn small rounded dark color="teal" :disabled="calendarLoading" @click="openAdditionalDialog">
+        <v-icon left small>event_busy</v-icon>
+        Other Act.
+      </v-btn>
     </v-speed-dial>
+    <itinerary-dialog ref="visitDialog" :show-activator="false"></itinerary-dialog>
+    <itinerary-travel ref="travelDialog" :show-activator="false"></itinerary-travel>
+    <additional-dialog ref="additionalDialog" :show-activator="false"></additional-dialog>
   </v-container>
 </template>
 <script>
@@ -231,6 +280,7 @@ export default {
     dialog: false,
     enableStart: false,
     progValue: false,
+    calendarLoading: false,
   }),
   computed: {
     ...mapState(['CurITIMSTList', 'CurUserDetails', 'CurClientDetails']),
@@ -400,9 +450,26 @@ export default {
       location.reload()
     },
     dataReload() {
-      this.getITIMSTPerCNT(this.CurUserDetails.USRDTL.USRDCI).then(res => {
-        this.upCurITIMSTList(res)
-      })
+      this.calendarLoading = true
+      return this.getITIMSTPerCNT(this.CurUserDetails.USRDTL.USRDCI)
+        .then(res => {
+          this.upCurITIMSTList(res)
+        })
+        .catch(error => {
+          alert(error)
+        })
+        .finally(() => {
+          this.calendarLoading = false
+        })
+    },
+    openVisitDialog() {
+      this.$refs.visitDialog.open()
+    },
+    openTravelDialog() {
+      this.$refs.travelDialog.open()
+    },
+    openAdditionalDialog() {
+      this.$refs.additionalDialog.open()
     },
     GetMyCoordinates() {
       navigator.geolocation.getCurrentPosition(
@@ -647,6 +714,27 @@ export default {
   border: 1px solid #dbe7ec;
   border-radius: 8px;
   background: #fff;
+  position: relative;
+}
+
+.mr-itinerary__loading {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 8px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-width: 240px;
+  padding: 22px;
+  text-align: center;
+}
+
+.mr-itinerary__loading span {
+  color: #64748b;
+  font-size: 13px;
 }
 
 .mr-itinerary__calendar-head {

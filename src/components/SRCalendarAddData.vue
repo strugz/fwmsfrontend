@@ -2,7 +2,7 @@
   <v-layout mt-0 row justify-center>
     <v-dialog v-model="DataDialog" width="500">
       <template v-slot:activator="{ on }">
-        <v-btn small rounded dark color="teal" v-on="on"> Add Data </v-btn>
+        <v-btn v-if="showActivator" small rounded dark color="teal" v-on="on"> Add Data </v-btn>
       </template>
       <v-toolbar class="primary" dark>
         <v-toolbar-title>Add Data</v-toolbar-title>
@@ -39,6 +39,9 @@ export default {
   methods: {
     ...mapActions(['getThreadDetailsByTRDMID', 'insertLVEMST']),
     ...mapMutations(['upCurServiceCalendarUpdate']),
+    open() {
+      this.DataDialog = true
+    },
     addData() {
       this.upCurServiceCalendarUpdate({
         accmid: moment(new Date()).format('YYYYMMDDHHmmss'),
@@ -79,6 +82,12 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+  },
+  props: {
+    showActivator: {
+      type: Boolean,
+      default: true,
     },
   },
 }

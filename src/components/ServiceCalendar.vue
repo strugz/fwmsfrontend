@@ -42,23 +42,42 @@
           </v-col>
           <v-col cols="12" md="6">
             <div class="service-calendar__actions">
-              <v-btn depressed color="teal darken-2" dark @click="dataReload">
+              <v-btn
+                depressed
+                color="teal darken-2"
+                dark
+                :loading="calendarLoading"
+                :disabled="calendarLoading"
+                @click="dataReload"
+              >
                 <v-icon left small>refresh</v-icon>
                 Load
               </v-btn>
-              <v-btn depressed color="grey lighten-3" class="service-calendar__nav-btn" @click="$refs.calendar.prev()">
+              <v-btn
+                depressed
+                color="grey lighten-3"
+                class="service-calendar__nav-btn"
+                :disabled="calendarLoading"
+                @click="$refs.calendar.prev()"
+              >
                 <v-icon left small>keyboard_arrow_left</v-icon>
                 Prev
               </v-btn>
-              <v-btn depressed color="grey lighten-3" class="service-calendar__nav-btn" @click="$refs.calendar.next()">
+              <v-btn
+                depressed
+                color="grey lighten-3"
+                class="service-calendar__nav-btn"
+                :disabled="calendarLoading"
+                @click="$refs.calendar.next()"
+              >
                 Next
                 <v-icon right small>keyboard_arrow_right</v-icon>
               </v-btn>
-              <v-btn depressed color="indigo" dark @click="printDiv('printDiv')">
+              <v-btn depressed color="indigo" dark :disabled="calendarLoading" @click="printDiv('printDiv')">
                 <v-icon left small>print</v-icon>
                 Print
               </v-btn>
-              <v-btn depressed color="red lighten-1" dark @click="removeCalendarData">
+              <v-btn depressed color="red lighten-1" dark :disabled="calendarLoading" @click="removeCalendarData">
                 <v-icon left small>delete_sweep</v-icon>
                 Reset
               </v-btn>
@@ -87,6 +106,14 @@
       </section>
 
       <v-card class="service-calendar__calendar-card" flat>
+        <v-overlay absolute :value="calendarLoading" opacity="0.08" color="#0f766e">
+          <div class="service-calendar__loading">
+            <v-progress-circular indeterminate color="teal darken-2" size="42"></v-progress-circular>
+            <strong>Loading service calendar</strong>
+            <span>Fetching the latest schedule records...</span>
+          </div>
+        </v-overlay>
+
         <div class="service-calendar__calendar-head">
           <div>
             <h2>{{ myDate }}</h2>
@@ -221,14 +248,29 @@
         class="mb-5 mr-3 no-print"
       >
         <template v-slot:activator>
-          <v-btn color="primary" dark fab>
+          <v-btn color="primary" dark fab :disabled="calendarLoading">
             <v-icon>add</v-icon>
           </v-btn>
         </template>
-        <itinerary-dialog v-show="CurUserDetails.CNTMST.CNTDPT != 'COLLECTOR'"></itinerary-dialog>
-        <!-- <work-with v-show="CurUserDetails.CNTMST.CNTDPT != 'COLLECTOR'"></work-with> -->
-        <add-data></add-data>
+        <v-btn
+          v-show="CurUserDetails.CNTMST.CNTDPT != 'COLLECTOR'"
+          small
+          rounded
+          dark
+          color="teal"
+          :disabled="calendarLoading"
+          @click="openServiceItineraryDialog"
+        >
+          <v-icon left small>add_location_alt</v-icon>
+          Add Itinerary
+        </v-btn>
+        <v-btn small rounded dark color="teal" :disabled="calendarLoading" @click="openServiceAddDataDialog">
+          <v-icon left small>event_busy</v-icon>
+          Add Data
+        </v-btn>
       </v-speed-dial>
+      <itinerary-dialog ref="serviceItineraryDialog" :show-activator="false"></itinerary-dialog>
+      <add-data ref="serviceAddDataDialog" :show-activator="false"></add-data>
     </div>
   </v-container>
 </template>
@@ -266,6 +308,7 @@ export default {
     textGroup: '',
     userInitial: '',
     serviceLocLogID: '',
+    calendarLoading: false,
   }),
   computed: {
     ...mapState(['CurServiceCalendar', 'CurUserDetails']),
@@ -641,7 +684,8 @@ export default {
       location.reload()
     },
     dataReload() {
-      this.getServiceCalendar({
+      this.calendarLoading = true
+      return this.getServiceCalendar({
         cntmid: this.$route.params.CNTMID,
         data: {
           itidteFrom: this.datefrom,
@@ -665,6 +709,15 @@ export default {
           alert('Please re-select the Client!', error)
           this.enableStart = false
         })
+        .finally(() => {
+          this.calendarLoading = false
+        })
+    },
+    openServiceItineraryDialog() {
+      this.$refs.serviceItineraryDialog.open()
+    },
+    openServiceAddDataDialog() {
+      this.$refs.serviceAddDataDialog.open()
     },
     dialogOpen() {
       this.DataDialog = true
@@ -798,6 +851,27 @@ export default {
   border: 1px solid #dbe7ec;
   border-radius: 8px;
   background: #fff;
+  position: relative;
+}
+
+.service-calendar__loading {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 8px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-width: 260px;
+  padding: 22px;
+  text-align: center;
+}
+
+.service-calendar__loading span {
+  color: #64748b;
+  font-size: 13px;
 }
 
 .service-calendar__calendar-head {

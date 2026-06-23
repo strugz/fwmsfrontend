@@ -52,11 +52,24 @@
           </v-col>
           <v-col cols="12" md="2">
             <div class="ps-calendar__actions">
-              <v-btn depressed color="teal darken-2" dark @click="dataReload">
+              <v-btn
+                depressed
+                color="teal darken-2"
+                dark
+                :loading="calendarLoading"
+                :disabled="calendarLoading"
+                @click="dataReload"
+              >
                 <v-icon left small>refresh</v-icon>
                 Load
               </v-btn>
-              <v-btn depressed color="red lighten-5" class="red--text text--darken-2" @click="removeCalendarData">
+              <v-btn
+                depressed
+                color="red lighten-5"
+                class="red--text text--darken-2"
+                :disabled="calendarLoading"
+                @click="removeCalendarData"
+              >
                 Reset
               </v-btn>
             </div>
@@ -84,17 +97,37 @@
       </section>
 
       <v-card class="ps-calendar__calendar-card" flat>
+        <v-overlay absolute :value="calendarLoading" opacity="0.08" color="#0f766e">
+          <div class="ps-calendar__loading">
+            <v-progress-circular indeterminate color="teal darken-2" size="42"></v-progress-circular>
+            <strong>Loading calendar</strong>
+            <span>Fetching records for the selected user...</span>
+          </div>
+        </v-overlay>
+
         <div class="ps-calendar__calendar-head">
           <div>
             <h2>{{ myDate }}</h2>
             <p>Click a calendar item to review instruments, status, and activity details.</p>
           </div>
           <div class="ps-calendar__month-actions no-print">
-            <v-btn depressed color="grey lighten-3" class="ps-calendar__nav-btn" @click="$refs.calendar.prev()">
+            <v-btn
+              depressed
+              color="grey lighten-3"
+              class="ps-calendar__nav-btn"
+              :disabled="calendarLoading"
+              @click="$refs.calendar.prev()"
+            >
               <v-icon left small>keyboard_arrow_left</v-icon>
               Prev
             </v-btn>
-            <v-btn depressed color="grey lighten-3" class="ps-calendar__nav-btn" @click="$refs.calendar.next()">
+            <v-btn
+              depressed
+              color="grey lighten-3"
+              class="ps-calendar__nav-btn"
+              :disabled="calendarLoading"
+              @click="$refs.calendar.next()"
+            >
               Next
               <v-icon right small>keyboard_arrow_right</v-icon>
             </v-btn>
@@ -117,7 +150,9 @@
                         <span>{{ eventTitleLine(event) }}</span>
                         <small v-if="eventStatusLabel(event)">{{ eventStatusLabel(event) }}</small>
                       </div>
-                      <p v-if="eventSubtitle(event)">{{ eventSubtitle(event) }}</p>
+                      <p v-if="eventSubtitle(event)">
+                        {{ eventSubtitle(event) }}
+                      </p>
                     </div>
                   </template>
 
@@ -174,6 +209,7 @@ export default {
     userList: [],
     selectedItemUser: null,
     selectedItemDepartment: null,
+    calendarLoading: false,
   }),
   watch: {
     selectedItemDepartment() {
@@ -271,7 +307,8 @@ export default {
         return
       }
 
-      this.getServiceCalendar({
+      this.calendarLoading = true
+      return this.getServiceCalendar({
         cntmid: this.selectedItemUser.CNTMID,
         data: {
           itidteFrom: this.datefrom,
@@ -293,6 +330,9 @@ export default {
         })
         .catch(error => {
           alert('Please re-select the Client!', error)
+        })
+        .finally(() => {
+          this.calendarLoading = false
         })
     },
     removeCalendarData() {
@@ -406,6 +446,27 @@ export default {
 
 .ps-calendar__calendar-card {
   overflow: hidden;
+  position: relative;
+}
+
+.ps-calendar__loading {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 8px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+  color: #0f172a;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  min-width: 250px;
+  padding: 22px;
+  text-align: center;
+}
+
+.ps-calendar__loading span {
+  color: #64748b;
+  font-size: 13px;
 }
 
 .ps-calendar__calendar-head {
