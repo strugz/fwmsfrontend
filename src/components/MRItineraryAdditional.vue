@@ -1,72 +1,92 @@
 <template>
-  <v-layout mt-0 row justify-center>
-    <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
+  <div class="mr-extra">
+    <v-dialog v-model="dialog" max-width="520" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
         <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small rounded dark color="teal" v-on="on"> Other Act. </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on">
+          <v-icon left small>event_busy</v-icon>
+          Other Act.
+        </v-btn>
       </template>
-      <v-flex xs12>
-        <v-card color="grey lighten-4" text class="mt-0">
-          <v-toolbar color="primary" dark>
-            <v-toolbar-title>Leave Details</v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
-          <v-card-title primary-title>
-            <v-flex xs12>
-              <v-select
-                v-model="TSRObjectiveSelected"
-                :items="TSRObjectiveList"
-                item-text="ObjectiveName"
-                item-value="ObjectiveName"
-                clearable
-                hide-details
-                no-data-text
-                label="SL,VL, Holiday, etc."
-              ></v-select>
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field v-model="details" label="Others"></v-text-field>
-            </v-flex>
-            <v-flex xs12 lg6>
-              <v-menu
-                ref="menu1"
-                v-model="menu1"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                max-width="290px"
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="dateFormatted"
-                    label="Date Leave"
-                    hint="MM/DD/YYYY format"
-                    persistent-hint
-                    prepend-icon="event"
-                    @blur="date = parseDate(dateFormatted)"
-                    v-on="on"
-                    readonly
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
-              </v-menu>
-            </v-flex>
-          </v-card-title>
-          <v-card-actions>
-            <v-btn color="primary" :disabled="enableStart" @click="SaveAdditionalItinerary">Save</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialog = false"> Cancel </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
+
+      <v-card class="mr-extra__card" flat>
+        <div class="mr-extra__header">
+          <div>
+            <p class="mr-extra__eyebrow">Calendar Entry</p>
+            <h2>Leave Details</h2>
+            <span>Record leave, holiday, office work, or other activities.</span>
+          </div>
+          <v-btn icon text color="white" @click="dialog = false">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </div>
+
+        <v-card-text class="mr-extra__body">
+          <v-select
+            v-model="TSRObjectiveSelected"
+            :items="TSRObjectiveList"
+            item-text="ObjectiveName"
+            item-value="ObjectiveName"
+            clearable
+            hide-details="auto"
+            no-data-text
+            outlined
+            dense
+            label="Activity type"
+            prepend-inner-icon="event_busy"
+          ></v-select>
+
+          <v-text-field
+            v-model="details"
+            label="Other details"
+            outlined
+            dense
+            hide-details="auto"
+            prepend-inner-icon="notes"
+          ></v-text-field>
+
+          <v-menu
+            ref="menu1"
+            v-model="menu1"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            max-width="290px"
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="dateFormatted"
+                label="Activity date"
+                hint="MM/DD/YYYY format"
+                persistent-hint
+                outlined
+                dense
+                prepend-inner-icon="event"
+                @blur="date = parseDate(dateFormatted)"
+                v-on="on"
+                readonly
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
+          </v-menu>
+        </v-card-text>
+
+        <v-card-actions class="mr-extra__actions">
+          <v-btn text color="blue-grey darken-1" @click="dialog = false">Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="teal darken-2" dark depressed :disabled="enableStart" @click="SaveAdditionalItinerary">
+            Save Entry
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
-  </v-layout>
+  </div>
 </template>
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
@@ -154,3 +174,48 @@ export default {
   },
 }
 </script>
+<style scoped>
+.mr-extra__card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mr-extra__header {
+  align-items: flex-start;
+  background: linear-gradient(135deg, #0f766e, #1976d2);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 24px;
+}
+
+.mr-extra__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.mr-extra__header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.mr-extra__header span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+}
+
+.mr-extra__body {
+  display: grid;
+  gap: 14px;
+  padding: 22px 24px 10px;
+}
+
+.mr-extra__actions {
+  border-top: 1px solid rgba(15, 76, 76, 0.1);
+  padding: 14px 24px 18px;
+}
+</style>

@@ -1,77 +1,121 @@
 <template>
-  <v-layout mt-0 row justify-center>
-    <v-dialog v-model="dialog" width="500" persistent transition="dialog-bottom-transition">
+  <div class="mr-visit">
+    <v-dialog v-model="dialog" max-width="720" persistent transition="dialog-bottom-transition">
       <template v-slot:activator="{ on }">
         <v-btn v-if="type == 'icon'" small icon text rounded dark color="teal" v-on="on">
           <v-icon color="white lighten-1">timer_off</v-icon>
         </v-btn>
-        <v-btn v-else small rounded dark color="teal" v-on="on"> Visit </v-btn>
+        <v-btn v-else small rounded dark color="teal" v-on="on">
+          <v-icon left small>add_location_alt</v-icon>
+          Visit
+        </v-btn>
       </template>
-      <v-toolbar color="primary" dark class="fixed-toolbar">
-        <v-toolbar-title>Itinerary</v-toolbar-title>
-        <v-spacer></v-spacer>
-      </v-toolbar>
-      <v-card color="grey lighten-4" text>
-        <v-container fluid>
-          <v-flex xs12 class="mt-2">
-            <v-card color="grey lighten-4" text class="mt-0">
-              <v-flex xs12>
-                <v-text-field v-model="searchQuery" label="Search Client"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-card color="grey lighten-4" class="mt-3 mb-3">
-                  <v-card-title class="custom-card-title">Client</v-card-title>
-                  <v-card-text style="max-height: 150px; overflow-y: auto">
-                    <v-radio-group v-model="clientSelected" column @change="getCustomer">
-                      <v-radio
-                        v-for="item in filteredClients"
-                        :key="item.ACCMID"
-                        :label="item.ACCMNM"
-                        :value="item.ACCMID"
-                      ></v-radio>
-                    </v-radio-group>
-                  </v-card-text>
-                </v-card>
-              </v-flex>
-            </v-card>
-          </v-flex>
-          <v-flex xs12>
-            <v-card color="grey lighten-4" class="mt-3 mb-3">
-              <v-card-title class="custom-card-title">
-                <b>Customer</b>
-              </v-card-title>
-              <v-card-text style="max-height: 150px; overflow-y: auto">
-                <v-radio-group v-model="customerSelected" column>
-                  <v-radio
-                    v-for="item in customerList"
-                    :key="item.CSTMID"
-                    :label="item.CSTNME"
-                    :value="item.CSTMID"
-                  ></v-radio>
-                </v-radio-group>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex xs12>
-            <v-card color="grey lighten-4" class="mt-1 mb-1">
-              <v-card-title class="custom-card-title">
-                <b>Objective</b>
-              </v-card-title>
-              <v-card-text style="max-height: 150px; overflow-y: auto">
-                <div v-for="item in TSRObjectiveList" :key="item.ObjectiveName" class="custom-checkbox">
-                  <v-checkbox
-                    :label="item.ObjectiveName"
-                    :value="item.ObjectiveName"
-                    v-model="TSRObjectiveSelected"
-                  ></v-checkbox>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 v-if="TSRObjectiveSelected.includes('Others')">
-            <v-text-field v-model="TSRObjectiveSelectOthers" label="Please specify Others"></v-text-field>
-          </v-flex>
-          <v-flex xs12 lg6>
+
+      <v-card class="mr-visit__card" flat>
+        <div class="mr-visit__header">
+          <div>
+            <p class="mr-visit__eyebrow">New Itinerary</p>
+            <h2>Schedule Visit</h2>
+            <span>Select a client, customer, objective, and visit date.</span>
+          </div>
+          <v-btn icon text color="white" @click="dialog = false">
+            <v-icon>close</v-icon>
+          </v-btn>
+        </div>
+
+        <v-card-text class="mr-visit__body">
+          <section class="mr-visit__section">
+            <div class="mr-visit__section-head">
+              <v-icon color="teal darken-2">business</v-icon>
+              <div>
+                <h3>Client</h3>
+                <p>Search and choose the account for this visit.</p>
+              </div>
+            </div>
+
+            <v-text-field
+              v-model="searchQuery"
+              label="Search client"
+              outlined
+              dense
+              hide-details
+              prepend-inner-icon="search"
+            ></v-text-field>
+
+            <div class="mr-visit__choice-panel">
+              <v-radio-group v-model="clientSelected" column hide-details @change="getCustomer">
+                <v-radio
+                  v-for="item in filteredClients"
+                  :key="item.ACCMID"
+                  :label="item.ACCMNM"
+                  :value="item.ACCMID"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+          </section>
+
+          <section class="mr-visit__section">
+            <div class="mr-visit__section-head">
+              <v-icon color="teal darken-2">person</v-icon>
+              <div>
+                <h3>Customer</h3>
+                <p>Choose the contact linked to the selected client.</p>
+              </div>
+            </div>
+
+            <div class="mr-visit__choice-panel">
+              <v-radio-group v-model="customerSelected" column hide-details>
+                <v-radio
+                  v-for="item in customerList"
+                  :key="item.CSTMID"
+                  :label="item.CSTNME"
+                  :value="item.CSTMID"
+                ></v-radio>
+              </v-radio-group>
+            </div>
+          </section>
+
+          <section class="mr-visit__section">
+            <div class="mr-visit__section-head">
+              <v-icon color="teal darken-2">flag</v-icon>
+              <div>
+                <h3>Objective</h3>
+                <p>Select one or more visit objectives.</p>
+              </div>
+            </div>
+
+            <div class="mr-visit__objective-grid">
+              <v-checkbox
+                v-for="item in TSRObjectiveList"
+                :key="item.ObjectiveName"
+                :label="item.ObjectiveName"
+                :value="item.ObjectiveName"
+                v-model="TSRObjectiveSelected"
+                hide-details
+                dense
+              ></v-checkbox>
+            </div>
+
+            <v-text-field
+              v-if="TSRObjectiveSelected.includes('Others')"
+              v-model="TSRObjectiveSelectOthers"
+              label="Please specify others"
+              outlined
+              dense
+              hide-details="auto"
+              prepend-inner-icon="edit_note"
+            ></v-text-field>
+          </section>
+
+          <section class="mr-visit__section mr-visit__section--date">
+            <div class="mr-visit__section-head">
+              <v-icon color="teal darken-2">event</v-icon>
+              <div>
+                <h3>Visit Date</h3>
+                <p>Pick the itinerary schedule date.</p>
+              </div>
+            </div>
+
             <v-menu
               ref="menu1"
               v-model="menu1"
@@ -87,10 +131,12 @@
               <template v-slot:activator="{ on }">
                 <v-text-field
                   v-model="dateFormatted"
-                  label="Visit Date"
+                  label="Visit date"
                   hint="MM/DD/YYYY format"
                   persistent-hint
-                  prepend-icon="event"
+                  outlined
+                  dense
+                  prepend-inner-icon="event"
                   @blur="date = parseDate(dateFormatted)"
                   v-on="on"
                   readonly
@@ -98,16 +144,19 @@
               </template>
               <v-date-picker v-model="date" no-title @input="menu1 = false"></v-date-picker>
             </v-menu>
-          </v-flex>
-          <v-card-actions>
-            <v-btn color="primary" :disabled="enableStart" @click="SaveItineraryValidation">Save</v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" @click="dialog = false"> Cancel </v-btn>
-          </v-card-actions>
-        </v-container>
+          </section>
+        </v-card-text>
+
+        <v-card-actions class="mr-visit__actions">
+          <v-btn text color="blue-grey darken-1" @click="dialog = false">Cancel</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="teal darken-2" dark depressed :disabled="enableStart" @click="SaveItineraryValidation">
+            Save Visit
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-layout>
+  </div>
 </template>
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
@@ -279,21 +328,106 @@ export default {
 }
 </script>
 <style scoped>
-.custom-checkbox {
-  margin-bottom: 1px;
-  /* Adjust this value to change the spacing */
+.mr-visit__card {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  overflow: hidden;
 }
 
-.custom-card-title {
-  padding: 0px 16px;
-  /* Remove any default margin */
+.mr-visit__header {
+  align-items: flex-start;
+  background: linear-gradient(135deg, #0f766e, #1976d2);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 22px 24px;
 }
 
-.fixed-toolbar {
-  position: fixed;
-  top: 0;
-  width: 87.5%;
-  /* This line was missing the property */
-  z-index: 1000;
+.mr-visit__eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.mr-visit__header h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.mr-visit__header span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.9rem;
+}
+
+.mr-visit__body {
+  display: grid;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.mr-visit__section {
+  border: 1px solid rgba(15, 76, 76, 0.12);
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.mr-visit__section--date {
+  max-width: 360px;
+}
+
+.mr-visit__section-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+}
+
+.mr-visit__section-head h3 {
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.mr-visit__section-head p {
+  color: #64748b;
+  font-size: 0.84rem;
+  margin: 0;
+}
+
+.mr-visit__choice-panel {
+  border: 1px solid rgba(100, 116, 139, 0.16);
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 4px 10px;
+}
+
+.mr-visit__objective-grid {
+  display: grid;
+  gap: 2px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mr-visit__actions {
+  border-top: 1px solid rgba(15, 76, 76, 0.1);
+  padding: 14px 24px 18px;
+}
+
+@media (max-width: 600px) {
+  .mr-visit__objective-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mr-visit__section--date {
+    max-width: none;
+  }
 }
 </style>

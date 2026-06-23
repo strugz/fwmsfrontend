@@ -1,142 +1,166 @@
 <template>
-  <v-container>
-    <v-layout app wrap id="printDiv">
-      <v-flex xs12 class="ml-3 mr-3 mt-3">
-        <span>
-          <h4>MARSMAN DRYSDALE MEDICAL PRODUCT INC.</h4>
-          <h4>CALENDAR PLANNER</h4>
-        </span>
-        <span>
-          <h3>{{ myDate }}</h3>
-        </span>
-        <v-layout row wrap>
-          <v-flex sm4 md4 lg6 xs12>
+  <v-container fluid class="ps-calendar-page">
+    <div id="printDiv" class="ps-calendar">
+      <section class="ps-calendar__hero">
+        <div>
+          <p class="ps-calendar__eyebrow">Marsman Drysdale Medical Product Inc.</p>
+          <h1>Calendar Planner</h1>
+          <p class="ps-calendar__subtitle">
+            Review planned PS activities, scheduled work, started items, and leave entries.
+          </p>
+        </div>
+
+        <div class="ps-calendar__month">
+          <span>{{ myDate }}</span>
+          <small>{{ selectedUserName }}</small>
+        </div>
+      </section>
+
+      <v-card class="ps-calendar__controls no-print" flat>
+        <v-row align="center" dense>
+          <v-col cols="12" md="3">
             <v-combobox
-              outlined
               v-model="selectedItemDepartment"
               :items="departmentList"
               item-text="DPTNME"
               item-value="DPTNME"
               label="Select Department"
-            ></v-combobox>
-          </v-flex>
-          <v-flex sm4 md4 lg6 xs12>
-            <v-combobox
               outlined
+              dense
+              hide-details
+              prepend-inner-icon="business"
+            ></v-combobox>
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-combobox
               v-model="selectedItemUser"
               :items="userList"
               item-text="CNTMNN"
               item-value="CNTMID"
               label="Select User"
+              outlined
+              dense
+              hide-details
+              prepend-inner-icon="person"
             ></v-combobox>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap>
-          <v-flex sm2 md2 xs12>
-            <v-text-field v-model="datefrom" class="no-print ml-2" type="date" label="From"></v-text-field>
-          </v-flex>
-          <v-flex sm2 md2 xs12>
-            <v-text-field v-model="dateto" class="no-print ml-2" type="date" label="To"></v-text-field>
-          </v-flex>
-          <v-flex sm1 md1 xs12>
-            <v-btn class="no-print primary" @click="dataReload">Load</v-btn>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="red no-print" @click="removeCalendarData">Reset Data</v-btn>
-          </v-flex>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="no-print" @click="$refs.calendar.prev()">
-              <v-icon dark left> keyboard_arrow_left </v-icon>
+          </v-col>
+          <v-col cols="12" sm="6" md="2">
+            <v-text-field v-model="datefrom" type="date" label="From" outlined dense hide-details></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6" md="2">
+            <v-text-field v-model="dateto" type="date" label="To" outlined dense hide-details></v-text-field>
+          </v-col>
+          <v-col cols="12" md="2">
+            <div class="ps-calendar__actions">
+              <v-btn depressed color="teal darken-2" dark @click="dataReload">
+                <v-icon left small>refresh</v-icon>
+                Load
+              </v-btn>
+              <v-btn depressed color="red lighten-5" class="red--text text--darken-2" @click="removeCalendarData">
+                Reset
+              </v-btn>
+            </div>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <section class="ps-calendar__stats no-print">
+        <div class="ps-calendar__stat">
+          <span>{{ calendarCount }}</span>
+          <small>Total items</small>
+        </div>
+        <div class="ps-calendar__stat">
+          <span>{{ scheduledCount }}</span>
+          <small>Scheduled</small>
+        </div>
+        <div class="ps-calendar__stat">
+          <span>{{ startedCount }}</span>
+          <small>Started</small>
+        </div>
+        <div class="ps-calendar__stat">
+          <span>{{ leaveCount }}</span>
+          <small>Leave</small>
+        </div>
+      </section>
+
+      <v-card class="ps-calendar__calendar-card" flat>
+        <div class="ps-calendar__calendar-head">
+          <div>
+            <h2>{{ myDate }}</h2>
+            <p>Click a calendar item to review instruments, status, and activity details.</p>
+          </div>
+          <div class="ps-calendar__month-actions no-print">
+            <v-btn depressed color="grey lighten-3" class="ps-calendar__nav-btn" @click="$refs.calendar.prev()">
+              <v-icon left small>keyboard_arrow_left</v-icon>
               Prev
             </v-btn>
-          </v-flex>
-          <v-flex sm3 md3 xs12>
-            <v-btn class="no-print" @click="$refs.calendar.next()">
+            <v-btn depressed color="grey lighten-3" class="ps-calendar__nav-btn" @click="$refs.calendar.next()">
               Next
-              <v-icon right dark> keyboard_arrow_right </v-icon>
+              <v-icon right small>keyboard_arrow_right</v-icon>
             </v-btn>
-          </v-flex>
-        </v-layout>
-        <v-sheet height="800" class="my-event3">
-          <v-calendar ref="calendar" v-model="today" type="month" color="primary">
+          </div>
+        </div>
+
+        <v-sheet class="ps-calendar__sheet">
+          <v-calendar ref="calendar" v-model="today" type="month" color="teal darken-2">
             <template v-slot:day="{ date }">
               <template v-for="event in eventsMap[date]">
-                <v-menu :key="event.trdmti" v-model="event.open" :close-on-content-click="false" full-width offset-x>
+                <v-menu
+                  :key="event.trdmti || event.title + date"
+                  v-model="event.open"
+                  :close-on-content-click="false"
+                  offset-y
+                >
                   <template v-slot:activator="{ on }">
-                    <div class="my-event1 mb-1" v-ripple v-on="on" v-show="event.trdsts != 'LEAVE'">
-                      <div v-if="!event.time && event.trdmde != '' && event.trdsts != ''">
-                        {{ event.client }}
+                    <div class="ps-calendar-event mb-1" :class="eventClass(event)" v-ripple v-on="on">
+                      <div class="ps-calendar-event__top">
+                        <span>{{ eventTitleLine(event) }}</span>
+                        <small v-if="eventStatusLabel(event)">{{ eventStatusLabel(event) }}</small>
                       </div>
-                      <div v-if="event.trdmde == '' && event.trdsts == 'SCHEDULED'" v-ripple>
-                        {{ event.client }}
-                      </div>
-                      <div v-show="event.trdsts == ''">
-                        {{ event.client }}
-                      </div>
-                    </div>
-                    <div
-                      v-show="event.trdsts != '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                      v-on="on"
-                      v-for="(text, index) in event.trdmde.split('|')"
-                      :key="index"
-                    >
-                      <div v-show="event.trdmde != '' && event.trdsts != 'SCHEDULED'">
-                        {{ text }}
-                      </div>
-                      <div v-show="(event.trdmde == '' && event.trdsts == 'SCHEDULED') || event.trdsts == 'START'">
-                        {{ event.trdsts + ':' }}
-                        {{ event.itiobj + ' - ' }} {{ event.itiins }}
-                      </div>
-                    </div>
-                    <div
-                      v-show="event.trdmde != '' && event.trdsts == '' && event.trdsts != 'LEAVE'"
-                      class="my-event2 mb-1"
-                      v-ripple
-                    >
-                      {{ event.trdmde }}
-                    </div>
-                    <div v-show="event.trdsts == 'LEAVE'" class="my-event4" v-ripple v-on="on">
-                      {{ event.title }}
+                      <p v-if="eventSubtitle(event)">{{ eventSubtitle(event) }}</p>
                     </div>
                   </template>
-                  <v-layout wrap row>
-                    <v-card
-                      v-show="event.trdsts == 'START' || event.trdsts == 'SCHEDULED'"
-                      color="grey lighten-4"
-                      min-width="250px"
-                      max-width="350px"
-                      text
-                    >
-                      <v-toolbar color="primary" dark>
-                        <v-toolbar-title>{{ event.title }}</v-toolbar-title>
-                        <v-spacer></v-spacer>
-                      </v-toolbar>
-                      <v-card-title primary-title>
-                        <v-flex xs12 v-show="event.itiobj">
-                          <p>
-                            <span style="color: blue; font-weight: bold">Instrument:</span>
-                            {{ ' ' + event.itiins }}
-                          </p>
-                        </v-flex>
-                      </v-card-title>
-                      <v-card-actions> </v-card-actions>
-                    </v-card>
-                  </v-layout>
+
+                  <v-card class="ps-calendar-menu-card" min-width="320px" max-width="420px" flat>
+                    <v-toolbar dark flat height="56" class="ps-calendar-menu-card__toolbar">
+                      <v-toolbar-title>{{ event.title || event.client || 'Calendar item' }}</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                    </v-toolbar>
+                    <v-card-text>
+                      <div v-if="event.client" class="ps-calendar-menu-card__meta">
+                        <strong>Client</strong>
+                        <span>{{ event.client }}</span>
+                      </div>
+                      <div v-if="event.itiobj" class="ps-calendar-menu-card__meta">
+                        <strong>Objective</strong>
+                        <span>{{ event.itiobj }}</span>
+                      </div>
+                      <div v-if="event.itiins" class="ps-calendar-menu-card__meta">
+                        <strong>Instrument</strong>
+                        <span>{{ event.itiins }}</span>
+                      </div>
+                      <div v-if="event.trdmde" class="ps-calendar-menu-card__meta">
+                        <strong>Details</strong>
+                        <span>{{ event.trdmde }}</span>
+                      </div>
+                      <div class="ps-calendar-menu-card__meta">
+                        <strong>Status</strong>
+                        <span>{{ eventStatusLabel(event) || 'Calendar item' }}</span>
+                      </div>
+                    </v-card-text>
+                  </v-card>
                 </v-menu>
               </template>
             </template>
           </v-calendar>
         </v-sheet>
-      </v-flex>
-    </v-layout>
+      </v-card>
+    </div>
   </v-container>
 </template>
+
 <script>
-import { mapActions, mapState, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import moment from 'moment'
 
 export default {
@@ -153,6 +177,11 @@ export default {
   }),
   watch: {
     selectedItemDepartment() {
+      if (!this.selectedItemDepartment || !this.selectedItemDepartment.DPTNME) {
+        this.userList = []
+        return
+      }
+
       this.getUserByDepartment(this.selectedItemDepartment.DPTNME)
         .then(res => {
           this.userList = res.data
@@ -171,6 +200,25 @@ export default {
     },
     myDate() {
       return moment(this.today).format('MMMM YYYY')
+    },
+    selectedUserName() {
+      return this.selectedItemUser ? this.selectedItemUser.CNTMCN || this.selectedItemUser.CNTMNN : 'Select a user'
+    },
+    selectedMonthEvents() {
+      const selectedMonth = moment(this.today).format('YYYY-MM')
+      return this.CurServiceCalendar.filter(event => moment(event.date).format('YYYY-MM') === selectedMonth)
+    },
+    calendarCount() {
+      return this.selectedMonthEvents.length
+    },
+    scheduledCount() {
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'SCHEDULED').length
+    },
+    startedCount() {
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'START').length
+    },
+    leaveCount() {
+      return this.selectedMonthEvents.filter(event => event.trdsts == 'LEAVE').length
     },
   },
   mounted() {
@@ -195,10 +243,34 @@ export default {
   methods: {
     ...mapActions(['getServiceCalendar', 'getUserByDepartment']),
     ...mapMutations(['upCurServiceCalendar']),
+    eventClass(event) {
+      if (event.trdsts == 'LEAVE') return 'ps-calendar-event--leave'
+      if (event.trdsts == 'START') return 'ps-calendar-event--start'
+      if (event.trdsts == 'SCHEDULED') return 'ps-calendar-event--scheduled'
+      return 'ps-calendar-event--default'
+    },
+    eventTitleLine(event) {
+      return event.trdsts == 'LEAVE' ? event.title : event.client || event.title || 'Calendar item'
+    },
+    eventStatusLabel(event) {
+      if (event.trdsts == 'LEAVE') return 'LEAVE'
+      return event.trdsts || ''
+    },
+    eventSubtitle(event) {
+      if (event.trdsts == 'LEAVE') return ''
+      if (event.trdmde && event.trdsts != 'SCHEDULED') return event.trdmde
+      if (event.itiobj || event.itiins) return [event.itiobj, event.itiins].filter(Boolean).join(' - ')
+      return ''
+    },
     open(event) {
       alert(event.title)
     },
     dataReload() {
+      if (!this.selectedItemUser || !this.selectedItemUser.CNTMID) {
+        alert('Please select a user first.')
+        return
+      }
+
       this.getServiceCalendar({
         cntmid: this.selectedItemUser.CNTMID,
         data: {
@@ -230,69 +302,260 @@ export default {
   },
 }
 </script>
+
 <style scoped>
-.my-event3 ::v-deep .v-calendar-weekly__day {
-  overflow: hidden auto;
-  min-width: 0;
-  contain: paint;
+.ps-calendar-page {
+  min-height: calc(100vh - 92px);
+  padding: 24px 12px 40px;
 }
 
-.my-event3 ::v-deep .v-calendar-weekly__day::-webkit-scrollbar {
+.ps-calendar {
+  margin: 0 auto;
+  max-width: 1240px;
+}
+
+.ps-calendar__hero {
+  align-items: flex-end;
+  background: linear-gradient(135deg, #0f766e, #1976d2);
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px 28px;
+}
+
+.ps-calendar__eyebrow {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.ps-calendar__hero h1 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+.ps-calendar__subtitle {
+  margin: 0;
+}
+
+.ps-calendar__month {
+  text-align: right;
+}
+
+.ps-calendar__month span {
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.ps-calendar__month small {
+  color: rgba(255, 255, 255, 0.82);
+  font-weight: 700;
+}
+
+.ps-calendar__controls,
+.ps-calendar__calendar-card,
+.ps-calendar__stat {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+}
+
+.ps-calendar__controls {
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.ps-calendar__actions,
+.ps-calendar__month-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ps-calendar__stats {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 16px 0;
+}
+
+.ps-calendar__stat {
+  padding: 18px;
+}
+
+.ps-calendar__stat span {
+  color: #0f172a;
+  display: block;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.ps-calendar__stat small {
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ps-calendar__calendar-card {
+  overflow: hidden;
+}
+
+.ps-calendar__calendar-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+}
+
+.ps-calendar__calendar-head h2 {
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.ps-calendar__calendar-head p {
+  color: #64748b;
+  margin: 0;
+}
+
+.ps-calendar__sheet {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  height: 760px;
+}
+
+.ps-calendar__sheet ::v-deep .v-calendar-weekly__day {
+  contain: paint;
+  min-width: 0;
+  overflow: hidden auto;
+}
+
+.ps-calendar__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar {
   width: 4px;
 }
 
-.my-event3 ::v-deep .v-calendar-weekly__day::-webkit-scrollbar-thumb {
-  border-radius: 999px;
+.ps-calendar__sheet ::v-deep .v-calendar-weekly__day::-webkit-scrollbar-thumb {
   background: #c7d5dd;
+  border-radius: 999px;
 }
 
-.my-event1 {
-  box-sizing: border-box;
-  border-radius: 2px;
-  color: #000000;
-  border: 1px solid #1867c0;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 10px;
-}
-
-.my-event2 {
-  box-sizing: border-box;
-  border-radius: 2px;
-  color: #000000;
-  border: 1px solid #f1cc52;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 8px;
-}
-
-.my-event4 {
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  border-radius: 2px;
-  background-color: #127509;
-  color: #ffffff;
-  border: 1px solid #1867c0;
-  width: 100%;
-  font-size: 12px;
-  padding: 3px;
+.ps-calendar-event {
+  border-left: 4px solid #1976d2;
+  border-radius: 6px;
   cursor: pointer;
-  margin-bottom: 1px;
-  inline-size: 100%;
-  overflow-wrap: break-word;
+  font-size: 0.72rem;
+  overflow: hidden;
+  padding: 5px 6px;
 }
 
-.my-event3 {
-  border-color: red;
-  border: 2px solid;
+.ps-calendar-event__top {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.ps-calendar-event__top span {
+  color: #0f172a;
+  font-weight: 800;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-calendar-event__top small {
+  color: #475569;
+  flex: 0 0 auto;
+  font-size: 0.56rem;
+  font-weight: 900;
+}
+
+.ps-calendar-event p {
+  color: #475569;
+  font-size: 0.66rem;
+  margin: 2px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-calendar-event--scheduled {
+  background: #eff6ff;
+  border-color: #1976d2;
+}
+
+.ps-calendar-event--start {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+
+.ps-calendar-event--leave {
+  background: #dcfce7;
+  border-color: #16a34a;
+}
+
+.ps-calendar-event--default {
+  background: #f8fafc;
+  border-color: #64748b;
+}
+
+.ps-calendar-menu-card__toolbar {
+  background: linear-gradient(135deg, #0f766e, #1976d2) !important;
+}
+
+.ps-calendar-menu-card__toolbar .v-toolbar__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ps-calendar-menu-card__meta {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.ps-calendar-menu-card__meta strong {
+  color: #64748b;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .ps-calendar__hero,
+  .ps-calendar__calendar-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ps-calendar__month {
+    text-align: left;
+  }
+
+  .ps-calendar__actions,
+  .ps-calendar__month-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .ps-calendar__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ps-calendar__sheet {
+    height: 660px;
+  }
 }
 
 @media print {
