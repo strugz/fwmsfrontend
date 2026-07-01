@@ -178,7 +178,7 @@ export default {
         console.log(res);
       })
       .catch((error) => {
-        this.logout();
+        // A temporary privacy-service failure must not destroy a valid login session.
         console.error(error);
       });
   },

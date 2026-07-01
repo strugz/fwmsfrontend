@@ -31,23 +31,38 @@ Vue.use(Router)
 
 const SR_BASE = process.env.VUE_APP_SR_URL
 
+const hasValidToken = () => {
+  const token = Cookies.get('token')
+
+  if (!token) return false
+
+  try {
+    const decoded = jwt.decode(token)
+
+    if (!decoded) return false
+
+    // Tokens without an expiry remain valid until the server rejects them.
+    return !decoded.exp || decoded.exp * 1000 > Date.now()
+  } catch (error) {
+    return false
+  }
+}
+
 const ifNotAuthenticated = (to, from, next) => {
-  jwt.verify(Cookies.get('token'), process.env.VUE_APP_PRIVATE_KEY, (err, decoded) => {
-    if (decoded) {
-      next('/')
-      return
-    }
-  })
+  if (hasValidToken()) {
+    next('/')
+    return
+  }
+
   next()
 }
 
 const ifAuthenticated = (to, from, next) => {
-  jwt.verify(Cookies.get('token'), process.env.VUE_APP_PRIVATE_KEY, err => {
-    if (err) {
-      next('/login')
-      return
-    }
-  })
+  if (!hasValidToken()) {
+    next('/login')
+    return
+  }
+
   next()
 }
 
